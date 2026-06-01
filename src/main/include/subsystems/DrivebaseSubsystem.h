@@ -15,19 +15,19 @@ class DrivebaseSubsystem : public frc2::SubsystemBase {
 
 
  private:
-    SwerveModule m_frontLeft{DriveConstants::kFrontLeftDriveID, DriveConstants::kFrontLeftTurnID};
-    SwerveModule m_frontRight{DriveConstants::kFrontRightDriveID, DriveConstants::kFrontRightTurnID};
-    SwerveModule m_backLeft{DriveConstants::kBackLeftDriveID, DriveConstants::kBackLeftTurnID};
-    SwerveModule m_backRight{DriveConstants::kBackRightDriveID, DriveConstants::kBackRightTurnID};
+    SwerveModule frontLeft{DriveConstants::kFrontLeftDriveID, DriveConstants::kFrontLeftTurnID, DriveConstants::kFrontLeftEncoderID};
+    SwerveModule frontRight{DriveConstants::kFrontRightDriveID, DriveConstants::kFrontRightTurnID, DriveConstants::kFrontRightEncoderID};
+    SwerveModule backLeft{DriveConstants::kBackLeftDriveID, DriveConstants::kBackLeftTurnID, DriveConstants::kBackLeftEncoderID};
+    SwerveModule backRight{DriveConstants::kBackRightDriveID, DriveConstants::kBackRightTurnID, DriveConstants::kBackRightEncoderID};
 
-    frc::SlewRateLimiter<units::scalar> xLimiter{3.0};
-    frc::SlewRateLimiter<units::scalar> yLimiter{3.0};
-    frc::SlewRateLimiter<units::scalar> rotationLimiter{3.0};
+    frc::SlewRateLimiter<units::scalar> xLimiter{3.0 / 1_s};
+    frc::SlewRateLimiter<units::scalar> yLimiter{3.0 / 1_s};
+    frc::SlewRateLimiter<units::scalar> rotationLimiter{3.0 / 1_s};
 
-    frc::SwerveDriveKinematics drive{
-        frc::Translation2d(0.381, 0.381),
-        frc::Translation2d(0.381, -0.381),
-        frc::Translation2d(-0.381, 0.381),
-        frc::Translation2d(-0.381, -0.381)
+    frc::SwerveDriveKinematics<4> drive{
+        frc::Translation2d(0.381_m, 0.381_m),
+        frc::Translation2d(0.381_m, -0.381_m),
+        frc::Translation2d(-0.381_m, 0.381_m),
+        frc::Translation2d(-0.381_m, -0.381_m)
     };
 };
