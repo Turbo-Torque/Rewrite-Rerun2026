@@ -13,7 +13,9 @@ class DrivebaseSubsystem : public frc2::SubsystemBase {
 
   void Drive(double xSpeed, double ySpeed, double rotation);
 
-
+  void Periodic() override {
+    frontLeft.PublishInfo("front left angle", frontLeft.GetState().angle.Degrees().value());
+  };
  private:
     SwerveModule frontLeft{DriveConstants::kFrontLeftDriveID, DriveConstants::kFrontLeftTurnID, DriveConstants::kFrontLeftEncoderID};
     SwerveModule frontRight{DriveConstants::kFrontRightDriveID, DriveConstants::kFrontRightTurnID, DriveConstants::kFrontRightEncoderID};
@@ -25,9 +27,9 @@ class DrivebaseSubsystem : public frc2::SubsystemBase {
     frc::SlewRateLimiter<units::scalar> rotationLimiter{3.0 / 1_s};
 
     frc::SwerveDriveKinematics<4> drive{
-        frc::Translation2d(0.381_m, 0.381_m),
-        frc::Translation2d(0.381_m, -0.381_m),
-        frc::Translation2d(-0.381_m, 0.381_m),
-        frc::Translation2d(-0.381_m, -0.381_m)
+        frc::Translation2d(0.27_m, 0.27_m),
+        frc::Translation2d(0.27_m, -0.27_m),
+        frc::Translation2d(-0.27_m, 0.27_m),
+        frc::Translation2d(-0.27_m, -0.27_m)
     };
 };

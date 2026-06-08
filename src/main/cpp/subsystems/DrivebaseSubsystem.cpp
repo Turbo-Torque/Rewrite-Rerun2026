@@ -2,14 +2,13 @@
 
 #include <frc/kinematics/ChassisSpeeds.h>
 
-DrivebaseSubsystem::DrivebaseSubsystem() {
-};
+DrivebaseSubsystem::DrivebaseSubsystem() {};
 
 void DrivebaseSubsystem::Drive(double xSpeed, double ySpeed, double rotation) {
     frc::ChassisSpeeds speeds{    
-    units::meters_per_second_t{xSpeed},
-    units::meters_per_second_t{ySpeed},
-    units::radians_per_second_t{rotation}
+    units::meters_per_second_t{xSpeed * 0.25},
+    units::meters_per_second_t{ySpeed * 0.25},
+    units::radians_per_second_t{rotation * 0.25}
 };
 
     auto states = drive.ToSwerveModuleStates(speeds);
