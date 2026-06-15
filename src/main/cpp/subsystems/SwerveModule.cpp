@@ -13,8 +13,6 @@ SwerveModule::SwerveModule
  
 frc::SwerveModuleState SwerveModule::GetState() {
     return frc::SwerveModuleState{};
-
-
 }
 
 void SwerveModule::SetDesiredState(const frc::SwerveModuleState & state) {
@@ -29,14 +27,26 @@ void SwerveModule::SetDesiredState(const frc::SwerveModuleState & state) {
         frc::SmartDashboard::PutNumber("desired angle",desiredAngle);
         frc::SmartDashboard::PutNumber("current angle",currentAngle);
         frc::SmartDashboard::PutNumber("angle", turnOutput);
+        frc::SmartDashboard::PutNumber(
+            "Desired Angle",
+            optimizeState.angle.Degrees().value());
 
-        PublishInfo("current angle", currentAngle);
-    
+        frc::SmartDashboard::PutNumber(
+            "Drive Speed",
+            optimizeState.speed.value());
 
+        
         driveMotor.Set(driveSpeed);
         turnMotor.Set(turnOutput);
-
     }
+
+void SwerveModule::SetDriveInverted(bool inverted) {
+    turnMotor.SetInverted(inverted);
+}
+
+double SwerveModule::GetCurrentAngle() {
+    return turnEncoder.GetAbsolutePosition().GetValue().value() * 360;
+}
 
 
 

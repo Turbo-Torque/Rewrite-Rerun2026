@@ -16,15 +16,15 @@ RobotContainer::RobotContainer() {
 
                     frc::ApplyDeadband(
                         -driveController.GetLeftY(),
-                        0.05),
+                        0.5),
 
                     frc::ApplyDeadband(
                         -driveController.GetLeftX(),
-                        0.05),
+                        0.5),
 
                     frc::ApplyDeadband(
                         -driveController.GetRightX(),
-                        0.05)
+                        0.5)
 
                 );
             },
