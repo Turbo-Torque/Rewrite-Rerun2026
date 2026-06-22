@@ -5,6 +5,7 @@
 #include <frc/controller/PIDController.h>
 #include "ctre/phoenix6/TalonFX.hpp"
 #include "ctre/phoenix6/CANcoder.hpp"
+
 #include <rev/SparkMax.h>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <string>
@@ -27,6 +28,9 @@ public:
     }
 
     double GetCurrentAngle();
+    double GetCurrentSpeed();
+    double GetTurnEncoder();
+    bool IsRotating();
 
 private:
     ctre::phoenix6::hardware::TalonFX driveMotor;

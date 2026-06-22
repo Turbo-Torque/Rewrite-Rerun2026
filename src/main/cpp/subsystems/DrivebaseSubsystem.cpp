@@ -13,6 +13,7 @@ void DrivebaseSubsystem::Drive(double xSpeed, double ySpeed, double rotation) {
 };
 
     auto states = drive.ToSwerveModuleStates(speeds);
+    frc::SwerveDriveKinematics<4>::DesaturateWheelSpeeds(&states, units::meters_per_second_t(4.5));
     frontLeft.SetDesiredState(states[0]);
     frontRight.SetDesiredState(states[1]);
     backLeft.SetDesiredState(states[2]);
@@ -43,6 +44,23 @@ void DrivebaseSubsystem::Drive(double xSpeed, double ySpeed, double rotation) {
     frc::SmartDashboard::PutNumber(
         "BR Actual Angle",
         backRight.GetCurrentAngle());
+
+    frc::SmartDashboard::PutNumber(
+        "FL Actual SPEED",
+        frontLeft.GetCurrentSpeed());
+
+    frc::SmartDashboard::PutNumber(
+        "FR Actual SPEED",
+        frontRight.GetCurrentSpeed());
+
+    frc::SmartDashboard::PutNumber(
+        "BL Actual SPEED",
+        backLeft.GetCurrentSpeed());
+
+    frc::SmartDashboard::PutNumber(
+        "BR Actual SPEED",
+        backRight.GetCurrentSpeed());
+
         
 }
 
