@@ -48,3 +48,13 @@ namespace IntakeConstants {
     inline constexpr units::volt_t kIntakeVolts = 3_V;
 
 }
+
+namespace HopperConstants {
+    inline constexpr int kHopperMotorPort = 0;
+    inline constexpr units::volt_t kHopperInVolts = 3_V;
+    inline constexpr units::volt_t kHopperOutVolts = -3_V;
+}
+
+namespace RobotConstants{
+    inline constexpr double kStartVoltage = 11;
+}
