@@ -36,3 +36,15 @@ namespace DriveConstants {
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
     inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
 }
+
+namespace IntakeConstants {
+    inline constexpr int kIntakeMotorPort = 0;
+    inline constexpr int kIntakePivotPort = 0;
+    inline constexpr int kIntakeCANPort = 0;
+
+    inline constexpr double kIntakeUp = 0.0;
+    inline constexpr double kIntakeDown = 90.0;
+    inline constexpr double kFFPivot = 0.0;
+    inline constexpr units::volt_t kIntakeVolts = 3_V;
+
+}
