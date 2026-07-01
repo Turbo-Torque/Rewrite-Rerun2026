@@ -24,9 +24,14 @@ class RobotContainer {
   frc2::CommandPtr GetAutonomousCommand();
 
  private:
+  DrivebaseSubsystem drivebaseSubsystem;
   frc2::CommandXboxController driveController{0};
 
-  DrivebaseSubsystem m_drivebaseSubsystem;
+  frc2::CommandPtr CreateDriveCommand() {
+    return drivebaseSubsystem.DriveCommand([this]() {return driveController.GetLeftX();}, [this]() {return driveController.GetLeftY();}, [this]() {return driveController.GetRightX();});
+  }
+
 
   void ConfigureBindings();
+  void ConfigureDefualts();
 };

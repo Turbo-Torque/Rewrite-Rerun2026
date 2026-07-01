@@ -4,12 +4,17 @@
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/Trigger.h>
 
-RobotContainer::RobotContainer() {
+RobotContainer::RobotContainer():
+    drivebaseSubsystem()
+{
 
     ConfigureBindings();
-
+    ConfigureDefualts();
 }
 
+void RobotContainer::ConfigureDefualts() {
+    drivebaseSubsystem.SetDefaultCommand(CreateDriveCommand());
+}
 void RobotContainer::ConfigureBindings() {
 
     // Add controller bindings here

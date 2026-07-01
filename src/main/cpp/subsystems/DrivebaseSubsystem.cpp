@@ -1,6 +1,7 @@
 #include "subsystems/DrivebaseSubsystem.h"
 
 #include "Constants.h"
+#include <frc2/command/Commands.h>
 using namespace DriveConstants;
 
 
@@ -26,7 +27,22 @@ void DrivebaseSubsystem::SetModuleStates(const std::array<frc::SwerveModuleState
     backRight.SetModuleState(states[3]);
 }
 
-
+frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotSpeed) {
+    frc2::cmd::Run (
+        [=, this] {
+            frc::ChassisSpeeds speeds{
+                units::meters_per_second_t(
+                    -xSpeed() * DriveConstants::kMaxLinearSpeed),
+                units::meters_per_second_t(
+                    -ySpeed() * DriveConstants::kMaxLinearSpeed),
+                units::radians_per_second_t(
+                    -rotSpeed() * DriveConstants::kMaxAngularSpeed)
+            };
+            Drive(speeds);
+        },
+        {this}
+    );
+}
 
 std::array<frc::SwerveModuleState, 4> DrivebaseSubsystem::GetModuleStates(){
     return {frontLeft.GetModuleState(), frontRight.GetModuleState(), backLeft.GetModuleState(), backRight.GetModuleState()};

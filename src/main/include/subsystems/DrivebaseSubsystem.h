@@ -7,6 +7,8 @@
 #include "ctre/phoenix6/CANBus.hpp"
 #include "frc/controller/PIDController.h"
 #include "turbolib/motors/NeoKrakenModule.hpp"
+#include <frc2/command/CommandPtr.h>
+#include <functional>
 #include <array>
 
 
@@ -23,6 +25,8 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
 
     void Periodic() override;
     void SimulationPeriodic() override;
+
+    frc2::CommandPtr DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotationSpeed);
 
     private:
     ctre::phoenix6::CANBus canBus{};

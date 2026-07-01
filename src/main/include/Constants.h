@@ -10,7 +10,7 @@
 
 namespace OperatorConstants {
 
-    inline constexpr int kDriverControllerPort = 0;
+    inline constexpr int kDriveControllerPort = 0;
 
 }
 
@@ -33,6 +33,6 @@ namespace DriveConstants {
     inline frc::SwerveDriveKinematics<4> kKinematics{kModulePosition[0], kModulePosition[1], kModulePosition[2], kModulePosition[3]};
 
 
-    inline constexpr double kMaxSpeed = 4.5;
-
+    inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
+    inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
 }
