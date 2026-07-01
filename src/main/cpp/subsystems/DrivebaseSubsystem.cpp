@@ -59,8 +59,6 @@ void DrivebaseSubsystem::Drive(double xSpeed, double ySpeed, double rotation) {
 
     frc::SmartDashboard::PutNumber(
         "BR Actual SPEED",
-        backRight.GetCurrentSpeed());
-
-        
+        backRight.GetCurrentSpeed());       
 }
 
