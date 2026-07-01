@@ -1,35 +1,35 @@
 #pragma once
 
-#include <frc2/command/SubsystemBase.h>
-#include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/geometry/Translation2d.h>
-#include <frc/filter/SlewRateLimiter.h>
-#include "subsystems/SwerveModule.h"
-#include "Constants.h"
-#include <frc/smartdashboard/SmartDashboard.h>
-
-class DrivebaseSubsystem : public frc2::SubsystemBase {
- public:
-  DrivebaseSubsystem();
-
-  void Drive(double xSpeed, double ySpeed, double rotation);
-
-  
- private:
-    SwerveModule frontLeft{DriveConstants::kFrontLeftDriveID, DriveConstants::kFrontLeftTurnID, DriveConstants::kFrontLeftEncoderID};
-    SwerveModule frontRight{DriveConstants::kFrontRightDriveID, DriveConstants::kFrontRightTurnID, DriveConstants::kFrontRightEncoderID};
-    SwerveModule backLeft{DriveConstants::kBackLeftDriveID, DriveConstants::kBackLeftTurnID, DriveConstants::kBackLeftEncoderID};
-    SwerveModule backRight{DriveConstants::kBackRightDriveID, DriveConstants::kBackRightTurnID, DriveConstants::kBackRightEncoderID};
+#include "frc2/command/SubsystemBase.h"
+#include "frc/kinematics/ChassisSpeeds.h"
+#include "frc/kinematics/SwerveModulePosition.h"
+#include "frc/kinematics/SwerveModuleState.h"
+#include "ctre/phoenix6/CANBus.hpp"
+#include "frc/controller/PIDController.h"
+#include "turbolib/motors/NeoKrakenModule.hpp"
+#include <array>
 
 
-    ///frc::SlewRateLimiter<units::scalar> xLimiter{3.0 / 1_s};
-    ///frc::SlewRateLimiter<units::scalar> yLimiter{3.0 / 1_s};
-    ///frc::SlewRateLimiter<units::scalar> rotationLimiter{3.0 / 1_s};
 
-    frc::SwerveDriveKinematics<4> drive{
-        frc::Translation2d(0.27_m, 0.27_m),
-        frc::Translation2d(0.27_m, -0.27_m),
-        frc::Translation2d(-0.27_m, 0.27_m),
-        frc::Translation2d(-0.27_m, -0.27_m)
-    };
+class DrivebaseSubsystem final:public frc2::SubsystemBase {
+    public: 
+    DrivebaseSubsystem();
+
+    void Drive(const frc::ChassisSpeeds& speeds);
+    void SetModuleStates(const std::array<frc::SwerveModuleState, 4>& states);
+
+    std::array<frc::SwerveModuleState, 4> GetModuleStates();
+    std::array<frc::SwerveModulePosition, 4> GetSwerveModulePosition();
+
+    void Periodic() override;
+    void SimulationPeriodic() override;
+
+    private:
+    ctre::phoenix6::CANBus canBus{};
+    turbolib::motors::NeoKrakenModule frontLeft, frontRight, backLeft, backRight;
+
+    frc::PIDController rotationController{0.009, 0, 0};
+
+    frc::ChassisSpeeds cmdSpeeds{0.0_mps, 0.0_mps, 0.0_rad_per_s};
+
 };

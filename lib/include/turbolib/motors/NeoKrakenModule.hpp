@@ -14,6 +14,7 @@
 #include <ctre/phoenix6/CANcoder.hpp>
 #include <ctre/phoenix6/TalonFX.hpp>
 #include <rev/SparkMax.h>
+#include <numbers>
 
 #include "units/current.h"
 #include "units/length.h"
@@ -37,10 +38,10 @@ class NeoKrakenModule final {
   frc::PIDController driveController, steerController;
 
   constexpr static double kVelocityMultiplier =
-      (1 / GEAR_RATIO / 60) * (units::meter_t{WHEEL_DIAMETER}.value() * M_PI);
+      (1 / GEAR_RATIO / 60) * (units::meter_t{WHEEL_DIAMETER}.value() * std::numbers::pi);
   constexpr static double kPositionMultiplier =
-      (1 / GEAR_RATIO) * (units::meter_t{WHEEL_DIAMETER}.value() * M_PI);
-  constexpr static double kCanCoderMultiplier = 2 * M_PI;
+      (1 / GEAR_RATIO) * (units::meter_t{WHEEL_DIAMETER}.value() * std::numbers::pi);
+  constexpr static double kCanCoderMultiplier = 2 * std::numbers::pi;
 
   void ConfigDriveMotor(ctre::phoenix6::hardware::TalonFX &target);
   void ConfigSteerMotor(rev::spark::SparkMax &target);

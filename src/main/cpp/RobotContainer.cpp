@@ -8,29 +8,6 @@ RobotContainer::RobotContainer() {
 
     ConfigureBindings();
 
-    m_drivebaseSubsystem.SetDefaultCommand(
-            frc2::cmd::Run(
-            [this] {
-
-                m_drivebaseSubsystem.Drive(
-
-                    frc::ApplyDeadband(
-                        -driveController.GetLeftY(),
-                        0.5),
-
-                    frc::ApplyDeadband(
-                        -driveController.GetLeftX(),
-                        0.5),
-
-                    frc::ApplyDeadband(
-                        -driveController.GetRightX(),
-                        0.5)
-
-                );
-            },
-            {&m_drivebaseSubsystem}
-        )
-    );
 }
 
 void RobotContainer::ConfigureBindings() {

@@ -20,6 +20,7 @@
 #include <ctre/phoenix6/StatusSignal.hpp>
 #include <ctre/phoenix6/controls/VoltageOut.hpp>
 #include <ctre/phoenix6/core/CoreCANcoder.hpp>
+#include <numbers>
 
 #include "ctre/phoenix6/TalonFX.hpp"
 #include "units/angle.h"
@@ -28,6 +29,7 @@
 #include "units/length.h"
 #include "units/velocity.h"
 #include "units/voltage.h"
+
 
 namespace {
 constexpr double kDriveP = 0.01;
@@ -70,7 +72,7 @@ void NeoKrakenModule::ConfigPIDInternal() {
   this->driveController = frc::PIDController(kDriveP, 0.0, 0.0);
   this->steerController = frc::PIDController(kSteerP, 0.0, 0.0);
 
-  this->steerController.EnableContinuousInput(-M_PI, M_PI);
+  this->steerController.EnableContinuousInput(-std::numbers::pi, std::numbers::pi);
 }
 
 void NeoKrakenModule::ConfigDriveMotor(ctre::phoenix6::hardware::TalonFX& target) {
@@ -140,7 +142,7 @@ frc::SwerveModuleState NeoKrakenModule::GetModuleState() {
 }
 
 frc::SwerveModulePosition NeoKrakenModule::GetModulePosition() {
-  return {units::meter_t{GetPosition()}, units::radian_t{M_PI + GetEncoderPosition()}};
+  return {units::meter_t{GetPosition()}, units::radian_t{std::numbers::pi + GetEncoderPosition()}};
 }
 
 units::meters_per_second_t NeoKrakenModule::GetVelocity() {

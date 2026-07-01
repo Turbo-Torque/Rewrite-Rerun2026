@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "frc/geometry/Translation2d.h"
+#include "frc/kinematics/SwerveDriveKinematics.h"
+#include <turbolib/structure/SwervePorts.hpp>
+
 
 
 namespace OperatorConstants {
@@ -11,27 +15,24 @@ namespace OperatorConstants {
 }
 
 namespace DriveConstants {
-    constexpr int kFrontLeftDriveID = 1;
-    constexpr int kFrontLeftTurnID = 2;
-    constexpr int kFrontLeftEncoderID = 18;
+    inline turbolib::structure::SwervePorts kFrontLeftPorts{1, 2, 18};
+    inline turbolib::structure::SwervePorts kFrontRightPorts{3, 8, 21};
+    inline turbolib::structure::SwervePorts kBackLeftPorts{5, 4, 19};
+    inline turbolib::structure::SwervePorts kBackRightPorts{7, 6, 20};
 
-    constexpr int kFrontRightDriveID = 3;
-    constexpr int kFrontRightTurnID = 8;
-    constexpr int kFrontRightEncoderID = 21;
+    inline constexpr double kRobotLength = 0.5525;
+    inline constexpr double kRobotWidth = 0.5525;
+
+    inline constexpr frc::Translation2d kModulePosition[] = {
+        {units::meter_t{kRobotLength / 2}, units::meter_t{kRobotWidth / 2}},   
+        {units::meter_t{kRobotLength / 2}, units::meter_t{-kRobotWidth / 2}},  
+        {units::meter_t{-kRobotLength / 2}, units::meter_t{kRobotWidth / 2}},  
+        {units::meter_t{-kRobotLength / 2}, units::meter_t{-kRobotWidth / 2}}  
+    }; 
+
+    inline frc::SwerveDriveKinematics<4> kKinematics{kModulePosition[0], kModulePosition[1], kModulePosition[2], kModulePosition[3]};
 
 
-    constexpr int kBackLeftDriveID = 5;
-    constexpr int kBackLeftTurnID = 4;
-    constexpr int kBackLeftEncoderID = 19;
+    inline constexpr double kMaxSpeed = 4.5;
 
-
-    constexpr int kBackRightDriveID = 7;
-    constexpr int kBackRightTurnID = 6;
-    constexpr int kBackRightEncoderID = 20;
-
-
-    constexpr double kTrackWidth = 0.381;
-    constexpr double kWheelBase = 0.381;
-
-    constexpr double kMaxSpeed = 4.5;
 }
