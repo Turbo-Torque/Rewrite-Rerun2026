@@ -55,6 +55,14 @@ namespace HopperConstants {
     inline constexpr units::volt_t kHopperOutVolts = -3_V;
 }
 
+namespace GateConstants {
+    inline constexpr int kRightGateMotorPort = 0;
+    inline constexpr int kLeftGateMotorPort = 0;
+    inline constexpr units::volt_t kGateVolts = 2;
+
+
+}
+
 namespace RobotConstants{
     inline constexpr double kStartVoltage = 11;
 }

@@ -10,7 +10,7 @@ class HopperSubsystem : public frc2::SubsystemBase{
         frc2::CommandPtr RunHopperCommand();
 
         void FeedRequsted(bool request);
-        void StopHopper() { SetHopperVoltage(0_V)}
+        void StopHopper() { SetHopperVoltage(0_V);};
         void Periodic() override;
 
     private:
