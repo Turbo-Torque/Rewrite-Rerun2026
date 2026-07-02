@@ -5,6 +5,8 @@
 #include "frc/geometry/Translation2d.h"
 #include "frc/kinematics/SwerveDriveKinematics.h"
 #include <turbolib/structure/SwervePorts.hpp>
+#include "units/angular_velocity.h"
+
 
 
 
@@ -58,7 +60,14 @@ namespace HopperConstants {
 namespace GateConstants {
     inline constexpr int kRightGateMotorPort = 0;
     inline constexpr int kLeftGateMotorPort = 0;
-    inline constexpr units::volt_t kGateVolts = 2;
+    inline constexpr units::volt_t kGateVolts = 2_V;
+}
+
+
+namespace ShooterConstants {
+    inline constexpr int kRightShooterMotorPort = 0;
+    inline constexpr int kLeftShooterMotorPort = 0;
+    inline constexpr units::revolutions_per_minute_t kShooterVolts = 200_rpm;
 
 
 }
