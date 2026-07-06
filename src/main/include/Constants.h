@@ -6,9 +6,10 @@
 #include "frc/kinematics/SwerveDriveKinematics.h"
 #include <turbolib/structure/SwervePorts.hpp>
 #include "units/angular_velocity.h"
+#include "units/current.h"
+#include "units/voltage.h"
 
-
-
+using namespace units::literals;
 
 namespace OperatorConstants {
 
@@ -21,6 +22,7 @@ namespace DriveConstants {
     inline turbolib::structure::SwervePorts kFrontRightPorts{3, 8, 21};
     inline turbolib::structure::SwervePorts kBackLeftPorts{5, 4, 19};
     inline turbolib::structure::SwervePorts kBackRightPorts{7, 6, 20};
+    inline constexpr int kGyro = 22;
 
     inline constexpr double kRobotLength = 0.5525;
     inline constexpr double kRobotWidth = 0.5525;
@@ -37,6 +39,7 @@ namespace DriveConstants {
 
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
     inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
+    inline constexpr double kControllerDeadBand = 0.08;
 }
 
 namespace IntakeConstants {

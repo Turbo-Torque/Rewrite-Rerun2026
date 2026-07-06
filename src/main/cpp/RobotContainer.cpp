@@ -17,8 +17,9 @@ void RobotContainer::ConfigureDefualts() {
 }
 void RobotContainer::ConfigureBindings() {
 
-    // Add controller bindings here
-
+    driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {
+        drivebaseSubsystem.ZeroGyro();
+    } ));
 }
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
