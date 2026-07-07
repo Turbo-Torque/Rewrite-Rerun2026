@@ -41,12 +41,10 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
 
             const frc::ChassisSpeeds speeds{
 
-                units::meters_per_second_t(
-                    xSpeedLimiter.Calculate(-x * DriveConstants::kMaxLinearSpeed)),
-                units::meters_per_second_t(
-                    ySpeedLimiter.Calculate(-y * DriveConstants::kMaxLinearSpeed)),
-                units::radians_per_second_t(
-                    rotSpeedLimiter.Calculate(-rot * DriveConstants::kMaxAngularSpeed))
+             
+                    -x * DriveConstants::kMaxLinearSpeed,
+                    y * DriveConstants::kMaxLinearSpeed,
+                    rot * DriveConstants::kMaxAngularSpeed
             };
             //cmd speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(speeds, GetGyroAngle());
             Drive(speeds);
