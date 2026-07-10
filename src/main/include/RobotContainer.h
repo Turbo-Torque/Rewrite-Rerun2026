@@ -9,6 +9,9 @@
 
 #include "Constants.h"
 #include "subsystems/DrivebaseSubsystem.h"
+#include "subsystems/IntakeSubsystem.h"
+#include "subsystems/HopperSubsystem.h"
+#include "subsystems/GateSubsystem.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -25,13 +28,20 @@ class RobotContainer {
 
  private:
   DrivebaseSubsystem drivebaseSubsystem;
-  frc2::CommandXboxController driveController{0};
+  IntakeSubsystem intakeSubsystem;
+  HopperSubsystem hopperSubsystem;
+  GateSubsystem gateSubsystem;
+
+  frc2::CommandXboxController driveController{OperatorConstants::kDriveControllerPort};
+  frc2::CommandXboxController operatorController{OperatorConstants::kOperatorControllerPort};
 
   frc2::CommandPtr CreateDriveCommand() {
     return drivebaseSubsystem.DriveCommand([this]() {return driveController.GetLeftX();}, [this]() {return driveController.GetLeftY();}, [this]() {return driveController.GetRightX();});
   }
-
-
   void ConfigureBindings();
   void ConfigureDefualts();
+  void ConfigureShooterBindings();
+  void ConfigureIntakeBindings();
+  void ConfigureHopperBingins();
+
 };

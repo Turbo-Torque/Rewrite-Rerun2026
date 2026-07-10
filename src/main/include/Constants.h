@@ -14,14 +14,15 @@ using namespace units::literals;
 namespace OperatorConstants {
 
     inline constexpr int kDriveControllerPort = 0;
+    inline constexpr int kOperatorControllerPort = 1;
 
 }
 
 namespace DriveConstants {
+    inline turbolib::structure::SwervePorts kBackRightPorts{5, 6, 20};
+    inline turbolib::structure::SwervePorts kFrontRightPorts{7, 8, 21};
     inline turbolib::structure::SwervePorts kFrontLeftPorts{1, 2, 18};
-    inline turbolib::structure::SwervePorts kFrontRightPorts{3, 8, 21};
-    inline turbolib::structure::SwervePorts kBackLeftPorts{5, 4, 19};
-    inline turbolib::structure::SwervePorts kBackRightPorts{7, 6, 20};
+    inline turbolib::structure::SwervePorts kBackLeftPorts{3, 4, 19};
     inline constexpr int kGyro = 22;
 
     inline constexpr double kRobotLength = 0.5525;
@@ -70,9 +71,7 @@ namespace GateConstants {
 namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 0;
     inline constexpr int kLeftShooterMotorPort = 0;
-    inline constexpr units::revolutions_per_minute_t kShooterVolts = 200_rpm;
-
-
+    inline constexpr units::revolutions_per_minute_t kShooterRPM = 600_rpm;
 }
 
 namespace RobotConstants{

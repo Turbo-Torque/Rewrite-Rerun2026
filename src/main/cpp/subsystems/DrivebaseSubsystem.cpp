@@ -35,16 +35,16 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
     return frc2::FunctionalCommand ( []{},
         [=, this] {
 
-            double x = frc::ApplyDeadband(xSpeed(), DriveConstants::kControllerDeadBand);
-            double y = frc::ApplyDeadband(ySpeed(), DriveConstants::kControllerDeadBand);
-            double rot = frc::ApplyDeadband(rotSpeed(), DriveConstants::kControllerDeadBand);
+            //double x = frc::ApplyDeadband(xSpeed(), DriveConstants::kControllerDeadBand);
+            // double y = frc::ApplyDeadband(ySpeed(), DriveConstants::kControllerDeadBand);
+            // double rot = frc::ApplyDeadband(rotSpeed(), DriveConstants::kControllerDeadBand);
 
             const frc::ChassisSpeeds speeds{
 
              
-                    -x * DriveConstants::kMaxLinearSpeed,
-                    y * DriveConstants::kMaxLinearSpeed,
-                    rot * DriveConstants::kMaxAngularSpeed
+                    - (xSpeed() * DriveConstants::kMaxLinearSpeed),
+                    - (ySpeed() * DriveConstants::kMaxLinearSpeed),
+                    - (rotSpeed() * DriveConstants::kMaxAngularSpeed)
             };
             //cmd speeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(speeds, GetGyroAngle());
             Drive(speeds);

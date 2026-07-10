@@ -20,22 +20,22 @@ public:
     }
 
     void UpdateInputs(ShooterIOInputs& inputs) override {
-        auto rps = leftShooterMotor.GetVelocity().GetValue();
+        auto rpm = leftShooterMotor.GetVelocity().GetValue();
 
-        inputs.shooterRPM = units::revolutions_per_minute_t{rps};
+        inputs.shooterRPM = units::revolutions_per_minute_t{rpm};
         inputs.shooterCurrent = leftShooterMotor.GetTorqueCurrent().GetValue();
 
         inputs.atRotations =
-            std::abs((inputs.shooterRPM - targetRPM).value()) < 50.0;
+            std::abs((inputs.shooterRPM - targetRPM).value()) < 100.0;
     }
 
-    void SetShooterRPM(units::turns_per_second_t rpm) override {
+    void SetShooterRPM(units::revolutions_per_minute_t rpm) override {
         targetRPM = rpm;
 
-        auto rps = units::turns_per_second_t{rpm};
+        auto rpm = units::revolutions_per_minute_t{rpm};
 
         leftShooterMotor.SetControl(
-            velocityRequest.WithVelocity(rps));
+            velocityRequest.WithVelocity(rpm));
     }
 
 private:
@@ -61,10 +61,14 @@ private:
         config.Slot0.kP = 0.12;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
+        config.Slot0.kS = 0.2;
         config.Slot0.kV = 0.12;
 
         leftShooterMotor.GetConfigurator().Apply(config);
         rightShooterMotor.GetConfigurator().Apply(config);
+
+        leftShooterMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast);
+        rightShooterMotor.SetNeutralMode(ctre::phoenix6::signals::NeutralModeValue::Coast); 
 
         rightShooterMotor.SetControl(
             ctre::phoenix6::controls::Follower{
