@@ -15,6 +15,11 @@ frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
     });
 }
 
+bool ShooterSubsystem::IsNearState() {
+    return inputs.atRotations;
+}
+
+
 void ShooterSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
 }

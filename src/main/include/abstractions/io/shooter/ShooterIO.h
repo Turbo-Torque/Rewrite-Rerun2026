@@ -10,7 +10,7 @@ struct ShooterIOInputs{
     units::revolutions_per_minute_t shooterRPMSsetpoint{0.0};
     units::ampere_t shooterCurrent{0_A};
 
-    bool atRotations{false};
+    bool atRotations = false;
 
 };
 

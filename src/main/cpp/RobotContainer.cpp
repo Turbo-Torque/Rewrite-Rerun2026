@@ -3,21 +3,37 @@
 #include <frc/MathUtil.h>
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/Trigger.h>
+
 #include "subsystems/IntakeSubsystem.h"
 #include "abstractions/io/intake/IntakeIO.h"
 #include "abstractions/io/intake/IntakeRealIO.h"
 #include "abstractions/io/intake/IntakeSimIO.h"
+
 #include "subsystems/HopperSubsystem.h"
 #include "abstractions/io/hopper/HopperIO.h"
 #include "abstractions/io/hopper/HopperRealIO.h"
 #include "abstractions/io/hopper/HopperSimIO.h"
+
+#include "subsystems/GateSubsystem.h"
+#include "abstractions/io/gate/GateIO.h"
+#include "abstractions/io/gate/GateRealIO.h"
+#include "abstractions/io/gate/GateSimIO.h"
+
+
+#include "subsystems/ShooterSubsystem.h"
+#include "abstractions/io/shooter/ShooterIO.h"
+#include "abstractions/io/shooter/ShooterRealIO.h"
+#include "abstractions/io/shooter/ShooterSimIO.h"
+
 #include "turbolib/util/MakeIO.hpp"
 
 
 RobotContainer::RobotContainer()
     : drivebaseSubsystem(),
     intakeSubsystem(turbolib::utils::MakeIO<IntakeIO, IntakeRealIO, IntakeSimIO>()),
-    hopperSubsystem(turbolib::utils::MakeIO<HopperIO, HopperRealIO, HopperSimIO>())
+    hopperSubsystem(turbolib::utils::MakeIO<HopperIO, HopperRealIO, HopperSimIO>()),
+    gateSubsystem(turbolib::utils::MakeIO<GateIO, GateRealIO, GateSimIO>()),
+    shooterSubsystem(turbolib::utils::MakeIO<ShooterIO, ShooterRealIO, ShooterSimIO>())
 
 {
     ConfigureBindings();
@@ -36,7 +52,17 @@ void RobotContainer::ConfigureBindings() {
 }
 
 void RobotContainer::ConfigureIntakeBindings() {
-    operatorController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+    driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+}
+
+void RobotContainer::ConfigureFeedBindings() {
+
+    operatorController.B().ToggleOnTrue(RunFeedCommand());
+    
+}
+
+void RobotContainer::ConfigureShooterBindings(){
+    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
 }
 
 
