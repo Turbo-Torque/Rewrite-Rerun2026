@@ -7,38 +7,36 @@
 #include "subsystems/IntakeSubsystem.h"
 #include "abstractions/io/intake/IntakeIO.h"
 #include "abstractions/io/intake/IntakeRealIO.h"
-#include "abstractions/io/intake/IntakeSimIO.h"
 
 #include "subsystems/HopperSubsystem.h"
 #include "abstractions/io/hopper/HopperIO.h"
 #include "abstractions/io/hopper/HopperRealIO.h"
-#include "abstractions/io/hopper/HopperSimIO.h"
 
 #include "subsystems/GateSubsystem.h"
 #include "abstractions/io/gate/GateIO.h"
 #include "abstractions/io/gate/GateRealIO.h"
-#include "abstractions/io/gate/GateSimIO.h"
 
 
 #include "subsystems/ShooterSubsystem.h"
 #include "abstractions/io/shooter/ShooterIO.h"
 #include "abstractions/io/shooter/ShooterRealIO.h"
-#include "abstractions/io/shooter/ShooterSimIO.h"
 
 #include "turbolib/util/MakeIO.hpp"
 
 
 RobotContainer::RobotContainer()
     : drivebaseSubsystem(),
-    intakeSubsystem(turbolib::utils::MakeIO<IntakeIO, IntakeRealIO, IntakeSimIO>()),
-    hopperSubsystem(turbolib::utils::MakeIO<HopperIO, HopperRealIO, HopperSimIO>()),
-    gateSubsystem(turbolib::utils::MakeIO<GateIO, GateRealIO, GateSimIO>()),
-    shooterSubsystem(turbolib::utils::MakeIO<ShooterIO, ShooterRealIO, ShooterSimIO>())
+    intakeSubsystem(std::make_unique<IntakeRealIO>()),
+    hopperSubsystem(std::make_unique<HopperRealIO>()),
+    gateSubsystem(std::make_unique<GateRealIO>()),
+    shooterSubsystem(std::make_unique<ShooterRealIO>())
 
 {
     ConfigureBindings();
     ConfigureDefualts();
     ConfigureIntakeBindings();
+    ConfigureFeedBindings();
+    ConfigureShooterBindings();
 }
 
 void RobotContainer::ConfigureDefualts() {
@@ -57,14 +55,13 @@ void RobotContainer::ConfigureIntakeBindings() {
 
 void RobotContainer::ConfigureFeedBindings() {
 
-    operatorController.B().ToggleOnTrue(RunFeedCommand());
+    operatorController.B().ToggleOnTrue(hopperSubsystem.RunHopperCommand().AlongWith(gateSubsystem.RunGateCommand()));
     
 }
 
 void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
 }
-
 
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {

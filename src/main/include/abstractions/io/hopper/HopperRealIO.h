@@ -20,7 +20,7 @@ class HopperRealIO : public HopperIO {
         }
 
         void UpdateInputs(HopperIOInputs& inputs) override {
-            inputs.hopperVolts = units::volt_t{hopperMotor.GetAppliedOutput() * hopperMotor.GetBusVoltage()};
+            inputs.hopperVolts = units::volt_t{hopperMotor.GetAppliedOutput()};
         }
 
         void SetHopperVolts(units::volt_t volts) override{
@@ -32,10 +32,11 @@ class HopperRealIO : public HopperIO {
         void ConfigHopperMotor() {
             rev::spark::SparkMaxConfig config;
 
-            config.SetIdleMode(rev::spark::SparkBaseConfig::kBrake);
+            config.SetIdleMode(rev::spark::SparkBaseConfig::kCoast);
             config.SmartCurrentLimit(35, 50);
             config.VoltageCompensation(RobotConstants::kStartVoltage);
             config.OpenLoopRampRate(0.08);
+            config.Inverted(true);
 
             hopperMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
         };

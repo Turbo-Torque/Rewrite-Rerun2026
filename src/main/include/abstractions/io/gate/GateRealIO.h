@@ -41,7 +41,7 @@ class GateRealIO : public GateIO {
             rightGateMotor.GetConfigurator().Apply(config);
 
             rightGateMotor.SetControl(
-                ctre::phoenix6::controls::Follower {leftGateMotor.GetDeviceID(), false}
+                ctre::phoenix6::controls::Follower {leftGateMotor.GetDeviceID(), true}
             );
         }
 };

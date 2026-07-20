@@ -44,34 +44,34 @@ namespace DriveConstants {
 }
 
 namespace IntakeConstants {
-    inline constexpr int kIntakeMotorPort = 0;
-    inline constexpr int kIntakePivotPort = 0;
-    inline constexpr int kIntakeCANPort = 0;
+    inline constexpr int kIntakeMotorPort = 10;
+    inline constexpr int kIntakePivotPort = 9;
+    //inline constexpr int kIntakeCANPort = 0;
 
     inline constexpr double kIntakeUp = 0.0;
-    inline constexpr double kIntakeDown = 90.0;
+    inline constexpr double kIntakeDown = 57.0;
     inline constexpr double kFFPivot = 0.0;
-    inline constexpr units::volt_t kIntakeVolts = 3_V;
+    inline constexpr units::volt_t kIntakeVolts = 5_V;
 
 }
 
 namespace HopperConstants {
-    inline constexpr int kHopperMotorPort = 0;
-    inline constexpr units::volt_t kHopperInVolts = 3_V;
-    inline constexpr units::volt_t kHopperOutVolts = -3_V;
+    inline constexpr int kHopperMotorPort = 11;
+    inline constexpr units::volt_t kHopperInVolts = 5_V;
+    //inline constexpr units::volt_t kHopperOutVolts = -3_V;
 }
 
 namespace GateConstants {
-    inline constexpr int kRightGateMotorPort = 0;
-    inline constexpr int kLeftGateMotorPort = 0;
-    inline constexpr units::volt_t kGateVolts = 2_V;
+    inline constexpr int kRightGateMotorPort = 15;
+    inline constexpr int kLeftGateMotorPort = 14;
+    inline constexpr units::volt_t kGateVolts = 5_V;
 }
 
 
 namespace ShooterConstants {
-    inline constexpr int kRightShooterMotorPort = 0;
-    inline constexpr int kLeftShooterMotorPort = 0;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM = 600_rpm;
+    inline constexpr int kRightShooterMotorPort = 6;
+    inline constexpr int kLeftShooterMotorPort = 16;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2000_rpm;
 }
 
 namespace RobotConstants{

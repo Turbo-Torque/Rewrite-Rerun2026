@@ -2,6 +2,7 @@
 #include "Constants.h"
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 
 
 IntakeSubsystem::IntakeSubsystem(std::unique_ptr<IntakeIO> intakeIo) : io(std::move(intakeIo)) {
@@ -29,6 +30,10 @@ void IntakeSubsystem::ToggleIntake() {
 
 void IntakeSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
+
+    frc::SmartDashboard::PutNumber("Intake Pose", inputs.position);
+    frc::SmartDashboard::PutNumber("Intake Volts", inputs.intakeVolts.value());
+
 
     if (intakeDeployed) {
         SetIntakePivot(true);

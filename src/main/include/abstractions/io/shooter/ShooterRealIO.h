@@ -20,9 +20,7 @@ public:
     }
 
     void UpdateInputs(ShooterIOInputs& inputs) override {
-        auto rpm = leftShooterMotor.GetVelocity().GetValue();
-
-        inputs.shooterRPM = units::revolutions_per_minute_t{rpm};
+        inputs.shooterRPM = leftShooterMotor.GetVelocity().GetValue();
         inputs.shooterCurrent = leftShooterMotor.GetTorqueCurrent().GetValue();
 
         inputs.atRotations =
@@ -30,10 +28,6 @@ public:
     }
 
     void SetShooterRPM(units::revolutions_per_minute_t rpm) override {
-        targetRPM = rpm;
-
-        auto rpm = units::revolutions_per_minute_t{rpm};
-
         leftShooterMotor.SetControl(
             velocityRequest.WithVelocity(rpm));
     }
@@ -58,6 +52,8 @@ private:
         config.CurrentLimits.SupplyCurrentLimit = 45_A;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
+        config.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
+
         config.Slot0.kP = 0.12;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
@@ -73,7 +69,7 @@ private:
         rightShooterMotor.SetControl(
             ctre::phoenix6::controls::Follower{
                 leftShooterMotor.GetDeviceID(),
-                false
+                true
             });
     }
 };

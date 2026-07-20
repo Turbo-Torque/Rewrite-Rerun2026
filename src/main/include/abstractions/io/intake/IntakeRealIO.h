@@ -27,14 +27,18 @@ class IntakeRealIO : public IntakeIO {
         void UpdateInputs(IntakeIOInputs& inputs) override {
             inputs.position = pivotMotor.GetEncoder().GetPosition();
             inputs.setpoint = pivotMotor.GetClosedLoopController().GetSetpoint();
-            inputs.pivotAtSetpoint = pivotMotor.GetClosedLoopController().IsAtSetpoint();
             inputs.intakeVolts = units::volt_t{intakeMotor.GetMotorVoltage().GetValue()};
             inputs.intakeCurrent = units::ampere_t{intakeMotor.GetTorqueCurrent().GetValue()};
+            
+            if ((inputs.position < 57.0) && (inputs.position > 50.0)) {
+                inputs.pivotAtSetpoint = true;
+            } 
         }
 
         void SetIntakeVolts(units::volt_t voltage) override{
-            intakeMotor.SetControl(voltageRequest.WithOutput(voltage));
+            intakeMotor.SetVoltage(voltage);
         }
+
 
         void SetIntakePivot(bool deployed) {
             double pivotSetpoint;
@@ -44,10 +48,9 @@ class IntakeRealIO : public IntakeIO {
                 pivotSetpoint = IntakeConstants::kIntakeUp;
             }
 
-            pivotMotor.GetClosedLoopController().SetSetpoint(pivotSetpoint, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, IntakeConstants::kFFPivot);
-
-            
+            pivotMotor.GetClosedLoopController().SetSetpoint(pivotSetpoint, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, IntakeConstants::kFFPivot); 
         }
+
 
         void SetIntakeSetpoint(double rot) override{
             pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, IntakeConstants::kFFPivot);
@@ -57,7 +60,7 @@ class IntakeRealIO : public IntakeIO {
     private:
         ctre::phoenix6::hardware::TalonFX intakeMotor{IntakeConstants::kIntakeMotorPort};
         rev::spark::SparkMax pivotMotor{IntakeConstants::kIntakePivotPort, rev::spark::SparkLowLevel::MotorType::kBrushless};
-        ctre::phoenix6::hardware::CANcoder pivotEncoder{IntakeConstants::kIntakeCANPort};
+        //ctre::phoenix6::hardware::CANcoder pivotEncoder{IntakeConstants::kIntakeCANPort};
         ctre::phoenix6::controls::VoltageOut voltageRequest{0_V};
         
         void ConfigIntakeMotor() {
@@ -72,18 +75,19 @@ class IntakeRealIO : public IntakeIO {
 
         void ConfigPivotMotor() {
             rev::spark::SparkMaxConfig config;
-            config.closedLoop.P(0.1, rev::spark::kSlot0);
-            config.closedLoop.I(0.0, rev::spark::kSlot0);
-            config.closedLoop.D(0.0, rev::spark::kSlot0);
+            config.closedLoop.P(0.04, rev::spark::kSlot0);
+            config.closedLoop.I(0.001, rev::spark::kSlot0);
+            config.closedLoop.D(0.002, rev::spark::kSlot0);
 
             config.closedLoop.P(0.02, rev::spark::kSlot1);
             config.closedLoop.I(0.0, rev::spark::kSlot1);
-            config.closedLoop.D(0.0, rev::spark::kSlot1);
+            config.closedLoop.D(0.002, rev::spark::kSlot1);
 
             config.SmartCurrentLimit(35, 50);
             config.SetIdleMode(rev::spark::SparkBaseConfig::kCoast);
             config.OpenLoopRampRate(0.1);
             config.closedLoop.AllowedClosedLoopError(0.20);
+            config.Inverted(true);
 
             pivotMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
             pivotMotor.GetEncoder().SetPosition(0.0);

@@ -3,6 +3,8 @@
 
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
+#include "frc/smartdashboard/SmartDashboard.h"
+
 
 HopperSubsystem::HopperSubsystem(std::unique_ptr<HopperIO> hopperIO) : io(std::move(hopperIO)) {
     SetName("HopperSubsystem");
@@ -17,4 +19,7 @@ frc2::CommandPtr HopperSubsystem::RunHopperCommand() {
 
 void HopperSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
+
+    frc::SmartDashboard::PutNumber("Hopper Volts", inputs.hopperVolts.value());
+
 }

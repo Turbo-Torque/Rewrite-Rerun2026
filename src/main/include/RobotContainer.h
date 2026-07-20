@@ -47,8 +47,7 @@ class RobotContainer {
           return shooterSubsystem.IsNearState();
       })
       .AndThen(
-          gateSubsystem.RunGateCommand()
-              .AlongWith(hopperSubsystem.RunHopperCommand()));
+          hopperSubsystem.RunHopperCommand());
     }
 
   void ConfigureBindings();
