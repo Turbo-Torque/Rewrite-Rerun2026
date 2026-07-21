@@ -47,10 +47,23 @@ namespace DriveConstants {
     inline constexpr double kControllerDeadBand = 0.08;
 
     inline const std::map<std::string, frc::Pose2d> kStartingPose = {
-        {"bLeft", frc::Pose2d(7.5_m, 6.5_m, 180_deg)},
-        {"bCenter", frc::Pose2d(7.5_m, 4.0_m, 180_deg)},
-        {"bRight", frc::Pose2d(7.5_m, 1.5_m, 180_deg)}
+        {"bLeft", frc::Pose2d(3.5_m, 5.5_m, 270_deg)},
+        {"bCenter", frc::Pose2d(3.5_m, 4.0_m, 180_deg)},
+        {"bRight", frc::Pose2d(3.5_m, 1.5_m, 90_deg)},
+        {"rLeft", frc::Pose2d(12.5_m, 6_m, 270_deg)},
+        {"rCenter", frc::Pose2d(12.5_m, 4.0_m, 180_deg)},
+        {"rRight", frc::Pose2d(12.5_m, 1.5_m, 90_deg)}
     };
+}
+
+namespace AutoConstants {
+    inline constexpr double kTranslationP = 5.0;
+    inline constexpr double kTranslationI = 0.0;
+    inline constexpr double kTranslationD = 0.0;
+
+    inline constexpr double kRotationP = 5.0;
+    inline constexpr double kRotationI = 0.0;
+    inline constexpr double kRotationD = 0.0;
 }
 
 namespace IntakeConstants {

@@ -5,6 +5,13 @@
 #include <frc2/command/Commands.h>
 #include <frc/MathUtil.h>
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/config/RobotConfig.h>
+#include <pathplanner/lib/config/PIDConstants.h>
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
+#include <frc/DriverStation.h>
+#include <frc/RobotBase.h>
+
 
 using namespace DriveConstants;
 
@@ -19,6 +26,7 @@ DrivebaseSubsystem::DrivebaseSubsystem():
         rotationController.EnableContinuousInput(0, 360);
 
         ConfigureTelemetry();
+        ConfigureAutoBuilder();
         SetName("DrivebaseSubsystem");
     }
 
@@ -29,6 +37,11 @@ void DrivebaseSubsystem::Drive(const frc::ChassisSpeeds& speeds){
     cmdSpeeds = frc::ChassisSpeeds::FromRobotRelativeSpeeds(speeds, GetGyroAngle());
     SetModuleStates(states);
 }
+
+void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
+    Drive(speeds);
+}
+
 
 void DrivebaseSubsystem::ConfigureTelemetry() {
     posePublisher = nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::Pose2d>("DrivebaseSubsystem/Pose").Publish();
@@ -45,6 +58,27 @@ void DrivebaseSubsystem::ConfigureTelemetry() {
     frc::SmartDashboard::PutData("Starting Pose", &startingPoseChooser);
     frc::SmartDashboard::PutData("Field", &field);
 
+}
+
+void DrivebaseSubsystem::ConfigureAutoBuilder() {
+    auto config = pathplanner::RobotConfig::fromGUISettings();
+
+    pathplanner::AutoBuilder::configure(
+        [this] { return GetPose();},
+        [this](frc::Pose2d pose) {ResetPose(pose);},
+        [this] {return GetRobotRelativeSpeeds();},
+        [this](auto speeds) { AutoDrive(speeds);},
+        std::make_shared<pathplanner::PPHolonomicDriveController>(
+            pathplanner::PIDConstants(AutoConstants::kTranslationP, AutoConstants::kTranslationI, AutoConstants::kTranslationD),
+            pathplanner::PIDConstants(AutoConstants::kRotationP, AutoConstants::kRotationI, AutoConstants::kRotationD)
+        ),
+        config,
+        [] {
+            auto alliance = frc::DriverStation::GetAlliance();
+            return alliance && alliance.value() == frc::DriverStation::Alliance::kRed;
+            
+        },
+    this);
 }
 
 void DrivebaseSubsystem::SetModuleStates(const std::array<frc::SwerveModuleState, 4>& states) {
@@ -104,12 +138,18 @@ frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {
 }
 
 frc::Pose2d DrivebaseSubsystem::GetPose() {
-    //return poseEstimator.GetEstimatedPosition();
-    return simPose;
+    if (frc::RobotBase::IsSimulation()) {
+        return simPose;
+    }
+    return poseEstimator.GetEstimatedPosition();
 }
 
 frc::Rotation2d DrivebaseSubsystem::GetAngle() {
     return gyro.GetRotation2d();
+}
+
+frc::ChassisSpeeds DrivebaseSubsystem::GetRobotRelativeSpeeds() {
+    return DriveConstants::kKinematics.ToChassisSpeeds(GetModuleStates());
 }
 
 std::array<frc::SwerveModuleState, 4> DrivebaseSubsystem::GetModuleStates(){

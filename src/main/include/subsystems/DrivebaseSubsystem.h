@@ -19,6 +19,13 @@
 #include "Constants.h"
 #include <frc/smartdashboard/SendableChooser.h>
 #include <frc/smartdashboard/Field2d.h>
+#include <frc/DriverStation.h>
+#include <frc/RobotBase.h>
+#include <pathplanner/lib/auto/AutoBuilder.h>
+#include <pathplanner/lib/config/RobotConfig.h>
+#include <pathplanner/lib/config/PIDConstants.h>
+#include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
+
 
 
 
@@ -35,12 +42,12 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     void ZeroGyro();
     void ResetPose(frc::Pose2d pose);
     void ApplyStartingPose();
-
-    turbolib::perception::TurboPoseEstimator& GetPoseEstimator();
+    void ConfigureAutoBuilder();
 
     frc::Pose2d GetPose();
     frc::Rotation2d GetGyroAngle();
     frc::Rotation2d GetAngle();
+    frc::ChassisSpeeds GetRobotRelativeSpeeds();
     std::array<frc::SwerveModuleState, 4> GetModuleStates();
     std::array<frc::SwerveModulePosition, 4> GetSwerveModulePosition();
 

@@ -23,6 +23,9 @@
 
 #include "turbolib/util/MakeIO.hpp"
 
+#include <pathplanner/lib/auto/NamedCommands.h>
+#include <pathplanner/lib/events/EventTrigger.h>
+
 
 RobotContainer::RobotContainer()
     : drivebaseSubsystem(),
@@ -37,6 +40,9 @@ RobotContainer::RobotContainer()
     ConfigureIntakeBindings();
     ConfigureFeedBindings();
     ConfigureShooterBindings();
+
+    autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
+    frc::SmartDashboard::PutData("Auto Chooser", &autoChooser);
 }
 
 void RobotContainer::ConfigureDefualts() {
@@ -68,8 +74,8 @@ void RobotContainer::ApplyStartingPose() {
 }
 
 
-frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
+frc2::Command* RobotContainer::GetAutonomousCommand() {
 
-    return frc2::cmd::None();
+    return autoChooser.GetSelected();
 
 }

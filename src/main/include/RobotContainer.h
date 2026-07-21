@@ -26,7 +26,7 @@ class RobotContainer {
  public:
   RobotContainer();
 
-  frc2::CommandPtr GetAutonomousCommand();
+  frc2::Command* GetAutonomousCommand();
   void ApplyStartingPose();
 
  private:
@@ -38,6 +38,7 @@ class RobotContainer {
 
   frc2::CommandXboxController driveController{OperatorConstants::kDriveControllerPort};
   frc2::CommandXboxController operatorController{OperatorConstants::kOperatorControllerPort};
+
 
   frc2::CommandPtr CreateDriveCommand() {
     return drivebaseSubsystem.DriveCommand([this]() {return driveController.GetLeftX();}, [this]() {return driveController.GetLeftY();}, [this]() {return driveController.GetRightX();});
@@ -56,5 +57,7 @@ class RobotContainer {
   void ConfigureShooterBindings();
   void ConfigureIntakeBindings();
   void ConfigureFeedBindings();
+
+  frc::SendableChooser<frc2::Command*> autoChooser;
 
 };
