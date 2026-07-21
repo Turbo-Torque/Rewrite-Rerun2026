@@ -27,6 +27,7 @@ class RobotContainer {
   RobotContainer();
 
   frc2::CommandPtr GetAutonomousCommand();
+  void ApplyStartingPose();
 
  private:
   DrivebaseSubsystem drivebaseSubsystem;

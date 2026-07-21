@@ -8,6 +8,10 @@
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/voltage.h"
+#include "frc/geometry/Pose2d.h"
+#include <map>
+#include <string>
+
 
 using namespace units::literals;
 
@@ -41,6 +45,12 @@ namespace DriveConstants {
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
     inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
     inline constexpr double kControllerDeadBand = 0.08;
+
+    inline const std::map<std::string, frc::Pose2d> kStartingPose = {
+        {"bLeft", frc::Pose2d(7.5_m, 6.5_m, 180_deg)},
+        {"bCenter", frc::Pose2d(7.5_m, 4.0_m, 180_deg)},
+        {"bRight", frc::Pose2d(7.5_m, 1.5_m, 180_deg)}
+    };
 }
 
 namespace IntakeConstants {

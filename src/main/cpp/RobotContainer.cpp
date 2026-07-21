@@ -63,6 +63,10 @@ void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
 }
 
+void RobotContainer::ApplyStartingPose() {
+    drivebaseSubsystem.ApplyStartingPose();
+}
+
 
 frc2::CommandPtr RobotContainer::GetAutonomousCommand() {
 
