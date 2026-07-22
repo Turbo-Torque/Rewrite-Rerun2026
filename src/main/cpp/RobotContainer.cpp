@@ -67,6 +67,8 @@ void RobotContainer::ConfigureFeedBindings() {
 
 void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
+    operatorController.X().ToggleOnTrue(AimAndShootCommand());
+    driveController.B().OnTrue(AimCommand());
 }
 
 void RobotContainer::ApplyStartingPose() {

@@ -6,6 +6,9 @@ class ShooterSubsystem : public frc2::SubsystemBase {
     public:
         ShooterSubsystem(std::unique_ptr<ShooterIO> io);
         void SetShooterRPM(units::revolutions_per_minute_t rpm) {io -> SetShooterRPM(rpm);}
+        void SetHoodSetpoint(double rot) {io ->SetHoodSetpoint(rot);}
+        void SetHoodAngle(bool angle) {io -> SetHoodAngle(angle);}
+        void SetHoodAngleGoal(units::degree_t angle);
 
         frc2::CommandPtr RunShooterCommand();
 

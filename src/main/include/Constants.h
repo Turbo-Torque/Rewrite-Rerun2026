@@ -5,12 +5,14 @@
 #include "frc/geometry/Translation2d.h"
 #include "frc/kinematics/SwerveDriveKinematics.h"
 #include <turbolib/structure/SwervePorts.hpp>
+#include "units/acceleration.h"
 #include "units/angular_velocity.h"
 #include "units/current.h"
 #include "units/voltage.h"
 #include "frc/geometry/Pose2d.h"
 #include <map>
 #include <string>
+#include "frc/geometry/Translation3d.h"
 
 
 using namespace units::literals;
@@ -76,6 +78,11 @@ namespace IntakeConstants {
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 5_V;
 
+    inline constexpr double kSPivot = 0.0;      
+    inline constexpr double kGPivot = 0.0;          
+    inline constexpr double kVPivot = 0.0;          
+
+
 }
 
 namespace HopperConstants {
@@ -95,8 +102,46 @@ namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
     inline constexpr units::revolutions_per_minute_t kShooterRPM = 2000_rpm;
+
+    inline constexpr units::meters_per_second_squared_t kGravity = 9.80665_mps_sq;
+    inline constexpr units::meter_t kShooterOffsetX = -0.2803_m;
+    inline constexpr units::meter_t kShooterOffsetY = -0.2041_m;
+    inline constexpr units::meter_t kShooterHeight = 0.525_m;
+
+    inline constexpr units::revolutions_per_minute_t kMinRPM = 3200_rpm;
+    inline constexpr units::revolutions_per_minute_t kMaxRPM = 4000_rpm;
+
+    inline constexpr units::second_t kMaxFlightTime = 1.5_s;
+    inline constexpr units::meter_t kFlywheelDiameter = 0.1016_m;
+
+    //Hood
+    inline constexpr int kHoodMotorPort = 0;   // TODO: real CAN ID
+
+    inline constexpr units::degree_t kMinAngle = 20_deg;
+    inline constexpr units::degree_t kMaxAngle = 60_deg;
+    inline constexpr double kHoodUp = 20.0; 
+    inline constexpr double kHoodDown = 0.0; 
+    inline constexpr units::degree_t kAngleStep = 1_deg;
+    inline constexpr units::revolutions_per_minute_t kMaxStep = 25_rpm;
+    
+
+    inline constexpr double kFFHood = 0.0;
+    inline constexpr units::meter_t kRangeTolerance = 0.10_m;
+    inline constexpr double kHoodGearRatio = 1.0;   // TODO: real motor-rotations-per-hood-rotation ratio
 }
+
 
 namespace RobotConstants{
     inline constexpr double kStartVoltage = 11;
+}
+
+namespace FieldConstants{
+    inline constexpr units::meter_t kFieldLength = 8.0696_m;
+    inline constexpr units::meter_t kfieldWidth = 7.1882_m;
+    inline constexpr units::meter_t kTargetHeight = 1.8288_m;
+    inline constexpr units::meter_t kBluePosX = 4.0284_m;
+    inline constexpr units::meter_t kHubPosY = 3.5941_m;
+
+    inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
+    inline constexpr frc::Translation3d kRedTargetPosition{kFieldLength - kBluePosX, kHubPosY, kTargetHeight};
 }

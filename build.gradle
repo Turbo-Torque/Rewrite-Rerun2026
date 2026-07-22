@@ -62,6 +62,10 @@ model {
 
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
+
+            binaries.all {
+                cppCompiler.define '_USE_MATH_DEFINES'
+            }
         }
     }
 
@@ -81,6 +85,10 @@ model {
             wpi.cpp.vendor.cpp(it)
             wpi.cpp.deps.wpilib(it)
             wpi.cpp.deps.googleTest(it)
+
+            binaries.all {
+                cppCompiler.define '_USE_MATH_DEFINES'
+            }
         }
     }
 }

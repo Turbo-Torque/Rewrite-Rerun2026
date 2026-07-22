@@ -11,6 +11,7 @@
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 #include <frc/DriverStation.h>
 #include <frc/RobotBase.h>
+#include <algorithm>
 
 
 using namespace DriveConstants;
@@ -22,8 +23,10 @@ DrivebaseSubsystem::DrivebaseSubsystem():
     backLeft("BackLeft", kBackLeftPorts.driveMotorPort, kBackLeftPorts.steerMotorPort, kBackLeftPorts.encoderPort),
     backRight("BackRight", kBackRightPorts.driveMotorPort, kBackRightPorts.steerMotorPort, kBackRightPorts.encoderPort),
     poseEstimator(kKinematics, frc::Rotation2d{}, std::array<frc::SwerveModulePosition, 4>{}, frc::Pose2d{}){
-        rotationController.SetTolerance(0.5);
-        rotationController.EnableContinuousInput(0, 360);
+        realRotationController.SetTolerance(0.5);
+        realRotationController.EnableContinuousInput(0, 360);
+        simRotationController.SetTolerance(0.5);
+        simRotationController.EnableContinuousInput(0, 360);
 
         ConfigureTelemetry();
         ConfigureAutoBuilder();
@@ -111,6 +114,23 @@ void DrivebaseSubsystem::ApplyStartingPose() {
     }
 }
 
+frc::PIDController& DrivebaseSubsystem::ActiveRotationController() {
+    return frc::RobotBase::IsSimulation() ? simRotationController : realRotationController;
+}
+
+void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
+    double output = ActiveRotationController().Calculate(GetPose().Rotation().Degrees().value(), targetHeading.Degrees().value());
+
+    units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
+    output = std::clamp(output, -maxSpeed.value(), maxSpeed.value());
+
+    Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{output}});
+}
+
+bool DrivebaseSubsystem::AtHeadingSetpoint() {
+    return ActiveRotationController().AtSetpoint();
+}
+
 frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotSpeed) {
     return frc2::FunctionalCommand ( []{},
         [=, this] {
@@ -179,6 +199,9 @@ void DrivebaseSubsystem::SimulationPeriodic() {
     const auto newY = simPose.Y() + vy * kSimPeriod;
     const auto newMega = frc::Rotation2d(simPose.Rotation().Radians() + omega * kSimPeriod);
     simPose = frc::Pose2d(newX, newY, newMega);
+
+    gyro.GetSimState().SetRawYaw(simPose.Rotation().Degrees());
+
     field.SetRobotPose(GetPose());
 
 }

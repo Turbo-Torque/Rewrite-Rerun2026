@@ -16,6 +16,7 @@
 #include "rev/config/SparkMaxConfig.h"
 #include "units/current.h"
 #include "units/voltage.h"
+#include <frc/controller/ArmFeedforward.h>
 
 class IntakeRealIO : public IntakeIO {
     public:
@@ -53,7 +54,9 @@ class IntakeRealIO : public IntakeIO {
 
 
         void SetIntakeSetpoint(double rot) override{
-            pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, IntakeConstants::kFFPivot);
+            units::radian_t currentAngle{(pivotMotor.GetEncoder().GetPosition())};
+            units::volt_t ff = pivotFF.Calculate(currentAngle, 0_rad_per_s);
+            pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, ff.value());
 
         }
 
@@ -62,6 +65,11 @@ class IntakeRealIO : public IntakeIO {
         rev::spark::SparkMax pivotMotor{IntakeConstants::kIntakePivotPort, rev::spark::SparkLowLevel::MotorType::kBrushless};
         //ctre::phoenix6::hardware::CANcoder pivotEncoder{IntakeConstants::kIntakeCANPort};
         ctre::phoenix6::controls::VoltageOut voltageRequest{0_V};
+
+        frc::ArmFeedforward pivotFF {
+            units::volt_t{IntakeConstants::kSPivot},
+            units::volt_t{IntakeConstants::kGPivot},
+            units::unit_t<frc::ArmFeedforward::kv_unit>{IntakeConstants::kVPivot}};
         
         void ConfigIntakeMotor() {
             ctre::phoenix6::configs::TalonFXConfiguration config{};

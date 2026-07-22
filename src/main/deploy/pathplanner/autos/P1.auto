@@ -7,7 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "l1"
+            "pathName": "c1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "c2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "c3"
           }
         }
       ]

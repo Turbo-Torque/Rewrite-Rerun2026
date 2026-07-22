@@ -27,8 +27,6 @@
 #include <pathplanner/lib/controllers/PPHolonomicDriveController.h>
 
 
-
-
 class DrivebaseSubsystem final:public frc2::SubsystemBase {
     public: 
     DrivebaseSubsystem();
@@ -43,6 +41,9 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     void ResetPose(frc::Pose2d pose);
     void ApplyStartingPose();
     void ConfigureAutoBuilder();
+    void AimAtHeading(frc::Rotation2d targetHeading);
+
+    bool AtHeadingSetpoint();
 
     frc::Pose2d GetPose();
     frc::Rotation2d GetGyroAngle();
@@ -64,7 +65,9 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     ctre::phoenix6::hardware::Pigeon2 gyro{DriveConstants::kGyro, canBus};
     frc::SwerveDrivePoseEstimator<4> poseEstimator;
     
-    frc::PIDController rotationController{0.009, 0, 0};
+    frc::PIDController realRotationController{4.0, 0, 0};
+    frc::PIDController simRotationController{4.0, 0, 0};
+    frc::PIDController& ActiveRotationController();
 
     frc::ChassisSpeeds cmdSpeeds{0.0_mps, 0.0_mps, 0.0_rad_per_s};
     frc::Pose2d simPose = frc::Pose2d(9_m, 4_m, 0_deg);

@@ -14,6 +14,7 @@
 #include "subsystems/GateSubsystem.h"
 #include "subsystems/ShooterSubsystem.h"
 #include <frc2/command/Commands.h>
+#include "subsystems/ShotSolve.h"
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -41,16 +42,51 @@ class RobotContainer {
 
 
   frc2::CommandPtr CreateDriveCommand() {
-    return drivebaseSubsystem.DriveCommand([this]() {return driveController.GetLeftX();}, [this]() {return driveController.GetLeftY();}, [this]() {return driveController.GetRightX();});
+    return drivebaseSubsystem.DriveCommand([this]() {return driveController.GetLeftY();}, [this]() {return driveController.GetLeftX();}, [this]() {return driveController.GetRightX();});
   }
 
-   frc2::CommandPtr RunFeedCommand() {
-    return frc2::cmd::WaitUntil([this] {
-          return shooterSubsystem.IsNearState();
-      })
-      .AndThen(
-          hopperSubsystem.RunHopperCommand());
-    }
+  frc2::CommandPtr RunFeedCommand() {
+  return frc2::cmd::WaitUntil([this] {
+        return shooterSubsystem.IsNearState() && drivebaseSubsystem.AtHeadingSetpoint();
+    })
+    .AndThen(
+        hopperSubsystem.RunHopperCommand());
+  }
+
+  frc2::CommandPtr AimCommand() {
+      return frc2::cmd::Run([this] {
+          auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());
+          auto target = ShotSolve::GetTargetPosition();
+          auto geometry = ShotSolve::ComputeGeometry(muzzle, target);
+          drivebaseSubsystem.AimAtHeading(geometry.bearing);
+      }, {&drivebaseSubsystem})
+      .Until([this] { return drivebaseSubsystem.AtHeadingSetpoint(); });
+  }
+
+  frc2::CommandPtr AimAndShootCommand() {
+      return frc2::cmd::Run([this] {
+          auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());
+          auto target = ShotSolve::GetTargetPosition();
+          auto geometry = ShotSolve::ComputeGeometry(muzzle, target);
+
+          auto candidates = ShotSolve::GenerateCandidates();
+          auto evaluations = ShotSolve::EvaluateCandidates(candidates, geometry);
+          auto validShots = ShotSolve::FilterValidShots(evaluations, geometry);
+
+          ShotSolve::RankShots(validShots);
+          auto shot = ShotSolve::SelectBestShot(validShots);
+
+          drivebaseSubsystem.AimAtHeading(geometry.bearing);
+
+          if (shot) {
+              shooterSubsystem.SetShooterRPM(shot->candidate.rpm);
+              shooterSubsystem.SetHoodAngleGoal(shot->candidate.hoodAngle);
+          }
+    }, {&drivebaseSubsystem, &shooterSubsystem})
+    .FinallyDo([this] {
+        shooterSubsystem.SetShooterRPM(0_rpm);
+    });
+  }
 
   void ConfigureBindings();
   void ConfigureDefualts();
