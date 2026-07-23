@@ -10,6 +10,7 @@
 #include "ctre/phoenix6/controls/Follower.hpp"
 #include "ctre/phoenix6/controls/VelocityVoltage.hpp"
 #include "ctre/phoenix6/signals/SpnEnums.hpp"
+#include "ctre/phoenix6/controls/CoastOut.hpp"
 
 #include "units/angular_velocity.h"
 #include "units/current.h"
@@ -46,6 +47,10 @@ public:
             velocityRequest.WithVelocity(rpm));
     }
 
+    void CoastOut() override {
+        leftShooterMotor.SetControl(coastRequest);
+    }
+
 
     void SetHoodSetpoint(double rot) {
         hoodPID.SetSetpoint(rot);
@@ -63,6 +68,8 @@ private:
 	ctre::phoenix6::hardware::CANcoder hoodCAN{ShooterConstants::kHoodCAN};
 
     ctre::phoenix6::controls::VelocityVoltage velocityRequest{0_tps};
+
+    ctre::phoenix6::controls::CoastOut coastRequest;
 
     units::revolutions_per_minute_t targetRPM{0_rpm};
 

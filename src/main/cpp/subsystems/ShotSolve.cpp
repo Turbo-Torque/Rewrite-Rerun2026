@@ -1,4 +1,5 @@
 #include "subsystems/ShotSolve.h"
+#include "subsystems/DrivebaseSubsystem.h"
 
 #include "Constants.h"
 #include <frc/DriverStation.h>
@@ -105,7 +106,7 @@ std::optional<ShotSolve::ShotEvaluation> ShotSolve::SelectBestShot(const std::ve
 
 frc::Translation3d ShotSolve::GetTargetPosition() {
     auto alliance = frc::DriverStation::GetAlliance();
-    bool isRed = alliance && alliance.value() == frc::DriverStation::Alliance::kRed;
+    bool isRed = alliance == frc::DriverStation::Alliance::kRed;
 
     frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
     frc::SmartDashboard::PutBoolean("IsRed", isRed);

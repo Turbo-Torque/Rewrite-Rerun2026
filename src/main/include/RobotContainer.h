@@ -42,7 +42,7 @@ class RobotContainer {
 
 
   frc2::CommandPtr CreateDriveCommand() {
-    return drivebaseSubsystem.DriveCommand([this]() {return driveController.GetLeftY();}, [this]() {return driveController.GetLeftX();}, [this]() {return driveController.GetRightX();});
+    return drivebaseSubsystem.DriveCommand([this]() {return -(driveController.GetLeftY());}, [this]() {return -(driveController.GetLeftX());}, [this]() {return driveController.GetRightX();});
   }
 
   frc2::CommandPtr RunFeedCommand() {
@@ -90,6 +90,7 @@ class RobotContainer {
 
   void ConfigureBindings();
   void ConfigureDefualts();
+    void ConfigureNamedCommands();
   void ConfigureShooterBindings();
   void ConfigureIntakeBindings();
   void ConfigureFeedBindings();

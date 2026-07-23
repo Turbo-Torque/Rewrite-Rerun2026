@@ -80,11 +80,10 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     nt::StructPublisher<frc::ChassisSpeeds> cmdSpeedsPublisher;
     nt::StructArrayPublisher<frc::SwerveModuleState> swerveModuleStatePublisher;
     nt::StructPublisher<frc::Rotation2d> gyroPublisher;
-
-    // frc::SlewRateLimiter<units::meters_per_second> xSpeedLimiter{DriveConstants::kMaxLinearSpeed};
-    // frc::SlewRateLimiter<units::meters_per_second> ySpeedLimiter{DriveConstants::kMaxLinearSpeed};
-    // frc::SlewRateLimiter<units::radians_per_second> rotSpeedLimiter{DriveConstants::kMaxAngularSpeed};
-
-
+    nt::BooleanPublisher seesTagPublisher;
+    
+    frc::SlewRateLimiter<units::meters_per_second> xSpeedLimiter{DriveConstants::kMaxLinearAcceleration};
+    frc::SlewRateLimiter<units::meters_per_second> ySpeedLimiter{DriveConstants::kMaxLinearAcceleration};
+    frc::SlewRateLimiter<units::radians_per_second> rotSpeedLimiter{DriveConstants::kMaxAngularAcceleration};
 
 };

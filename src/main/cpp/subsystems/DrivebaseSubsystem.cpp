@@ -45,7 +45,15 @@ void DrivebaseSubsystem::Drive(const frc::ChassisSpeeds& speeds){
 }
 
 void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
-    Drive(speeds);
+    auto x = speeds.vx * -1;
+    auto y = speeds.vy * -1;
+    auto rot = speeds.omega * -1;
+
+    auto states = DriveConstants::kKinematics.ToSwerveModuleStates({x, y, rot});
+
+    if (frc::RobotBase::IsReal()) {
+        SetModuleStates(states);
+    }
 }
 
 
@@ -63,6 +71,8 @@ void DrivebaseSubsystem::ConfigureTelemetry() {
     startingPoseChooser.SetDefaultOption("Center", "Center");
     frc::SmartDashboard::PutData("Starting Pose", &startingPoseChooser);
     frc::SmartDashboard::PutData("Field", &field);
+
+    seesTagPublisher = nt::NetworkTableInstance::GetDefault().GetBooleanTopic("SeesTag").Publish();
 
 }
 
@@ -143,17 +153,28 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
     return frc2::FunctionalCommand ( []{},
         [=, this] {
 
-            //double x = frc::ApplyDeadband(xSpeed(), DriveConstants::kControllerDeadBand);
-            // double y = frc::ApplyDeadband(ySpeed(), DriveConstants::kControllerDeadBand);
-            //double rot = frc::ApplyDeadband(rotSpeed(), DriveConstants::kControllerDeadBand);
+            double xInput = frc::ApplyDeadband(xSpeed(), DriveConstants::kControllerDeadBand);
+            double yInput = frc::ApplyDeadband(ySpeed(), DriveConstants::kControllerDeadBand);
+            double rotInput = frc::ApplyDeadband(rotSpeed(), DriveConstants::kControllerDeadBand);
 
-            const frc::ChassisSpeeds speeds{
+            units::meters_per_second_t x;
+            units::meters_per_second_t y;
+            units::radians_per_second_t rot;
 
-             
-                    - (xSpeed() * DriveConstants::kMaxLinearSpeed),
-                    - (ySpeed() * DriveConstants::kMaxLinearSpeed),
-                    - (rotSpeed() * DriveConstants::kMaxAngularSpeed)
-            };
+            if (IsRedAlliance()) {
+                
+                x = DriveConstants::negativeMetersConvert * xInput * DriveConstants::kMaxLinearSpeed;
+                y =  DriveConstants::negativeMetersConvert * yInput * DriveConstants::kMaxLinearSpeed;
+                // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed;
+            } else {
+                x = xInput * DriveConstants::kMaxLinearSpeed;
+                y =  yInput * DriveConstants::kMaxLinearSpeed;
+                // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed;
+            }
+
+            const frc::ChassisSpeeds speeds{x, y, rot};
             frc::ChassisSpeeds cmdspeeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(speeds, GetGyroAngle());
             Drive(cmdspeeds);
         },
@@ -162,7 +183,7 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
 }
 
 frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {
-    return gyro.GetRotation2d();
+    return gyro.GetRotation2d().RotateBy(180_deg);
 }
 
 frc::Pose2d DrivebaseSubsystem::GetPose() {
@@ -201,6 +222,7 @@ void DrivebaseSubsystem::Periodic() {
     swerveModuleStatePublisher.Set(GetModuleStates());
     gyroPublisher.Set(GetGyroAngle());
     field.SetRobotPose(GetPose());
+    seesTagPublisher.Set(poseEstimator.SeesTag());
 }
 
 void DrivebaseSubsystem::SimulationPeriodic() {

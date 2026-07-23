@@ -26,5 +26,6 @@ class ShooterIO {
         virtual void UpdateInputs(ShooterIOInputs& inputs) = 0;
         virtual void SetShooterRPM(units::revolutions_per_minute_t rpm) = 0;
         virtual void SetHoodSetpoint(double rot) = 0;
+        virtual void CoastOut() = 0;
         virtual ~ShooterIO() = default;
 };

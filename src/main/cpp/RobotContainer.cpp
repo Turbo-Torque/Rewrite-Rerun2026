@@ -25,6 +25,7 @@
 
 #include <pathplanner/lib/auto/NamedCommands.h>
 #include <pathplanner/lib/events/EventTrigger.h>
+#include "pathplanner/lib/auto/AutoBuilder.h"
 
 
 RobotContainer::RobotContainer()
@@ -40,6 +41,7 @@ RobotContainer::RobotContainer()
     ConfigureIntakeBindings();
     ConfigureFeedBindings();
     ConfigureShooterBindings();
+    ConfigureNamedCommands();
 
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
     frc::SmartDashboard::PutData("Auto Chooser", &autoChooser);
@@ -75,6 +77,9 @@ void RobotContainer::ApplyStartingPose() {
     drivebaseSubsystem.ApplyStartingPose();
 }
 
+void RobotContainer::ConfigureNamedCommands() {
+      pathplanner::NamedCommands::registerCommand("Intake", intakeSubsystem.PivotAndRunIntakeCommand());
+}
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
 

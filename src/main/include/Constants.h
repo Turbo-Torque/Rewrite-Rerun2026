@@ -7,6 +7,7 @@
 #include <turbolib/structure/SwervePorts.hpp>
 #include "units/acceleration.h"
 #include "units/angular_velocity.h"
+#include "units/angular_acceleration.h"
 #include "units/current.h"
 #include "units/voltage.h"
 #include "frc/geometry/Pose2d.h"
@@ -40,19 +41,19 @@ namespace FieldConstants {
 namespace VisionConstants {
     inline constexpr frc::AprilTagField kAprilTagField = frc::AprilTagField::k2026RebuiltAndyMark;
 
-    inline const std::string kFrontLeftCameraName = "FrontLeftCam";
+    inline const std::string kFrontLeftCameraName = "leftShooterCam";
     inline const frc::Transform3d kFrontLeftCameraTransform{
         frc::Translation3d{3.5_in, 10.5_in, 29.6_in},
         frc::Rotation3d{0_deg, -30_deg, 0_deg}
     };
 
-    inline const std::string kFrontRightCameraName = "FrontRightCam";
+    inline const std::string kFrontRightCameraName = "rightShooterCam";
     inline const frc::Transform3d kFrontRightCameraTransform{
         frc::Translation3d{3.5_in, -10.5_in, 29.6_in},
         frc::Rotation3d{0_deg, -30_deg, 0_deg}
     };
 
-    inline const std::string kBackCameraName = "BackCam";
+    inline const std::string kBackCameraName = "blCam ";
     inline const frc::Transform3d kBackCameraTransform{
         frc::Translation3d{-0.3_m, 0.0_m, 0.5_m},
         frc::Rotation3d{0_deg, -20_deg, 180_deg}
@@ -81,7 +82,12 @@ namespace DriveConstants {
 
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
     inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
+    inline constexpr units::meters_per_second_squared_t kMaxLinearAcceleration = 8.0_mps_sq;
+    inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1200_deg_per_s_sq;
     inline constexpr double kControllerDeadBand = 0.08;
+
+    inline constexpr double negativeMetersConvert = -1.0;
+    inline constexpr double negativeTurnConvert = -1.0;
 
     inline const std::map<std::string, frc::Pose2d> kStartingPose = {
         {"bLeft", frc::Pose2d(3.5_m, 5.5_m, 270_deg)},
@@ -122,14 +128,14 @@ namespace IntakeConstants {
 
 namespace HopperConstants {
     inline constexpr int kHopperMotorPort = 11;
-    inline constexpr units::volt_t kHopperInVolts = 5_V;
+    inline constexpr units::volt_t kHopperInVolts = 6_V;
     //inline constexpr units::volt_t kHopperOutVolts = -3_V;
 }
 
 namespace GateConstants {
     inline constexpr int kRightGateMotorPort = 15;
     inline constexpr int kLeftGateMotorPort = 14;
-    inline constexpr units::volt_t kGateVolts = 5_V;
+    inline constexpr units::volt_t kGateVolts = 7_V;
 }
 
 
