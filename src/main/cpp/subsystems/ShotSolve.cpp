@@ -5,6 +5,7 @@
 #include <cmath>
 #include <units/math.h>
 #include <algorithm>
+#include "frc/smartdashboard/SmartDashboard.h"
 
 ShotSolve::ShotGeometry ShotSolve::ComputeGeometry(const frc::Translation3d& muzzle, const frc::Translation3d& target) {
     units::meter_t dx = target.X() - muzzle.X();
@@ -21,16 +22,6 @@ frc::Translation3d ShotSolve::GetMuzzlePosition(const frc::Pose2d& robotPose) {
     frc::Translation2d muzzleXY = robotPose.Translation() + fieldOffset;
 
     return frc::Translation3d{muzzleXY.X(), muzzleXY.Y(), ShooterConstants::kShooterHeight};
-};
-
-frc::Translation3d ShotSolve::GetTargetPosition() {
-    auto alliance = frc::DriverStation::GetAlliance();
-    bool isRed = alliance && alliance.value() == frc::DriverStation::Alliance::kRed;
-
-    if (isRed) {
-        return FieldConstants::kRedTargetPosition;
-    }
-    return FieldConstants::kBlueTargetPosition;
 };
 
 std::vector<ShotSolve::ShotCandidate> ShotSolve::GenerateCandidates() {
@@ -110,4 +101,17 @@ std::optional<ShotSolve::ShotEvaluation> ShotSolve::SelectBestShot(const std::ve
         return std::nullopt;
     }
     return rankedShots.front();
+}
+
+frc::Translation3d ShotSolve::GetTargetPosition() {
+    auto alliance = frc::DriverStation::GetAlliance();
+    bool isRed = alliance && alliance.value() == frc::DriverStation::Alliance::kRed;
+
+    frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
+    frc::SmartDashboard::PutBoolean("IsRed", isRed);
+
+    if (isRed) {
+        return FieldConstants::kRedTargetPosition;
+    }
+    return FieldConstants::kBlueTargetPosition;
 }

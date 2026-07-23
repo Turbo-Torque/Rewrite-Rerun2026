@@ -80,7 +80,7 @@ class RobotContainer {
 
           if (shot) {
               shooterSubsystem.SetShooterRPM(shot->candidate.rpm);
-              shooterSubsystem.SetHoodAngleGoal(shot->candidate.hoodAngle);
+              shooterSubsystem.SetHoodSetpoint(shot->candidate.hoodAngle.value());
           }
     }, {&drivebaseSubsystem, &shooterSubsystem})
     .FinallyDo([this] {

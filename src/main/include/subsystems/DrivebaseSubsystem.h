@@ -44,6 +44,7 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     void AimAtHeading(frc::Rotation2d targetHeading);
 
     bool AtHeadingSetpoint();
+    bool IsRedAlliance();
 
     frc::Pose2d GetPose();
     frc::Rotation2d GetGyroAngle();
@@ -63,7 +64,7 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
 
     turbolib::motors::NeoKrakenModule frontLeft, frontRight, backLeft, backRight;
     ctre::phoenix6::hardware::Pigeon2 gyro{DriveConstants::kGyro, canBus};
-    frc::SwerveDrivePoseEstimator<4> poseEstimator;
+    turbolib::perception::TurboPoseEstimator poseEstimator;
     
     frc::PIDController realRotationController{4.0, 0, 0};
     frc::PIDController simRotationController{4.0, 0, 0};

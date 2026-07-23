@@ -6,6 +6,7 @@
 #include "Constants.h"
 
 #include "ctre/phoenix6/TalonFX.hpp"
+#include <ctre/phoenix6/CANcoder.hpp>
 #include "ctre/phoenix6/controls/Follower.hpp"
 #include "ctre/phoenix6/controls/VelocityVoltage.hpp"
 #include "ctre/phoenix6/signals/SpnEnums.hpp"
@@ -21,10 +22,17 @@ public:
     }
 
     void UpdateInputs(ShooterIOInputs& inputs) override {
+        units::degree_t hoodPosition = hoodCAN.GetAbsolutePosition().GetValue();
+
         inputs.shooterRPM = units::revolutions_per_minute_t{leftShooterMotor.GetVelocity().GetValue()};
         inputs.shooterCurrent = units::ampere_t{leftShooterMotor.GetTorqueCurrent().GetValue()};
-        inputs.hoodPosition = hoodMotor.GetEncoder().GetPosition();
-        inputs.hoodSetPoint = hoodMotor.GetClosedLoopController().GetSetpoint();
+        inputs.hoodPosition = hoodPosition.value();
+        inputs.hoodSetPoint = hoodPID.GetSetpoint();
+        inputs.hoodCurrent = units::ampere_t{hoodMotor.GetOutputCurrent()};
+
+        units::volt_t hoodOut = units::volt_t{hoodPID.Calculate(hoodPosition.value())};
+
+        hoodMotor.SetVoltage(hoodOut);
 
         inputs.atRotations =
             std::abs((inputs.shooterRPM - targetRPM).value()) < 100.0;
@@ -38,19 +46,9 @@ public:
             velocityRequest.WithVelocity(rpm));
     }
 
-    void SetHoodAngle(bool deployed) {
-        double hoodSetpoint;
-        if (deployed) {
-            hoodSetpoint = ShooterConstants::kHoodUp;
-
-        } else {
-            hoodSetpoint = ShooterConstants::kHoodDown;
-        }
-        hoodMotor.GetClosedLoopController().SetSetpoint(hoodSetpoint, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, ShooterConstants::kFFHood);
-    }
 
     void SetHoodSetpoint(double rot) {
-        hoodMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, ShooterConstants::kFFHood);
+        hoodPID.SetSetpoint(rot);
     }
 
 private:
@@ -60,12 +58,15 @@ private:
     ctre::phoenix6::hardware::TalonFX rightShooterMotor{
         ShooterConstants::kRightShooterMotorPort};
 
-    rev::spark::SparkMax hoodMotor{ShooterConstants::kHoodMotorPort, rev::spark::SparkLowLevel::MotorType::kBrushless};
+    rev::spark::SparkMax hoodMotor{ShooterConstants::kHoodMotor, rev::spark::SparkLowLevel::MotorType::kBrushless};
+
+	ctre::phoenix6::hardware::CANcoder hoodCAN{ShooterConstants::kHoodCAN};
 
     ctre::phoenix6::controls::VelocityVoltage velocityRequest{0_tps};
 
     units::revolutions_per_minute_t targetRPM{0_rpm};
 
+    frc::PIDController hoodPID{0.12,0,0};
 
 
     void ConfigShooterMotor() {
@@ -109,14 +110,14 @@ private:
         config.closedLoop.I(0.0, rev::spark::kSlot1);
         config.closedLoop.D(0.002, rev::spark::kSlot1);
 
-        config.SmartCurrentLimit(35, 50);
+        config.SmartCurrentLimit(20, 30);
         config.SetIdleMode(rev::spark::SparkBaseConfig::kCoast);
         config.OpenLoopRampRate(0.1);
         config.closedLoop.AllowedClosedLoopError(0.20);
-        config.Inverted(true);
 
         hoodMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
         hoodMotor.GetEncoder().SetPosition(0.0);
+
     }
 
 };

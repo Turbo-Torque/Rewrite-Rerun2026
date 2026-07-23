@@ -22,7 +22,7 @@ DrivebaseSubsystem::DrivebaseSubsystem():
     frontRight("FrontRight", kFrontRightPorts.driveMotorPort, kFrontRightPorts.steerMotorPort, kFrontRightPorts.encoderPort),
     backLeft("BackLeft", kBackLeftPorts.driveMotorPort, kBackLeftPorts.steerMotorPort, kBackLeftPorts.encoderPort),
     backRight("BackRight", kBackRightPorts.driveMotorPort, kBackRightPorts.steerMotorPort, kBackRightPorts.encoderPort),
-    poseEstimator(kKinematics, frc::Rotation2d{}, std::array<frc::SwerveModulePosition, 4>{}, frc::Pose2d{}){
+    poseEstimator(frc::Rotation2d{}, std::array<frc::SwerveModulePosition, 4>{}, frc::Pose2d{}, kKinematics){
         realRotationController.SetTolerance(0.5);
         realRotationController.EnableContinuousInput(0, 360);
         simRotationController.SetTolerance(0.5);
@@ -30,6 +30,9 @@ DrivebaseSubsystem::DrivebaseSubsystem():
 
         ConfigureTelemetry();
         ConfigureAutoBuilder();
+        poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField);
+        poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField);
+        poseEstimator.AddLocalizationCamera(VisionConstants::kBackCameraName, VisionConstants::kBackCameraTransform, VisionConstants::kAprilTagField);        
         SetName("DrivebaseSubsystem");
     }
 
@@ -94,7 +97,7 @@ void DrivebaseSubsystem::SetModuleStates(const std::array<frc::SwerveModuleState
 void DrivebaseSubsystem::ZeroGyro() {
     gyro.Reset();
 
-    poseEstimator.ResetPosition(
+    poseEstimator.ResetEstimatorPosition(
         GetGyroAngle(),
         GetSwerveModulePosition(),
         frc::Pose2d{});
@@ -103,7 +106,7 @@ void DrivebaseSubsystem::ZeroGyro() {
 
 
 void DrivebaseSubsystem::ResetPose(frc::Pose2d pose) {
-    poseEstimator.ResetPosition(GetGyroAngle(), GetSwerveModulePosition(), pose);
+    poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), pose);
     simPose = pose;
 }
 
@@ -129,6 +132,11 @@ void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
 
 bool DrivebaseSubsystem::AtHeadingSetpoint() {
     return ActiveRotationController().AtSetpoint();
+}
+
+bool DrivebaseSubsystem::IsRedAlliance() {
+    auto alliance = frc::DriverStation::GetAlliance();
+    return alliance == frc::DriverStation::Alliance::kRed;
 }
 
 frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotSpeed) {
@@ -161,7 +169,7 @@ frc::Pose2d DrivebaseSubsystem::GetPose() {
     if (frc::RobotBase::IsSimulation()) {
         return simPose;
     }
-    return poseEstimator.GetEstimatedPosition();
+    return poseEstimator.GetPose2D();
 }
 
 frc::Rotation2d DrivebaseSubsystem::GetAngle() {
@@ -183,7 +191,11 @@ std::array<frc::SwerveModulePosition, 4> DrivebaseSubsystem::GetSwerveModulePosi
 
 void DrivebaseSubsystem::Periodic() {
     frc::SmartDashboard::PutNumber("Gyro", GetGyroAngle().Degrees().value());
-    poseEstimator.Update(GetGyroAngle(), GetSwerveModulePosition());
+    auto alliance = frc::DriverStation::GetAlliance();
+    frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
+    frc::SmartDashboard::PutBoolean("IsRed", alliance && alliance.value() == frc::DriverStation::Alliance::kRed);
+
+    poseEstimator.UpdateWithOdometryAndVision(GetGyroAngle(), GetSwerveModulePosition());
     posePublisher.Set(GetPose());
     cmdSpeedsPublisher.Set(cmdSpeeds);
     swerveModuleStatePublisher.Set(GetModuleStates());
@@ -198,7 +210,12 @@ void DrivebaseSubsystem::SimulationPeriodic() {
     const auto newX = simPose.X() + vx * kSimPeriod;
     const auto newY = simPose.Y() + vy * kSimPeriod;
     const auto newMega = frc::Rotation2d(simPose.Rotation().Radians() + omega * kSimPeriod);
-    simPose = frc::Pose2d(newX, newY, newMega);
+    if (IsRedAlliance()) {
+        simPose = frc::Pose2d(newX, newY, newMega);
+    } else {
+        simPose = frc::Pose2d(newX, newY, newMega);
+    }
+    
 
     gyro.GetSimState().SetRawYaw(simPose.Rotation().Degrees());
 

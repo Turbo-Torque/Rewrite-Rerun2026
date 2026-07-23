@@ -13,6 +13,9 @@
 #include <map>
 #include <string>
 #include "frc/geometry/Translation3d.h"
+#include "frc/geometry/Transform3d.h"
+#include "frc/geometry/Rotation3d.h"
+#include "frc/apriltag/AprilTagFields.h"
 
 
 using namespace units::literals;
@@ -22,6 +25,38 @@ namespace OperatorConstants {
     inline constexpr int kDriveControllerPort = 0;
     inline constexpr int kOperatorControllerPort = 1;
 
+}
+
+namespace FieldConstants {
+    inline constexpr units::meter_t kFieldLength = 16.541_m;//
+    inline constexpr units::meter_t kTargetHeight = 1.8288_m;
+    inline constexpr units::meter_t kBluePosX = 4.0284_m;
+    inline constexpr units::meter_t kHubPosY = 3.5941_m;
+
+    inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
+    inline constexpr frc::Translation3d kRedTargetPosition{kFieldLength - kBluePosX, kHubPosY, kTargetHeight};
+}
+
+namespace VisionConstants {
+    inline constexpr frc::AprilTagField kAprilTagField = frc::AprilTagField::k2026RebuiltAndyMark;
+
+    inline const std::string kFrontLeftCameraName = "FrontLeftCam";
+    inline const frc::Transform3d kFrontLeftCameraTransform{
+        frc::Translation3d{3.5_in, 10.5_in, 29.6_in},
+        frc::Rotation3d{0_deg, -30_deg, 0_deg}
+    };
+
+    inline const std::string kFrontRightCameraName = "FrontRightCam";
+    inline const frc::Transform3d kFrontRightCameraTransform{
+        frc::Translation3d{3.5_in, -10.5_in, 29.6_in},
+        frc::Rotation3d{0_deg, -30_deg, 0_deg}
+    };
+
+    inline const std::string kBackCameraName = "BackCam";
+    inline const frc::Transform3d kBackCameraTransform{
+        frc::Translation3d{-0.3_m, 0.0_m, 0.5_m},
+        frc::Rotation3d{0_deg, -20_deg, 180_deg}
+    };
 }
 
 namespace DriveConstants {
@@ -52,9 +87,9 @@ namespace DriveConstants {
         {"bLeft", frc::Pose2d(3.5_m, 5.5_m, 270_deg)},
         {"bCenter", frc::Pose2d(3.5_m, 4.0_m, 180_deg)},
         {"bRight", frc::Pose2d(3.5_m, 1.5_m, 90_deg)},
-        {"rLeft", frc::Pose2d(12.5_m, 6_m, 270_deg)},
-        {"rCenter", frc::Pose2d(12.5_m, 4.0_m, 180_deg)},
-        {"rRight", frc::Pose2d(12.5_m, 1.5_m, 90_deg)}
+        {"rLeft", frc::Pose2d(FieldConstants::kFieldLength - 3.5_m, 5.5_m, 180_deg - 270_deg)},
+        {"rCenter", frc::Pose2d(FieldConstants::kFieldLength - 3.5_m, 4.0_m, 180_deg - 180_deg)},
+        {"rRight", frc::Pose2d(FieldConstants::kFieldLength - 3.5_m, 1.5_m, 180_deg - 90_deg)}
     };
 }
 
@@ -73,8 +108,8 @@ namespace IntakeConstants {
     inline constexpr int kIntakePivotPort = 9;
     //inline constexpr int kIntakeCANPort = 0;
 
-    inline constexpr double kIntakeUp = 0.0;
-    inline constexpr double kIntakeDown = 57.0;
+    inline constexpr double kIntakeUp = 30.0;
+    inline constexpr double kIntakeDown = 60.0;
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 5_V;
 
@@ -115,11 +150,12 @@ namespace ShooterConstants {
     inline constexpr units::meter_t kFlywheelDiameter = 0.1016_m;
 
     //Hood
-    inline constexpr int kHoodMotorPort = 0;   // TODO: real CAN ID
+    inline constexpr int kHoodMotor = 47;
+    inline constexpr int kHoodCAN = 23;
 
     inline constexpr units::degree_t kMinAngle = 20_deg;
     inline constexpr units::degree_t kMaxAngle = 60_deg;
-    inline constexpr double kHoodUp = 20.0; 
+    inline constexpr double kHoodUp = 160.0; 
     inline constexpr double kHoodDown = 0.0; 
     inline constexpr units::degree_t kAngleStep = 1_deg;
     inline constexpr units::revolutions_per_minute_t kMaxStep = 25_rpm;
@@ -132,16 +168,5 @@ namespace ShooterConstants {
 
 
 namespace RobotConstants{
-    inline constexpr double kStartVoltage = 11;
-}
-
-namespace FieldConstants{
-    inline constexpr units::meter_t kFieldLength = 8.0696_m;
-    inline constexpr units::meter_t kfieldWidth = 7.1882_m;
-    inline constexpr units::meter_t kTargetHeight = 1.8288_m;
-    inline constexpr units::meter_t kBluePosX = 4.0284_m;
-    inline constexpr units::meter_t kHubPosY = 3.5941_m;
-
-    inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
-    inline constexpr frc::Translation3d kRedTargetPosition{kFieldLength - kBluePosX, kHubPosY, kTargetHeight};
+    inline constexpr double kStartVoltage = 12;
 }

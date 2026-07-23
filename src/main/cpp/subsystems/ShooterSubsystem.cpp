@@ -11,9 +11,10 @@ ShooterSubsystem::ShooterSubsystem(std::unique_ptr<ShooterIO> shooterIO) : io(st
 }
 
 frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
-    return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM);}, {this})
+    return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM); {SetHoodSetpoint(ShooterConstants::kHoodUp);}}, {this})
     .FinallyDo([this] {
         SetShooterRPM(0_rpm);
+        SetHoodSetpoint(ShooterConstants::kHoodDown);
     });
 }
 
@@ -21,10 +22,9 @@ bool ShooterSubsystem::IsNearState() {
     return inputs.atRotations;
 }
 
-void ShooterSubsystem::SetHoodAngleGoal(units::degree_t angle) {
-    double rotations = (angle.value() / 360) * ShooterConstants::kHoodGearRatio;
-    SetHoodSetpoint(rotations);
-}
+// void ShooterSubsystem::SetHoodAngleGoal(units::degree_t angle) {
+//     SetHoodSetpoint(angle.value());
+// }
 
 
 void ShooterSubsystem::Periodic() {
@@ -34,6 +34,7 @@ void ShooterSubsystem::Periodic() {
     frc::SmartDashboard::PutNumber("Shooter Volts", inputs.shooterCurrent.value());
     frc::SmartDashboard::PutNumber("Hood Angle", inputs.hoodPosition);
     frc::SmartDashboard::PutNumber("Hood Setpoint", inputs.hoodSetPoint);
+    frc::SmartDashboard::PutNumber("Hood Current", inputs.hoodCurrent.value());
 
     frc::SmartDashboard::GetNumber("1Shooter Rpm", inputs.shooterRPM.value());
     frc::SmartDashboard::GetNumber("1Shooter Setpoint", inputs.shooterRPMsetpoint.value());
