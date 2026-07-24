@@ -41,6 +41,7 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     void ResetPose(frc::Pose2d pose);
     void ApplyStartingPose();
     void ConfigureAutoBuilder();
+    void ConfigureEstimator();
     void AimAtHeading(frc::Rotation2d targetHeading);
 
     bool AtHeadingSetpoint();

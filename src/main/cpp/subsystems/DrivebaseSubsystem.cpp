@@ -5,6 +5,7 @@
 #include <frc2/command/Commands.h>
 #include <frc/MathUtil.h>
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
+#include "turbolib/perception/TurboPoseEstimator.hpp"
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/config/RobotConfig.h>
 #include <pathplanner/lib/config/PIDConstants.h>
@@ -30,9 +31,9 @@ DrivebaseSubsystem::DrivebaseSubsystem():
 
         ConfigureTelemetry();
         ConfigureAutoBuilder();
-        poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField);
-        poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField);
-        poseEstimator.AddLocalizationCamera(VisionConstants::kBackCameraName, VisionConstants::kBackCameraTransform, VisionConstants::kAprilTagField);        
+        ConfigureEstimator();
+
+        
         SetName("DrivebaseSubsystem");
     }
 
@@ -95,6 +96,14 @@ void DrivebaseSubsystem::ConfigureAutoBuilder() {
             
         },
     this);
+}
+
+void DrivebaseSubsystem::ConfigureEstimator() {
+    poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), frc::Pose2d{});
+    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField);
+    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField);
+    poseEstimator.AddLocalizationCamera(VisionConstants::kBackCameraName, VisionConstants::kBackCameraTransform, VisionConstants::kAprilTagField);        
+    
 }
 
 void DrivebaseSubsystem::SetModuleStates(const std::array<frc::SwerveModuleState, 4>& states) {
