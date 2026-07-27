@@ -100,8 +100,10 @@ void DrivebaseSubsystem::ConfigureAutoBuilder() {
 
 void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), frc::Pose2d{});
-    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField);
-    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField);
+    // poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField);
+    // poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField);
+    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField, true);
+    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField, true);
     poseEstimator.AddLocalizationCamera(VisionConstants::kBackCameraName, VisionConstants::kBackCameraTransform, VisionConstants::kAprilTagField);        
     
 }
@@ -177,10 +179,9 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
                 // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
                 rot = rotInput * DriveConstants::kMaxAngularSpeed;
             } else {
-                x = xInput * DriveConstants::kMaxLinearSpeed;
-                y =  yInput * DriveConstants::kMaxLinearSpeed;
-                // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
-                rot = rotInput * DriveConstants::kMaxAngularSpeed;
+                x = xInput * DriveConstants::kMaxLinearSpeed * 0.25;
+                y =  yInput * DriveConstants::kMaxLinearSpeed * 0.25;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.25;
             }
 
             const frc::ChassisSpeeds speeds{x, y, rot};
@@ -196,9 +197,6 @@ frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {
 }
 
 frc::Pose2d DrivebaseSubsystem::GetPose() {
-    if (frc::RobotBase::IsSimulation()) {
-        return simPose;
-    }
     return poseEstimator.GetPose2D();
 }
 
@@ -246,9 +244,14 @@ void DrivebaseSubsystem::SimulationPeriodic() {
     } else {
         simPose = frc::Pose2d(newX, newY, newMega);
     }
+
+
     
 
     gyro.GetSimState().SetRawYaw(simPose.Rotation().Degrees());
+
+    poseEstimator.UpdateAllSims(simPose);
+    poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), simPose);
 
     field.SetRobotPose(GetPose());
 
