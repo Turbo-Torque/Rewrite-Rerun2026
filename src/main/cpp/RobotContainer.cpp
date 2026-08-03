@@ -70,6 +70,7 @@ void RobotContainer::ConfigureFeedBindings() {
 void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
+    operatorController.A().ToggleOnTrue(shooterSubsystem.RunLaseringCommand());
     driveController.B().OnTrue(AimCommand());
 }
 
