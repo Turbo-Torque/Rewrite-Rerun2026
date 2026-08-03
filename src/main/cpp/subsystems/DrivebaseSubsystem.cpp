@@ -172,15 +172,15 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
 
             if (IsRedAlliance()) {
                 
-                x = DriveConstants::negativeMetersConvert * xInput * DriveConstants::kMaxLinearSpeed;
-                y =  DriveConstants::negativeMetersConvert * yInput * DriveConstants::kMaxLinearSpeed;
+                x = xSpeedLimiter.Calculate(negativeMetersConvert * xInput * DriveConstants::kMaxLinearSpeed);
+                y = ySpeedLimiter.Calculate(negativeMetersConvert * yInput * DriveConstants::kMaxLinearSpeed);
                 // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
-                rot = rotInput * DriveConstants::kMaxAngularSpeed;
+                rot = rotSpeedLimiter.Calculate(rotInput * DriveConstants::kMaxAngularSpeed);
             } else {
-                x = xInput * DriveConstants::kMaxLinearSpeed;
-                y =  yInput * DriveConstants::kMaxLinearSpeed;
+                x = xSpeedLimiter.Calculate(xInput * DriveConstants::kMaxLinearSpeed);
+                y = ySpeedLimiter.Calculate(yInput * DriveConstants::kMaxLinearSpeed);
                 // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
-                rot = rotInput * DriveConstants::kMaxAngularSpeed;
+                rot = rotSpeedLimiter.Calculate(rotInput * DriveConstants::kMaxAngularSpeed);
             }
 
             const frc::ChassisSpeeds speeds{x, y, rot};

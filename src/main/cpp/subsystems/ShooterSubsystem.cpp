@@ -14,7 +14,7 @@ frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
     return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM); {SetHoodSetpoint(ShooterConstants::kHoodUp);}}, {this})
     .FinallyDo([this] {
         SetShooterRPM(0_rpm);
-        SetHoodSetpoint(ShooterConstants::kHoodDown);
+        // SetHoodSetpoint(ShooterConstants::kHoodDown);
     });
 }
 

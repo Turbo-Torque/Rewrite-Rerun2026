@@ -81,7 +81,7 @@ namespace DriveConstants {
 
 
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
-    inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
+    inline constexpr units::radians_per_second_t kMaxAngularSpeed = 360_deg_per_s;
     inline constexpr units::meters_per_second_squared_t kMaxLinearAcceleration = 8.0_mps_sq;
     inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1200_deg_per_s_sq;
     inline constexpr double kControllerDeadBand = 0.08;
@@ -142,7 +142,7 @@ namespace GateConstants {
 namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2000_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM = 3500_rpm;
 
     inline constexpr units::meters_per_second_squared_t kGravity = 9.80665_mps_sq;
     inline constexpr units::meter_t kShooterOffsetX = -0.2803_m;
