@@ -14,12 +14,14 @@
 
 #include "units/angular_velocity.h"
 #include "units/current.h"
+#include "frc/controller/PIDController.h"
 
 class ShooterRealIO : public ShooterIO {
 public:
     ShooterRealIO() {
         ConfigShooterMotor();
         ConfigHoodMotor();
+        hoodPID.SetTolerance(2.0);   // TODO: tune, degrees
     }
 
     void UpdateInputs(ShooterIOInputs& inputs) override {
@@ -37,9 +39,7 @@ public:
 
         inputs.atRotations =
             std::abs((inputs.shooterRPM - targetRPM).value()) < 100.0;
-        if ((inputs.hoodPosition < 57.0) && (inputs.hoodPosition > 50.0)) {
-                inputs.hoodAtSetpoint = true;
-            } 
+        inputs.hoodAtSetpoint = hoodPID.AtSetpoint();
     }
 
     void SetShooterRPM(units::revolutions_per_minute_t rpm) override {
@@ -52,7 +52,7 @@ public:
     }
 
 
-    void SetHoodSetpoint(double rot) {
+    void SetHoodSetpoint(double rot) override {
         hoodPID.SetSetpoint(rot);
     }
 
@@ -109,22 +109,11 @@ private:
 
     void ConfigHoodMotor() {
         rev::spark::SparkMaxConfig config;
-        config.closedLoop.P(0.04, rev::spark::kSlot0);
-        config.closedLoop.I(0.001, rev::spark::kSlot0);
-        config.closedLoop.D(0.002, rev::spark::kSlot0);
-
-        config.closedLoop.P(0.02, rev::spark::kSlot1);
-        config.closedLoop.I(0.0, rev::spark::kSlot1);
-        config.closedLoop.D(0.002, rev::spark::kSlot1);
-
         config.SmartCurrentLimit(20, 30);
         config.SetIdleMode(rev::spark::SparkBaseConfig::kCoast);
         config.OpenLoopRampRate(0.1);
-        config.closedLoop.AllowedClosedLoopError(0.20);
 
         hoodMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
-        hoodMotor.GetEncoder().SetPosition(0.0);
-
     }
 
 };
