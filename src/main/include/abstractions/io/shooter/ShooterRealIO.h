@@ -16,6 +16,13 @@
 #include "units/current.h"
 #include "frc/controller/PIDController.h"
 
+#include "rev/ClosedLoopTypes.h"
+#include "rev/ConfigureTypes.h"
+#include "rev/SparkLowLevel.h"
+#include "rev/SparkMax.h"
+#include "rev/config/SparkBaseConfig.h"
+#include "rev/config/SparkMaxConfig.h"
+
 class ShooterRealIO : public ShooterIO {
 public:
     ShooterRealIO() {

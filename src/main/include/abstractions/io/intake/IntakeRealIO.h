@@ -41,23 +41,10 @@ class IntakeRealIO : public IntakeIO {
         }
 
 
-        void SetIntakePivot(bool deployed) {
-            double pivotSetpoint;
-            if (deployed) {
-                pivotSetpoint = IntakeConstants::kIntakeDown;
-            } else {
-                pivotSetpoint = IntakeConstants::kIntakeUp;
-            }
-
-            pivotMotor.GetClosedLoopController().SetSetpoint(pivotSetpoint, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, IntakeConstants::kFFPivot); 
-        }
-
-
         void SetIntakeSetpoint(double rot) override{
             units::radian_t currentAngle{(pivotMotor.GetEncoder().GetPosition())};
             units::volt_t ff = pivotFF.Calculate(currentAngle, 0_rad_per_s);
             pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, ff.value());
-
         }
 
     private:

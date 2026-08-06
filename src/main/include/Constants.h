@@ -114,7 +114,8 @@ namespace IntakeConstants {
     inline constexpr int kIntakePivotPort = 9;
     //inline constexpr int kIntakeCANPort = 0;
 
-    inline constexpr double kIntakeUp = 30.0;
+    inline constexpr double kIntakeUp = 0.0;
+    inline constexpr double kIntakeHalfway = 40.0;
     inline constexpr double kIntakeDown = 60.0;
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 5_V;
@@ -142,7 +143,7 @@ namespace GateConstants {
 namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2000_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM = 4000_rpm;
 
     inline constexpr units::meters_per_second_squared_t kGravity = 9.80665_mps_sq;
     inline constexpr units::meter_t kShooterOffsetX = -0.2803_m;

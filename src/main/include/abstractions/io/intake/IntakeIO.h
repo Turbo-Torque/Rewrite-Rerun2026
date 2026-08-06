@@ -18,7 +18,6 @@ class IntakeIO {
     public:
         virtual void UpdateInputs(IntakeIOInputs& inputs) = 0;
         virtual void SetIntakeVolts(units::volt_t volts) = 0;
-        virtual void SetIntakePivot(bool deployed) = 0;
         virtual void SetIntakeSetpoint(double rot) = 0;
         virtual ~IntakeIO() = default;
 };
