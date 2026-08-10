@@ -53,8 +53,9 @@ void RobotContainer::ConfigureDefualts() {
 void RobotContainer::ConfigureBindings() {
 
     driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {
-        drivebaseSubsystem.ZeroGyro();
-    } ));
+        drivebaseSubsystem.ZeroGyro();}));
+    driveController.Y().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.GetPoseEstimator().SetVisionEnabled(!drivebaseSubsystem.GetPoseEstimator().GetVisionEnabled());}
+    ));
 }
 
 void RobotContainer::ConfigureIntakeBindings() {

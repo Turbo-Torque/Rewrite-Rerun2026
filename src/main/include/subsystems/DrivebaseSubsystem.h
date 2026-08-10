@@ -31,8 +31,6 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     public: 
     DrivebaseSubsystem();
 
-
-
     void Drive(const frc::ChassisSpeeds& speeds);
     void AutoDrive(const frc::ChassisSpeeds& speeds);
     void ConfigureTelemetry();
@@ -53,6 +51,8 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     frc::ChassisSpeeds GetRobotRelativeSpeeds();
     std::array<frc::SwerveModuleState, 4> GetModuleStates();
     std::array<frc::SwerveModulePosition, 4> GetSwerveModulePosition();
+    turbolib::perception::TurboPoseEstimator& GetPoseEstimator();
+
 
     frc2::CommandPtr DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotationSpeed);
     
@@ -77,14 +77,15 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     frc::SendableChooser<std::string> startingPoseChooser;
     frc::Field2d field;
 
+    frc::SlewRateLimiter<units::meters_per_second> xSpeedLimiter{DriveConstants::kMaxLinearAcceleration};
+    frc::SlewRateLimiter<units::meters_per_second> ySpeedLimiter{DriveConstants::kMaxLinearAcceleration};
+    frc::SlewRateLimiter<units::radians_per_second> rotSpeedLimiter{DriveConstants::kMaxAngularAcceleration};
+
     nt::StructPublisher<frc::Pose2d> posePublisher;
     nt::StructPublisher<frc::ChassisSpeeds> cmdSpeedsPublisher;
     nt::StructArrayPublisher<frc::SwerveModuleState> swerveModuleStatePublisher;
     nt::StructPublisher<frc::Rotation2d> gyroPublisher;
     nt::BooleanPublisher seesTagPublisher;
     
-    frc::SlewRateLimiter<units::meters_per_second> xSpeedLimiter{DriveConstants::kMaxLinearAcceleration};
-    frc::SlewRateLimiter<units::meters_per_second> ySpeedLimiter{DriveConstants::kMaxLinearAcceleration};
-    frc::SlewRateLimiter<units::radians_per_second> rotSpeedLimiter{DriveConstants::kMaxAngularAcceleration};
 
 };
