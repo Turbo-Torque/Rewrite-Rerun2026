@@ -31,7 +31,7 @@ class IntakeRealIO : public IntakeIO {
             inputs.intakeVolts = units::volt_t{intakeMotor.GetMotorVoltage().GetValue()};
             inputs.intakeCurrent = units::ampere_t{intakeMotor.GetTorqueCurrent().GetValue()};
             
-            if ((inputs.position < 57.0) && (inputs.position > 50.0)) {
+            if ((inputs.position  <= 0)) {
                 inputs.pivotAtSetpoint = true;
             } 
         }

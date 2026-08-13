@@ -63,7 +63,9 @@ void DrivebaseSubsystem::ConfigureEstimator() {
                                   frc::AprilTagField::k2026RebuiltAndyMark);
     poseEstimator.AddLocalizationCamera("rightShooterCam",
                                   frc::Transform3d{3.5_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
-                                  frc::AprilTagField::k2026RebuiltAndyMark);   
+                                  frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -45_deg, -135_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+        
     
 }
 
@@ -76,7 +78,7 @@ void DrivebaseSubsystem::ConfigureTelemetry() {
     nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::Rotation2d>("DriveSubsystem/Gyro").Publish();
     seesTagPublisher = nt::NetworkTableInstance::GetDefault().GetBooleanTopic("DriveSubsystem/SeesTag").Publish();
 
-
+    frc::SmartDashboard::PutData("Field", &field);
 }
 
 
@@ -98,11 +100,6 @@ void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
         SetModuleStates(states);
     }
 }
-
-
-
-
-
 
 
 void DrivebaseSubsystem::SetModuleStates(const std::array<frc::SwerveModuleState, 4>& states) {
@@ -132,19 +129,14 @@ void DrivebaseSubsystem::ResetPose(frc::Pose2d pose) {
     simPose = pose;
 }
 
-void DrivebaseSubsystem::ApplyStartingPose() {
-    auto pose = DriveConstants::kStartingPose.find(startingPoseChooser.GetSelected());
-    if (pose != DriveConstants::kStartingPose.end()) {
-        ResetPose(pose->second);
-    }
-}
-
 frc::PIDController& DrivebaseSubsystem::ActiveRotationController() {
     return frc::RobotBase::IsSimulation() ? simRotationController : realRotationController;
 }
 
 void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
+
     double output = ActiveRotationController().Calculate(GetPose().Rotation().Degrees().value(), targetHeading.Degrees().value());
+
 
     units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
     output = std::clamp(output, -maxSpeed.value(), maxSpeed.value());
@@ -153,6 +145,7 @@ void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
 }
 
 bool DrivebaseSubsystem::AtHeadingSetpoint() {
+    ActiveRotationController().SetTolerance(0.5, 30.0);
     return ActiveRotationController().AtSetpoint();
 }
 

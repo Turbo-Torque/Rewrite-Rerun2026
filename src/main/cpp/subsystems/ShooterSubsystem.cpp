@@ -11,11 +11,22 @@ ShooterSubsystem::ShooterSubsystem(std::unique_ptr<ShooterIO> shooterIO) : io(st
 
     // put smartdashboard (controls rpm)
     frc::SmartDashboard::PutNumber("Put Shooter RPM", 0.0);
+    frc::SmartDashboard::PutNumber("Put Hood Angle", 0.0);
+
 }
 
 frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
+    return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM);
+        SetHoodSetpoint(ShooterConstants::kHoodUp);}, {this})
+    .FinallyDo([this] {
+        CoastOut();
+        SetHoodSetpoint(ShooterConstants::kHoodDown);
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::TestShooter() {
     return frc2::cmd::Run([this] {SetShooterRPM(units::revolutions_per_minute_t{frc::SmartDashboard::GetNumber("Put Shooter RPM", 0.0)});
-        {SetHoodSetpoint(ShooterConstants::kHoodUp);}}, {this})
+        SetHoodSetpoint(frc::SmartDashboard::GetNumber("Put Hood Angle", 0.0));}, {this})
     .FinallyDo([this] {
         CoastOut();
         SetHoodSetpoint(ShooterConstants::kHoodDown);

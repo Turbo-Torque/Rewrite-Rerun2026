@@ -70,17 +70,18 @@ void RobotContainer::ConfigureFeedBindings() {
 
 void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
+    operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
     driveController.B().OnTrue(AimCommand());
 }
 
-void RobotContainer::ApplyStartingPose() {
-    drivebaseSubsystem.ApplyStartingPose();
-}
-
 void RobotContainer::ConfigureNamedCommands() {
       pathplanner::NamedCommands::registerCommand("Intake", intakeSubsystem.PivotAndRunIntakeCommand());
+      pathplanner::NamedCommands::registerCommand("Feed", RunFeedCommand());
+    pathplanner::NamedCommands::registerCommand("Shoot", shooterSubsystem.RunShooterCommand());
+
 }
+
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
 

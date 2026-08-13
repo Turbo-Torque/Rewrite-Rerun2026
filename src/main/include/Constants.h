@@ -88,15 +88,6 @@ namespace DriveConstants {
 
     inline constexpr double negativeMetersConvert = -1.0;
     inline constexpr double negativeTurnConvert = -1.0;
-
-    inline const std::map<std::string, frc::Pose2d> kStartingPose = {
-        {"bLeft", frc::Pose2d(3.5_m, 5.5_m, 270_deg)},
-        {"bCenter", frc::Pose2d(3.5_m, 4.0_m, 180_deg)},
-        {"bRight", frc::Pose2d(3.5_m, 1.5_m, 90_deg)},
-        {"rLeft", frc::Pose2d(FieldConstants::kFieldLength - 3.5_m, 5.5_m, 180_deg - 270_deg)},
-        {"rCenter", frc::Pose2d(FieldConstants::kFieldLength - 3.5_m, 4.0_m, 180_deg - 180_deg)},
-        {"rRight", frc::Pose2d(FieldConstants::kFieldLength - 3.5_m, 1.5_m, 180_deg - 90_deg)}
-    };
 }
 
 namespace AutoConstants {
@@ -115,8 +106,8 @@ namespace IntakeConstants {
     //inline constexpr int kIntakeCANPort = 0;
 
     inline constexpr double kIntakeUp = 0.0;
-    inline constexpr double kIntakeHalfway = 40.0;
-    inline constexpr double kIntakeDown = 60.0;
+    inline constexpr double kIntakeHalfway = 0.0;
+    inline constexpr double kIntakeDown = 0.0;
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 5_V;
 
@@ -143,7 +134,7 @@ namespace GateConstants {
 namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM = 4000_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2850_rpm;
 
     inline constexpr units::meters_per_second_squared_t kGravity = 9.80665_mps_sq;
     inline constexpr units::meter_t kShooterOffsetX = -0.2803_m;
@@ -162,7 +153,7 @@ namespace ShooterConstants {
 
     inline constexpr units::degree_t kMinAngle = 20_deg;
     inline constexpr units::degree_t kMaxAngle = 60_deg;
-    inline constexpr double kHoodUp = 160.0; 
+    inline constexpr double kHoodUp = 130.0; 
     inline constexpr double kHoodDown = 0.0; 
     inline constexpr units::degree_t kAngleStep = 1_deg;
     inline constexpr units::revolutions_per_minute_t kMaxStep = 25_rpm;

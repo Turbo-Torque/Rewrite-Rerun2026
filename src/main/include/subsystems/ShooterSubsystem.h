@@ -11,6 +11,7 @@ class ShooterSubsystem : public frc2::SubsystemBase {
         // void SetHoodAngleGoal(units::degree_t angle);
 
         frc2::CommandPtr RunShooterCommand();
+        frc2::CommandPtr TestShooter();
 
         bool IsNearState();
         void Periodic() override;
