@@ -69,6 +69,18 @@ void RobotContainer::ConfigureFeedBindings() {
     
 }
 
+void RobotContainer::ConfigureSetpointBindings() {
+    operatorController.POVUp().(shooterSubsystem.SetHoodSetpoint(ShooterConstants::kHoodAngle1));
+    operatorController.POVDown().ToggleOnTrue(shooterSubsystem.SetHoodSetpoint(ShooterConstants::kHoodAngle2));
+    operatorController.POVLeft().ToggleOnTrue(shooterSubsystem.SetHoodSetpoint(ShooterConstants::kHoodAngle3));
+    operatorController.POVRight().ToggleOnTrue(shooterSubsystem.SetHoodSetpoint(ShooterConstants::kHoodAngle4));
+    operatorController.POVUp().ToggleOnTrue(shooterSubsystem.RunShooterCommand(ShooterConstants::kShooterRPM1));
+    operatorController.POVDown().ToggleOnTrue(shooterSubsystem.RunShooterCommand(ShooterConstants::kShooterRPM2));
+    operatorController.POVLeft().ToggleOnTrue(shooterSubsystem.RunShooterCommand(ShooterConstants::kShooterRPM3));
+    operatorController.POVRight().ToggleOnTrue(shooterSubsystem.RunShooterCommand(ShooterConstants::kShooterRPM4));
+
+}
+
 void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand(ShooterConstants::kShooterRPM));
     operatorController.X().ToggleOnTrue(AimAndShootCommand());

@@ -15,13 +15,22 @@ frc2::CommandPtr ShooterSubsystem::RunShooterCommand(units::revolutions_per_minu
     .FinallyDo([this] {
         CoastOut();
         SetHoodSetpoint(ShooterConstants::kHoodDown);
+        
     });
 }
+
+
+frc2::CommandPtr ShooterSubsystem::RunHoodCommand(double hoodAngle) {
+    return frc2::cmd::Run([this, hoodAngle] {SetHoodSetpoint(hoodAngle);}, {this})
+    .FinallyDo([this] {
+        SetHoodSetpoint(ShooterConstants::kHoodDown);
+        });
+    
 frc2::CommandPtr ShooterSubsystem::RunLaseringCommand() {
     return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM); {SetHoodSetpoint(ShooterConstants::kHoodUp);}}, {this})
     .FinallyDo([this] {
         CoastOut();
-        SetHoodSetpoint(ShooterConstants::kHoodDown);
+        RunHoodCommand(ShooterConstants::kHoodDown);
     });
 }
 

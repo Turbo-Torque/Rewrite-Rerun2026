@@ -94,6 +94,7 @@ class RobotContainer {
   void ConfigureShooterBindings();
   void ConfigureIntakeBindings();
   void ConfigureFeedBindings();
+  void ConfigureSetpointBindings();
 
   frc::SendableChooser<frc2::Command*> autoChooser;
 
