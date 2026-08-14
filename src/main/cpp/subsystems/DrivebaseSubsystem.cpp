@@ -64,7 +64,7 @@ void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.AddLocalizationCamera("rightShooterCam",
                                   frc::Transform3d{3.5_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
-    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -45_deg, -135_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -135_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
     
 }

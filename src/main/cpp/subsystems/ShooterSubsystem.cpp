@@ -33,6 +33,21 @@ frc2::CommandPtr ShooterSubsystem::TestShooter() {
     });
 }
 
+frc2::CommandPtr ShooterSubsystem::RunShooterCommand2(units::revolutions_per_minute_t rpm) {
+    return frc2::cmd::Run([this,rpm] {SetShooterRPM(rpm);}, {this})
+    .FinallyDo([this] {
+        CoastOut();
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::RunHoodCommand(double hoodAngle) {
+    return frc2::cmd::Run([this, hoodAngle] {SetHoodSetpoint(hoodAngle);}, {this})
+    .FinallyDo([this] {
+        SetHoodSetpoint(ShooterConstants::kHoodDown);
+    });
+
+}
+
 bool ShooterSubsystem::IsNearState() {
     return inputs.atRotations;
 }

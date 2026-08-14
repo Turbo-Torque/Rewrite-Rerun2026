@@ -135,6 +135,10 @@ namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
     inline constexpr units::revolutions_per_minute_t kShooterRPM = 2850_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM1 = 3500_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM2 = 3500_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM3 = 3500_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM4 = 3500_rpm;
 
     inline constexpr units::meters_per_second_squared_t kGravity = 9.80665_mps_sq;
     inline constexpr units::meter_t kShooterOffsetX = -0.2803_m;
@@ -155,6 +159,10 @@ namespace ShooterConstants {
     inline constexpr units::degree_t kMaxAngle = 60_deg;
     inline constexpr double kHoodUp = 130.0; 
     inline constexpr double kHoodDown = 0.0; 
+    inline constexpr double kHoodAngle1 = 80.0;
+    inline constexpr double kHoodAngle2 = 40.0;
+    inline constexpr double kHoodAngle3 = 20.0;
+    inline constexpr double kHoodAngle4 = 20.0;
     inline constexpr units::degree_t kAngleStep = 1_deg;
     inline constexpr units::revolutions_per_minute_t kMaxStep = 25_rpm;
     

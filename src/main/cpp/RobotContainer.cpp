@@ -41,6 +41,7 @@ RobotContainer::RobotContainer()
     ConfigureIntakeBindings();
     ConfigureFeedBindings();
     ConfigureShooterBindings();
+    ConfigureSetpointBindings();
     ConfigureNamedCommands();
 
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
@@ -73,6 +74,14 @@ void RobotContainer::ConfigureShooterBindings(){
     operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
     driveController.B().OnTrue(AimCommand());
+}
+
+void RobotContainer::ConfigureSetpointBindings() {
+    operatorController.POVUp().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM1).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle1)));
+    operatorController.POVDown().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM2).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle2)));
+    operatorController.POVLeft().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM3).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle3)));
+    operatorController.POVRight().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM4).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle4)));
+
 }
 
 void RobotContainer::ConfigureNamedCommands() {

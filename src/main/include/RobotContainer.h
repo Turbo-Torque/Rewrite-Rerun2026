@@ -62,6 +62,8 @@ class RobotContainer {
       .Until([this] { return drivebaseSubsystem.AtHeadingSetpoint(); });
   }
 
+
+
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {
           auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());
@@ -93,6 +95,7 @@ class RobotContainer {
   void ConfigureShooterBindings();
   void ConfigureIntakeBindings();
   void ConfigureFeedBindings();
+  void ConfigureSetpointBindings();
 
   frc::SendableChooser<frc2::Command*> autoChooser;
 
