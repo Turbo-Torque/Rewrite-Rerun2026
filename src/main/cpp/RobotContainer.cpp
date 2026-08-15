@@ -27,6 +27,7 @@
 #include <pathplanner/lib/events/EventTrigger.h>
 #include "pathplanner/lib/auto/AutoBuilder.h"
 
+#include "Constants.h"
 
 RobotContainer::RobotContainer()
     : drivebaseSubsystem(),
@@ -55,6 +56,7 @@ void RobotContainer::ConfigureBindings() {
     driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {
         drivebaseSubsystem.ZeroGyro();
     } ));
+    
 }
 
 void RobotContainer::ConfigureIntakeBindings() {
@@ -68,7 +70,7 @@ void RobotContainer::ConfigureFeedBindings() {
 }
 
 void RobotContainer::ConfigureShooterBindings(){
-    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
+    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand(ShooterConstants::kShooterRPM));
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
     operatorController.A().ToggleOnTrue(shooterSubsystem.RunLaseringCommand());
     driveController.B().OnTrue(AimCommand());

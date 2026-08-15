@@ -10,8 +10,8 @@ ShooterSubsystem::ShooterSubsystem(std::unique_ptr<ShooterIO> shooterIO) : io(st
     SetName("ShooterSubsystem");
 }
 
-frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
-    return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM); {SetHoodSetpoint(ShooterConstants::kHoodDown);}}, {this})
+frc2::CommandPtr ShooterSubsystem::RunShooterCommand(units::revolutions_per_minute_t rpm) {
+    return frc2::cmd::Run([this, rpm] {SetShooterRPM(rpm); {SetHoodSetpoint(ShooterConstants::kHoodDown);}}, {this})
     .FinallyDo([this] {
         CoastOut();
         SetHoodSetpoint(ShooterConstants::kHoodDown);
@@ -27,6 +27,22 @@ frc2::CommandPtr ShooterSubsystem::RunLaseringCommand() {
 
 bool ShooterSubsystem::IsNearState() {
     return inputs.atRotations;
+}
+
+frc2::CommandPtr ShooterSubsystem::GetRegressionShot(units::meter_t distance) {
+    auto it = rpmTable.upper_bound(distance);
+
+    units::revolutions_per_minute_t rpm;
+
+    if (it == rpmTable.begin()) {
+        rpm = rpmTable.begin()->second;
+    } else {
+        --it;
+        rpm = it->second;
+    }
+
+    
+
 }
 
 // void ShooterSubsystem::SetHoodAngleGoal(units::degree_t angle) {
