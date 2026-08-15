@@ -61,7 +61,7 @@ void RobotContainer::ConfigureBindings() {
 
 void RobotContainer::ConfigureIntakeBindings() {
     
-    driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+    driveController.A().WhileTrue(intakeSubsystem.PivotAndRunIntakeCommand());
     driveController.A().OnFalse(intakeSubsystem.AgitateCommand());
 }
 
