@@ -19,6 +19,13 @@ frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
     });
 }
 
+frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
+    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeUp);}, {this})
+    .Until([this]() { return inputs.pivotAtSetpoint; })
+    .FinallyDo([this] {
+        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway);
+    });
+}
 
 void IntakeSubsystem::Periodic() {
     io -> UpdateInputs(inputs);

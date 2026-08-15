@@ -61,6 +61,7 @@ void RobotContainer::ConfigureBindings() {
 
 void RobotContainer::ConfigureIntakeBindings() {
     driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+    operatorController.LeftTrigger().OnTrue(intakeSubsystem.AgitateCommand());
 }
 
 void RobotContainer::ConfigureFeedBindings() {

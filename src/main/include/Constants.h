@@ -105,9 +105,9 @@ namespace IntakeConstants {
     inline constexpr int kIntakePivotPort = 9;
     //inline constexpr int kIntakeCANPort = 0;
 
-    inline constexpr double kIntakeUp = 0.0;
-    inline constexpr double kIntakeHalfway = 0.0;
-    inline constexpr double kIntakeDown = 0.0;
+    inline constexpr double kIntakeUp = 20.0;
+    inline constexpr double kIntakeHalfway = 35.0; //35
+    inline constexpr double kIntakeDown = 60.0; //60
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 5_V;
 
