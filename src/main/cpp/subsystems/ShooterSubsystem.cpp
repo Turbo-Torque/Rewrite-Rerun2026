@@ -17,7 +17,8 @@ ShooterSubsystem::ShooterSubsystem(std::unique_ptr<ShooterIO> shooterIO) : io(st
 
 frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
     return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM);
-        SetHoodSetpoint(ShooterConstants::kHoodUp);}, {this})
+        SetHoodSetpoint(ShooterConstants::kHoodUp);
+        }, {this})
     .FinallyDo([this] {
         CoastOut();
         SetHoodSetpoint(ShooterConstants::kHoodDown);
@@ -33,10 +34,14 @@ frc2::CommandPtr ShooterSubsystem::TestShooter() {
     });
 }
 
-frc2::CommandPtr ShooterSubsystem::RunShooterCommand2(units::revolutions_per_minute_t rpm) {
-    return frc2::cmd::Run([this,rpm] {SetShooterRPM(rpm);}, {this})
+frc2::CommandPtr ShooterSubsystem::RunShooterCommand2(units::revolutions_per_minute_t rpm, double hoodAngle) {
+    return frc2::cmd::Run([this, rpm, hoodAngle] {
+        SetShooterRPM(rpm);
+        SetHoodSetpoint(hoodAngle);
+    }, {this})
     .FinallyDo([this] {
         CoastOut();
+        SetHoodSetpoint(ShooterConstants::kHoodDown);
     });
 }
 
@@ -49,7 +54,13 @@ frc2::CommandPtr ShooterSubsystem::RunHoodCommand(double hoodAngle) {
 }
 
 bool ShooterSubsystem::IsNearState() {
-    return inputs.atRotations;
+    if (inputs.shooterRPMsetpoint <= 200_rpm) {
+        return false;
+    }
+    if (inputs.atRotations) {
+            return true;
+    }
+    return false;
 }
 
 // void ShooterSubsystem::SetHoodAngleGoal(units::degree_t angle) {
@@ -62,6 +73,7 @@ void ShooterSubsystem::Periodic() {
 
     // display rpm
     frc::SmartDashboard::PutNumber("Shooter Rpm ", inputs.shooterRPM.value());
+    frc::SmartDashboard::PutBoolean("SHooter State", IsNearState());
     frc::SmartDashboard::PutNumber("Shooter Setpoint", inputs.shooterRPMsetpoint.value());
     frc::SmartDashboard::PutNumber("Shooter Volts", inputs.shooterCurrent.value());
     frc::SmartDashboard::PutNumber("Hood Angle", inputs.hoodPosition);

@@ -170,12 +170,12 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
                 
                 x = DriveConstants::negativeMetersConvert * xInput * DriveConstants::kMaxLinearSpeed * 0.75;
                 y =  DriveConstants::negativeMetersConvert * yInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed * 0.50;
+                rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed * 0.75;
                 rot = rotInput * DriveConstants::kMaxAngularSpeed;
             } else {
                 x = xInput * DriveConstants::kMaxLinearSpeed * 0.75;
                 y =  yInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.50;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.75;
             }
 
             const frc::ChassisSpeeds speeds{x, y, rot};
