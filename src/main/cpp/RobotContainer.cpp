@@ -72,17 +72,17 @@ void RobotContainer::ConfigureFeedBindings() {
 }
 
 void RobotContainer::ConfigureShooterBindings(){
-    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand());
+    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()));
     operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
     driveController.B().OnTrue(AimCommand());
 }
 
 void RobotContainer::ConfigureSetpointBindings() {
-    operatorController.POVUp().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM1).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle1)));
-    operatorController.POVDown().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM2).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle2)));
-    operatorController.POVLeft().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM3).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle3)));
-    operatorController.POVRight().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM4).AlongWith(shooterSubsystem.RunHoodCommand(ShooterConstants::kHoodAngle4)));
+    operatorController.POVUp().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM1, ShooterConstants::kHoodAngle1));
+    operatorController.POVDown().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM2, ShooterConstants::kHoodAngle2));
+    operatorController.POVLeft().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM3, ShooterConstants::kHoodAngle3));
+    operatorController.POVRight().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM4, ShooterConstants::kHoodAngle4));
 
 }
 

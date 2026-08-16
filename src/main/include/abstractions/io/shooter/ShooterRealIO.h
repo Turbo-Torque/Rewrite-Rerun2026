@@ -45,8 +45,9 @@ public:
         hoodMotor.SetVoltage(hoodOut);
 
         inputs.atRotations =
-            std::abs((inputs.shooterRPM - targetRPM).value()) < 100.0;
+            std::abs((inputs.shooterRPM - velocityRequest.Velocity).value()) < 100.0;
         inputs.hoodAtSetpoint = hoodPID.AtSetpoint();
+        inputs.shooterRPMsetpoint = velocityRequest.Velocity;
     }
 
     void SetShooterRPM(units::revolutions_per_minute_t rpm) override {
@@ -56,6 +57,7 @@ public:
 
     void CoastOut() override {
         leftShooterMotor.SetControl(coastRequest);
+        velocityRequest.Velocity = 0_rpm;
     }
 
 
@@ -78,7 +80,6 @@ private:
 
     ctre::phoenix6::controls::CoastOut coastRequest;
 
-    units::revolutions_per_minute_t targetRPM{0_rpm};
 
     frc::PIDController hoodPID{0.12,0,0};
 
@@ -94,7 +95,7 @@ private:
 
         config.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-        config.Slot0.kP = 0.12;
+        config.Slot0.kP = 0.1;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
         config.Slot0.kS = 0.2;
