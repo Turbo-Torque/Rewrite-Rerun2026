@@ -11,8 +11,12 @@ class ShooterSubsystem : public frc2::SubsystemBase {
         void CoastOut() {io -> CoastOut();}
         // void SetHoodAngleGoal(units::degree_t angle);
 
-        frc2::CommandPtr RunShooterCommand(units::revolutions_per_minute_t rpm);
-        frc2::CommandPtr RunLaseringCommand();
+        frc2::CommandPtr RunShooterCommand();
+        frc2::CommandPtr RunHoodCommand(double hoodAngle);
+        frc2::CommandPtr TestShooter();
+        frc2::CommandPtr RunShooterCommand2(units::revolutions_per_minute_t rpm, double hoodAngle);
+
+
         bool IsNearState();
         void Periodic() override;
 

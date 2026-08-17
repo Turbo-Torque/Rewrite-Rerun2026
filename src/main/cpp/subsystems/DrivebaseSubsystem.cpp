@@ -28,54 +28,13 @@ DrivebaseSubsystem::DrivebaseSubsystem():
         realRotationController.EnableContinuousInput(0, 360);
         simRotationController.SetTolerance(0.5);
         simRotationController.EnableContinuousInput(0, 360);
-
-        ConfigureTelemetry();
         ConfigureAutoBuilder();
         ConfigureEstimator();
+        ConfigureTelemetry();
 
         
         SetName("DrivebaseSubsystem");
     }
-
-
-
-void DrivebaseSubsystem::Drive(const frc::ChassisSpeeds& speeds){
-    auto states = DriveConstants::kKinematics.ToSwerveModuleStates(speeds);
-    cmdSpeeds = frc::ChassisSpeeds::FromRobotRelativeSpeeds(speeds, GetGyroAngle());
-    SetModuleStates(states);
-}
-
-void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
-    auto x = speeds.vx * -1;
-    auto y = speeds.vy * -1;
-    auto rot = speeds.omega * -1;
-
-    auto states = DriveConstants::kKinematics.ToSwerveModuleStates({x, y, rot});
-
-    if (frc::RobotBase::IsReal()) {
-        SetModuleStates(states);
-    }
-}
-
-
-void DrivebaseSubsystem::ConfigureTelemetry() {
-    posePublisher = nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::Pose2d>("DrivebaseSubsystem/Pose").Publish();
-    cmdSpeedsPublisher =
-      nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::ChassisSpeeds>("DriveSubsystem/CmdSpeeds").Publish();
-    swerveModuleStatePublisher = nt::NetworkTableInstance::GetDefault().GetStructArrayTopic<frc::SwerveModuleState>("DriveSubsystem/SwerveStates").Publish();
-    gyroPublisher =
-    nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::Rotation2d>("DriveSubsystem/Gyro").Publish();
-
-    for (auto& [name, pose] : DriveConstants::kStartingPose) {
-        startingPoseChooser.AddOption(name, name);
-    }
-    startingPoseChooser.SetDefaultOption("Center", "Center");
-    frc::SmartDashboard::PutData("Starting Pose", &startingPoseChooser);
-    frc::SmartDashboard::PutData("Field", &field);
-
-    seesTagPublisher = nt::NetworkTableInstance::GetDefault().GetBooleanTopic("SeesTag").Publish();
-
-}
 
 void DrivebaseSubsystem::ConfigureAutoBuilder() {
     auto config = pathplanner::RobotConfig::fromGUISettings();
@@ -100,13 +59,48 @@ void DrivebaseSubsystem::ConfigureAutoBuilder() {
 
 void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), frc::Pose2d{});
-    // poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField);
-    // poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField);
-    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontLeftCameraName, VisionConstants::kFrontLeftCameraTransform, VisionConstants::kAprilTagField, true);
-    poseEstimator.AddLocalizationCamera(VisionConstants::kFrontRightCameraName, VisionConstants::kFrontRightCameraTransform, VisionConstants::kAprilTagField, true);
-    poseEstimator.AddLocalizationCamera(VisionConstants::kBackCameraName, VisionConstants::kBackCameraTransform, VisionConstants::kAprilTagField);        
+    poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
+                                  frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("rightShooterCam",
+                                  frc::Transform3d{3.5_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
+                                  frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -135_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+        
     
 }
+
+void DrivebaseSubsystem::ConfigureTelemetry() {
+    posePublisher = nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::Pose2d>("DrivebaseSubsystem/Pose").Publish();
+    cmdSpeedsPublisher =
+      nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::ChassisSpeeds>("DriveSubsystem/CmdSpeeds").Publish();
+    swerveModuleStatePublisher = nt::NetworkTableInstance::GetDefault().GetStructArrayTopic<frc::SwerveModuleState>("DriveSubsystem/SwerveStates").Publish();
+    gyroPublisher =
+    nt::NetworkTableInstance::GetDefault().GetStructTopic<frc::Rotation2d>("DriveSubsystem/Gyro").Publish();
+    seesTagPublisher = nt::NetworkTableInstance::GetDefault().GetBooleanTopic("DriveSubsystem/SeesTag").Publish();
+
+    frc::SmartDashboard::PutData("Field", &field);
+}
+
+
+
+void DrivebaseSubsystem::Drive(const frc::ChassisSpeeds& speeds){
+    auto states = DriveConstants::kKinematics.ToSwerveModuleStates(speeds);
+    cmdSpeeds = frc::ChassisSpeeds::FromRobotRelativeSpeeds(speeds, GetGyroAngle());
+    SetModuleStates(states);
+}
+
+void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
+    auto x = speeds.vx * -1;
+    auto y = speeds.vy * -1;
+    auto rot = speeds.omega * -1;
+
+    auto states = DriveConstants::kKinematics.ToSwerveModuleStates({x, y, rot});
+
+    if (frc::RobotBase::IsReal()) {
+        SetModuleStates(states);
+    }
+}
+
 
 void DrivebaseSubsystem::SetModuleStates(const std::array<frc::SwerveModuleState, 4>& states) {
     frontLeft.SetModuleState(states[0]);
@@ -124,6 +118,10 @@ void DrivebaseSubsystem::ZeroGyro() {
         frc::Pose2d{});
 }
 
+turbolib::perception::TurboPoseEstimator& DrivebaseSubsystem::GetPoseEstimator() {
+    return poseEstimator;
+}
+
 
 
 void DrivebaseSubsystem::ResetPose(frc::Pose2d pose) {
@@ -131,19 +129,14 @@ void DrivebaseSubsystem::ResetPose(frc::Pose2d pose) {
     simPose = pose;
 }
 
-void DrivebaseSubsystem::ApplyStartingPose() {
-    auto pose = DriveConstants::kStartingPose.find(startingPoseChooser.GetSelected());
-    if (pose != DriveConstants::kStartingPose.end()) {
-        ResetPose(pose->second);
-    }
-}
-
 frc::PIDController& DrivebaseSubsystem::ActiveRotationController() {
     return frc::RobotBase::IsSimulation() ? simRotationController : realRotationController;
 }
 
 void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
+
     double output = ActiveRotationController().Calculate(GetPose().Rotation().Degrees().value(), targetHeading.Degrees().value());
+
 
     units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
     output = std::clamp(output, -maxSpeed.value(), maxSpeed.value());
@@ -152,6 +145,7 @@ void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
 }
 
 bool DrivebaseSubsystem::AtHeadingSetpoint() {
+    ActiveRotationController().SetTolerance(0.5, 30.0);
     return ActiveRotationController().AtSetpoint();
 }
 
@@ -174,15 +168,14 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
 
             if (IsRedAlliance()) {
                 
-                x = xSpeedLimiter.Calculate(negativeMetersConvert * xInput * DriveConstants::kMaxLinearSpeed);
-                y = ySpeedLimiter.Calculate(negativeMetersConvert * yInput * DriveConstants::kMaxLinearSpeed);
-                // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
-                rot = rotSpeedLimiter.Calculate(rotInput * DriveConstants::kMaxAngularSpeed);
+                x = DriveConstants::negativeMetersConvert * xInput * DriveConstants::kMaxLinearSpeed * 0.75;
+                y =  DriveConstants::negativeMetersConvert * yInput * DriveConstants::kMaxLinearSpeed * 0.75;
+                rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed * 0.75;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed;
             } else {
-                x = xSpeedLimiter.Calculate(xInput * DriveConstants::kMaxLinearSpeed);
-                y = ySpeedLimiter.Calculate(yInput * DriveConstants::kMaxLinearSpeed);
-                // rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed;
-                rot = rotSpeedLimiter.Calculate(rotInput * DriveConstants::kMaxAngularSpeed);
+                x = xInput * DriveConstants::kMaxLinearSpeed * 0.75;
+                y =  yInput * DriveConstants::kMaxLinearSpeed * 0.75;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.75;
             }
 
             const frc::ChassisSpeeds speeds{x, y, rot};
@@ -219,18 +212,24 @@ std::array<frc::SwerveModulePosition, 4> DrivebaseSubsystem::GetSwerveModulePosi
 
 
 void DrivebaseSubsystem::Periodic() {
-    frc::SmartDashboard::PutNumber("Gyro", GetGyroAngle().Degrees().value());
-    auto alliance = frc::DriverStation::GetAlliance();
-    frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
-    frc::SmartDashboard::PutBoolean("IsRed", alliance && alliance.value() == frc::DriverStation::Alliance::kRed);
-
-    poseEstimator.UpdateWithOdometryAndVision(GetGyroAngle(), GetSwerveModulePosition());
     posePublisher.Set(GetPose());
     cmdSpeedsPublisher.Set(cmdSpeeds);
     swerveModuleStatePublisher.Set(GetModuleStates());
     gyroPublisher.Set(GetGyroAngle());
     field.SetRobotPose(GetPose());
     seesTagPublisher.Set(poseEstimator.SeesTag());
+    if constexpr (frc::RobotBase::IsReal()) {
+    poseEstimator.UpdateWithOdometryAndVision(GetGyroAngle(), GetSwerveModulePosition());
+    } else {
+    poseEstimator.UpdateWithAllAvailableVisionMeasurements(GetGyroAngle());
+    }
+
+    frc::SmartDashboard::PutNumber("Gyro", GetGyroAngle().Degrees().value());
+    auto alliance = frc::DriverStation::GetAlliance();
+    frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
+    frc::SmartDashboard::PutBoolean("IsRed", alliance && alliance.value() == frc::DriverStation::Alliance::kRed);
+
+    
 }
 
 void DrivebaseSubsystem::SimulationPeriodic() {

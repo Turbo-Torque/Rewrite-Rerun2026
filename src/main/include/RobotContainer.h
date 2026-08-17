@@ -28,7 +28,6 @@ class RobotContainer {
   RobotContainer();
 
   frc2::Command* GetAutonomousCommand();
-  void ApplyStartingPose();
 
  private:
   DrivebaseSubsystem drivebaseSubsystem;
@@ -47,10 +46,10 @@ class RobotContainer {
 
   frc2::CommandPtr RunFeedCommand() {
   return frc2::cmd::WaitUntil([this] {
-        return shooterSubsystem.IsNearState() && drivebaseSubsystem.AtHeadingSetpoint();
+        return shooterSubsystem.IsNearState();
     })
     .AndThen(
-        hopperSubsystem.RunHopperCommand());
+        hopperSubsystem.RunHopperCommand()).AlongWith(gateSubsystem.RunGateCommand());
   }
 
   frc2::CommandPtr AimCommand() {
@@ -62,6 +61,8 @@ class RobotContainer {
       }, {&drivebaseSubsystem})
       .Until([this] { return drivebaseSubsystem.AtHeadingSetpoint(); });
   }
+
+
 
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {
@@ -76,7 +77,7 @@ class RobotContainer {
           ShotSolve::RankShots(validShots);
           auto shot = ShotSolve::SelectBestShot(validShots);
 
-          drivebaseSubsystem.AimAtHeading(geometry.bearing);
+        //   drivebaseSubsystem.AimAtHeading(geometry.bearing);
 
           if (shot) {
               shooterSubsystem.SetShooterRPM(shot->candidate.rpm);
@@ -84,8 +85,8 @@ class RobotContainer {
           }
     }, {&drivebaseSubsystem, &shooterSubsystem})
     .FinallyDo([this] {
-        shooterSubsystem.SetShooterRPM(0_rpm);
-    });
+        shooterSubsystem.CoastOut();
+        shooterSubsystem.SetHoodSetpoint(ShooterConstants::kHoodDown);    });
   }
 
   void ConfigureBindings();
@@ -94,6 +95,7 @@ class RobotContainer {
   void ConfigureShooterBindings();
   void ConfigureIntakeBindings();
   void ConfigureFeedBindings();
+  void ConfigureSetpointBindings();
 
   frc::SendableChooser<frc2::Command*> autoChooser;
 

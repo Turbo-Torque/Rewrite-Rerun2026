@@ -42,6 +42,7 @@ RobotContainer::RobotContainer()
     ConfigureIntakeBindings();
     ConfigureFeedBindings();
     ConfigureShooterBindings();
+    ConfigureSetpointBindings();
     ConfigureNamedCommands();
 
     autoChooser = pathplanner::AutoBuilder::buildAutoChooser();
@@ -54,13 +55,15 @@ void RobotContainer::ConfigureDefualts() {
 void RobotContainer::ConfigureBindings() {
 
     driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {
-        drivebaseSubsystem.ZeroGyro();
-    } ));
-    
+        drivebaseSubsystem.ZeroGyro();}));
+    driveController.Y().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.GetPoseEstimator().SetVisionEnabled(!drivebaseSubsystem.GetPoseEstimator().GetVisionEnabled());}
+    ));
 }
 
 void RobotContainer::ConfigureIntakeBindings() {
-    driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+    
+    driveController.A().WhileTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+    driveController.A().OnFalse(intakeSubsystem.AgitateCommand());
 }
 
 void RobotContainer::ConfigureFeedBindings() {
@@ -70,19 +73,28 @@ void RobotContainer::ConfigureFeedBindings() {
 }
 
 void RobotContainer::ConfigureShooterBindings(){
-    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand(ShooterConstants::kShooterRPM));
+    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()));
+    operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
     operatorController.A().ToggleOnTrue(shooterSubsystem.RunLaseringCommand());
     driveController.B().OnTrue(AimCommand());
 }
 
-void RobotContainer::ApplyStartingPose() {
-    drivebaseSubsystem.ApplyStartingPose();
+void RobotContainer::ConfigureSetpointBindings() {
+    operatorController.POVUp().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM1, ShooterConstants::kHoodAngle1));
+    operatorController.POVDown().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM2, ShooterConstants::kHoodAngle2));
+    operatorController.POVLeft().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM3, ShooterConstants::kHoodAngle3));
+    operatorController.POVRight().ToggleOnTrue(shooterSubsystem.RunShooterCommand2(ShooterConstants::kShooterRPM4, ShooterConstants::kHoodAngle4));
+
 }
 
 void RobotContainer::ConfigureNamedCommands() {
       pathplanner::NamedCommands::registerCommand("Intake", intakeSubsystem.PivotAndRunIntakeCommand());
+      pathplanner::NamedCommands::registerCommand("Feed", RunFeedCommand());
+    pathplanner::NamedCommands::registerCommand("Shoot", shooterSubsystem.RunShooterCommand());
+
 }
+
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
 

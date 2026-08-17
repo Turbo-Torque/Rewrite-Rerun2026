@@ -10,35 +10,33 @@ IntakeSubsystem::IntakeSubsystem(std::unique_ptr<IntakeIO> intakeIo) : io(std::m
 } 
 
 frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
-    return frc2::cmd::Run([this] {SetIntakePivot(true);}, {this})
+    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown);}, {this})
     .Until([this]() { return inputs.pivotAtSetpoint; })
     .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeVolts);}, {this}))
     .FinallyDo([this] {
         SetIntakeVoltage(0_V);
-        SetIntakePivot(false);
+        SetIntakeSetpoint(IntakeConstants::kIntakeUp);
     });
 }
 
-void IntakeSubsystem::ToggleIntake() {
-    intakeDeployed = !intakeDeployed;
 
-    if(!intakeDeployed) {
-        SetIntakeVoltage(0_V);
-        SetIntakePivot(false);
-    }
+frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
+    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeAgitate);}, {this})
+    .Until([this]() { return inputs.pivotAtSetpoint; })
+    .FinallyDo([this] {
+        SetIntakeSetpoint(IntakeConstants::kIntakeUp);
+    });
 }
+
 
 void IntakeSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
 
     frc::SmartDashboard::PutNumber("Intake Pose", inputs.position);
     frc::SmartDashboard::PutNumber("Intake Volts", inputs.intakeVolts.value());
-
-
-    if (intakeDeployed) {
-        SetIntakePivot(true);
-        if (inputs.pivotAtSetpoint) {
-            SetIntakeVoltage(IntakeConstants::kIntakeVolts);
-        }
+    if (inputs.pivotAtSetpoint && (inputs.position > 50) && (inputs.position < 60) ) {
+        SetIntakeVoltage(IntakeConstants::kIntakeVolts);
+    } else {
+        SetIntakeVoltage(0_V);
     }
 }
