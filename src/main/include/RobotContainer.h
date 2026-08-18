@@ -57,9 +57,10 @@ class RobotContainer {
           auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());
           auto target = ShotSolve::GetTargetPosition();
           auto geometry = ShotSolve::ComputeGeometry(muzzle, target);
-          drivebaseSubsystem.AimAtHeading(geometry.bearing);
+          drivebaseSubsystem.AimAtHeading(geometry.bearing.RotateBy(180_deg));
       }, {&drivebaseSubsystem})
-      .Until([this] { return drivebaseSubsystem.AtHeadingSetpoint(); });
+      .Until([this] { return drivebaseSubsystem.AtHeadingSetpoint(); })
+      .FinallyDo([this] {drivebaseSubsystem.Drive(frc::ChassisSpeeds{});});
   }
 
 

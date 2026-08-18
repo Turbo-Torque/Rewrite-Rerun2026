@@ -95,11 +95,11 @@ private:
 
         config.MotorOutput.Inverted = ctre::phoenix6::signals::InvertedValue::Clockwise_Positive;
 
-        config.Slot0.kP = 0.1;
+        config.Slot0.kP = 0.075;
         config.Slot0.kI = 0.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kS = 0.2;
-        config.Slot0.kV = 0.12;
+        config.Slot0.kS = 0.19;
+        config.Slot0.kV = 0.118;
 
         leftShooterMotor.GetConfigurator().Apply(config);
         rightShooterMotor.GetConfigurator().Apply(config);

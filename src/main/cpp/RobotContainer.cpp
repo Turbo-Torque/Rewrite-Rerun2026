@@ -74,7 +74,7 @@ void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()));
     operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
-    driveController.B().OnTrue(AimCommand());
+    driveController.B().ToggleOnTrue(AimCommand());
 }
 
 void RobotContainer::ConfigureSetpointBindings() {

@@ -64,7 +64,7 @@ void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.AddLocalizationCamera("rightShooterCam",
                                   frc::Transform3d{3.5_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
-    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -135_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+    // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -135_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
     
 }
@@ -122,8 +122,6 @@ turbolib::perception::TurboPoseEstimator& DrivebaseSubsystem::GetPoseEstimator()
     return poseEstimator;
 }
 
-
-
 void DrivebaseSubsystem::ResetPose(frc::Pose2d pose) {
     poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), pose);
     simPose = pose;
@@ -144,6 +142,7 @@ void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
     Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{output}});
 }
 
+
 bool DrivebaseSubsystem::AtHeadingSetpoint() {
     ActiveRotationController().SetTolerance(0.5, 30.0);
     return ActiveRotationController().AtSetpoint();
@@ -153,6 +152,17 @@ bool DrivebaseSubsystem::IsRedAlliance() {
     auto alliance = frc::DriverStation::GetAlliance();
     return alliance == frc::DriverStation::Alliance::kRed;
 }
+
+// bool DrivebaseSubsystem::SideFieldRight() {
+//     auto side = GetPose().Y().value();
+//     if (side >= 4.035) {
+//         double bumpY =  1.66;
+//         return true;
+//     } else {
+//         double bumpY = 6.41;
+//         return false;
+//     }
+// }
 
 frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotSpeed) {
     return frc2::FunctionalCommand ( []{},

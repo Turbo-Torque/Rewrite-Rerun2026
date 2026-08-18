@@ -39,9 +39,11 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     void ConfigureAutoBuilder();
     void ConfigureEstimator();
     void AimAtHeading(frc::Rotation2d targetHeading);
+    void AimAtBump(frc::Rotation2d bumpHeading);
 
     bool AtHeadingSetpoint();
     bool IsRedAlliance();
+    bool SideFieldRight();
 
     frc::Pose2d GetPose();
     frc::Rotation2d GetGyroAngle();
@@ -65,8 +67,8 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     ctre::phoenix6::hardware::Pigeon2 gyro{DriveConstants::kGyro, canBus};
     turbolib::perception::TurboPoseEstimator poseEstimator;
     
-    frc::PIDController realRotationController{0.5, 0, 0.15};
-    frc::PIDController alignController{2.0, 0 , 0.15};
+    frc::PIDController realRotationController{0.1, 0, 0.005};
+    frc::PIDController alignController{2.0, 0 , 0.015};
     frc::PIDController simRotationController{4.0, 0, 0};
     frc::PIDController& ActiveRotationController();
 

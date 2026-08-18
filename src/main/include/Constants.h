@@ -31,8 +31,8 @@ namespace OperatorConstants {
 namespace FieldConstants {
     inline constexpr units::meter_t kFieldLength = 16.541_m;//
     inline constexpr units::meter_t kTargetHeight = 1.8288_m;
-    inline constexpr units::meter_t kBluePosX = 4.0284_m;
-    inline constexpr units::meter_t kHubPosY = 3.5941_m;
+    inline constexpr units::meter_t kBluePosX = 4.931_m;
+    inline constexpr units::meter_t kHubPosY = 3.9478_m;
 
     inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
     inline constexpr frc::Translation3d kRedTargetPosition{kFieldLength - kBluePosX, kHubPosY, kTargetHeight};
