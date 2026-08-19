@@ -15,15 +15,16 @@ frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
     .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeVolts);}, {this}))
     .FinallyDo([this] {
         SetIntakeVoltage(0_V);
-        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway);
+        SetIntakeSetpoint(IntakeConstants::kIntakeUp);
     });
 }
+
 
 frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
     return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeAgitate);}, {this})
     .Until([this]() { return inputs.pivotAtSetpoint; })
     .FinallyDo([this] {
-        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway);
+        SetIntakeSetpoint(IntakeConstants::kIntakeUp);
     });
 }
 
