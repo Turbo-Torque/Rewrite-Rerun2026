@@ -63,6 +63,22 @@ bool ShooterSubsystem::IsNearState() {
     return false;
 }
 
+frc2::CommandPtr ShooterSubsystem::GetRegressionShot(units::meter_t distance) {
+    auto it = rpmTable.upper_bound(distance);
+
+    units::revolutions_per_minute_t rpm;
+
+    if (it == rpmTable.begin()) {
+        rpm = rpmTable.begin()->second;
+    } else {
+        --it;
+        rpm = it->second;
+    }
+
+    
+
+}
+
 // void ShooterSubsystem::SetHoodAngleGoal(units::degree_t angle) {
 //     SetHoodSetpoint(angle.value());
 // }

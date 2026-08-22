@@ -27,6 +27,7 @@
 #include <pathplanner/lib/events/EventTrigger.h>
 #include "pathplanner/lib/auto/AutoBuilder.h"
 
+#include "Constants.h"
 
 RobotContainer::RobotContainer()
     : drivebaseSubsystem(),
@@ -75,6 +76,7 @@ void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()));
     operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
+    operatorController.A().ToggleOnTrue(shooterSubsystem.RunLaseringCommand());
     driveController.B().OnTrue(AimCommand());
 }
 

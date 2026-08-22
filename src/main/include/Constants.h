@@ -81,7 +81,7 @@ namespace DriveConstants {
 
 
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
-    inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
+    inline constexpr units::radians_per_second_t kMaxAngularSpeed = 360_deg_per_s;
     inline constexpr units::meters_per_second_squared_t kMaxLinearAcceleration = 8.0_mps_sq;
     inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1200_deg_per_s_sq;
     inline constexpr double kControllerDeadBand = 0.08;
