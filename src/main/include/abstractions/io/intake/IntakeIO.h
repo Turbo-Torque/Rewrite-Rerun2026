@@ -8,6 +8,7 @@ struct IntakeIOInputs{
     double setpoint{0.0};
     units::volt_t pivotPIDOut{0_V};
     units::volt_t pivotFFOut{0_V};
+    // units::ampere_t pivotCurrent{0_A};
     units::volt_t intakeVolts{0_V};
     units::ampere_t intakeCurrent{0_A};
 
@@ -19,5 +20,6 @@ class IntakeIO {
         virtual void UpdateInputs(IntakeIOInputs& inputs) = 0;
         virtual void SetIntakeVolts(units::volt_t volts) = 0;
         virtual void SetIntakeSetpoint(double rot) = 0;
+        virtual void Agitate(double rot) = 0;
         virtual ~IntakeIO() = default;
 };

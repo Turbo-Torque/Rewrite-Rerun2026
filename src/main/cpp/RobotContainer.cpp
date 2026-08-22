@@ -50,24 +50,26 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::ConfigureDefualts() {
     drivebaseSubsystem.SetDefaultCommand(CreateDriveCommand());
+    driveController.B().ToggleOnTrue(drivebaseSubsystem.GetAngletoHubCommand());
 }
 void RobotContainer::ConfigureBindings() {
 
     driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {
-        drivebaseSubsystem.ZeroGyro();}));
-    driveController.Y().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.GetPoseEstimator().SetVisionEnabled(!drivebaseSubsystem.GetPoseEstimator().GetVisionEnabled());}
-    ));
+    drivebaseSubsystem.ZeroGyro();}));
+    driveController.Y().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.GetPoseEstimator().SetVisionEnabled(!drivebaseSubsystem.GetPoseEstimator().GetVisionEnabled());
+
+    }));
 }
 
 void RobotContainer::ConfigureIntakeBindings() {
     
-    driveController.A().WhileTrue(intakeSubsystem.PivotAndRunIntakeCommand());
-    driveController.A().OnFalse(intakeSubsystem.AgitateCommand());
+    driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+    driveController.Y().OnTrue(intakeSubsystem.AgitateCommand());
 }
 
 void RobotContainer::ConfigureFeedBindings() {
 
-    operatorController.B().ToggleOnTrue(hopperSubsystem.RunHopperCommand().AlongWith(gateSubsystem.RunGateCommand()));
+    // operatorController.B().ToggleOnTrue(hopperSubsystem.RunHopperCommand().AlongWith(gateSubsystem.RunGateCommand()));
     
 }
 
@@ -75,7 +77,6 @@ void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()));
     operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
-    driveController.B().ToggleOnTrue(AimCommand());
 }
 
 void RobotContainer::ConfigureSetpointBindings() {
@@ -90,6 +91,7 @@ void RobotContainer::ConfigureNamedCommands() {
       pathplanner::NamedCommands::registerCommand("Intake", intakeSubsystem.PivotAndRunIntakeCommand());
       pathplanner::NamedCommands::registerCommand("Feed", RunFeedCommand());
     pathplanner::NamedCommands::registerCommand("Shoot", shooterSubsystem.RunShooterCommand());
+    pathplanner::NamedCommands::registerCommand("Align", drivebaseSubsystem.GetAngletoHubCommand().WithDeadline(frc2::cmd::Wait(1.2_s)));
 
 }
 

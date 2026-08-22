@@ -14,6 +14,10 @@
     "**/.factorypath": true,
     "**/*~": true
   },
-  "C_Cpp.default.configurationProvider": "vscode-wpilib",
-  "C_Cpp.errorSquiggles": "enabled"
+  "C_Cpp.errorSquiggles": "enabled",
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.arguments": [
+    "--compile-commands-dir=C:/torque-2026/Rewrite-Rerun2026/build/BinaryCompileCommands/compileFrcUserProgramLinuxathenaDebugExecutableFrcUserProgramCppCompileCommands",
+    "--query-driver=C:/Users/Public/wpilib/2026/roborio/bin/arm-frc2025-linux-gnueabi-g++.exe"
+  ]
 }

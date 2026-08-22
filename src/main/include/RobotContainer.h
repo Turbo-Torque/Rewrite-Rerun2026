@@ -6,6 +6,7 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <cmath>
 
 #include "Constants.h"
 #include "subsystems/DrivebaseSubsystem.h"
@@ -50,17 +51,6 @@ class RobotContainer {
     })
     .AndThen(
         hopperSubsystem.RunHopperCommand()).AlongWith(gateSubsystem.RunGateCommand());
-  }
-
-  frc2::CommandPtr AimCommand() {
-      return frc2::cmd::Run([this] {
-          auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());
-          auto target = ShotSolve::GetTargetPosition();
-          auto geometry = ShotSolve::ComputeGeometry(muzzle, target);
-          drivebaseSubsystem.AimAtHeading(geometry.bearing.RotateBy(180_deg));
-      }, {&drivebaseSubsystem})
-      .Until([this] { return drivebaseSubsystem.AtHeadingSetpoint(); })
-      .FinallyDo([this] {drivebaseSubsystem.Drive(frc::ChassisSpeeds{});});
   }
 
 

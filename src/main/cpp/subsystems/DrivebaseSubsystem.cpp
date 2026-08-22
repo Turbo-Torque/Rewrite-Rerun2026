@@ -5,6 +5,7 @@
 #include <frc2/command/Commands.h>
 #include <frc/MathUtil.h>
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
+#include "frc/Timer.h"
 #include "turbolib/perception/TurboPoseEstimator.hpp"
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/config/RobotConfig.h>
@@ -24,10 +25,10 @@ DrivebaseSubsystem::DrivebaseSubsystem():
     backLeft("BackLeft", kBackLeftPorts.driveMotorPort, kBackLeftPorts.steerMotorPort, kBackLeftPorts.encoderPort),
     backRight("BackRight", kBackRightPorts.driveMotorPort, kBackRightPorts.steerMotorPort, kBackRightPorts.encoderPort),
     poseEstimator(frc::Rotation2d{}, std::array<frc::SwerveModulePosition, 4>{}, frc::Pose2d{}, kKinematics){
-        realRotationController.SetTolerance(0.5);
-        realRotationController.EnableContinuousInput(0, 360);
-        simRotationController.SetTolerance(0.5);
-        simRotationController.EnableContinuousInput(0, 360);
+        realRotationController.SetTolerance(0.5_deg, 30_deg_per_s);
+        realRotationController.EnableContinuousInput(0_deg, 360_deg);
+        simRotationController.SetTolerance(0.5_deg, 30_deg_per_s);
+        simRotationController.EnableContinuousInput(0_deg, 360_deg);
         ConfigureAutoBuilder();
         ConfigureEstimator();
         ConfigureTelemetry();
@@ -127,24 +128,12 @@ void DrivebaseSubsystem::ResetPose(frc::Pose2d pose) {
     simPose = pose;
 }
 
-frc::PIDController& DrivebaseSubsystem::ActiveRotationController() {
+frc::ProfiledPIDController<units::degrees>& DrivebaseSubsystem::ActiveRotationController() {
     return frc::RobotBase::IsSimulation() ? simRotationController : realRotationController;
-}
-
-void DrivebaseSubsystem::AimAtHeading(frc::Rotation2d targetHeading) {
-
-    double output = ActiveRotationController().Calculate(GetPose().Rotation().Degrees().value(), targetHeading.Degrees().value());
-
-
-    units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
-    output = std::clamp(output, -maxSpeed.value(), maxSpeed.value());
-
-    Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{output}});
 }
 
 
 bool DrivebaseSubsystem::AtHeadingSetpoint() {
-    ActiveRotationController().SetTolerance(0.5, 30.0);
     return ActiveRotationController().AtSetpoint();
 }
 
@@ -178,14 +167,14 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
 
             if (IsRedAlliance()) {
                 
-                x = DriveConstants::negativeMetersConvert * xInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                y =  DriveConstants::negativeMetersConvert * yInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                rot = DriveConstants::negativeTurnConvert * rotInput * DriveConstants::kMaxAngularSpeed * 0.75;
+                x =  xInput * DriveConstants::kMaxLinearSpeed * 0.75;
+                y =   yInput * DriveConstants::kMaxLinearSpeed * 0.75;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.65;
                 rot = rotInput * DriveConstants::kMaxAngularSpeed;
             } else {
                 x = xInput * DriveConstants::kMaxLinearSpeed * 0.75;
                 y =  yInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.75;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.65;
             }
 
             const frc::ChassisSpeeds speeds{x, y, rot};
@@ -194,6 +183,39 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); }, [] {return false;}, {this}
     ).ToPtr().WithName("Drive");
+}
+
+frc2::CommandPtr DrivebaseSubsystem::RotateToHubCommand(std::function<frc::Rotation2d()> angle) {
+    return frc2::cmd::Wait(1_s).AndThen(frc2::FunctionalCommand([] {},
+        [=, this] {
+            const auto currentAngle = GetPose().Rotation().Degrees();
+            const auto targetAngle = angle().Degrees();
+
+            double rotSpeed = ActiveRotationController().Calculate(currentAngle, targetAngle);
+            units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
+            rotSpeed = std::clamp(rotSpeed, -maxSpeed.value(), maxSpeed.value());
+
+            Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{rotSpeed}});
+        },
+        [this](bool) { Drive(frc::ChassisSpeeds{}); },
+        [=, this] { return AtHeadingSetpoint(); },
+        {this}
+    ).ToPtr()).WithName("Rotate To Hub");
+}
+
+
+frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
+    std::function<frc::Rotation2d()> bestTargetAngle = [this]() {
+        frc::Pose2d targetPose = (IsRedAlliance()) ? PathingConstants::kRedHubPose : PathingConstants::kBlueHubPose;
+
+        frc::Pose2d currentPose = GetPose();
+
+        frc::Translation2d targetPosition = (targetPose.Translation() - currentPose.Translation());
+        auto targetAngle = std::atan2(targetPosition.Y().value(), targetPosition.X().value());
+
+        return frc::Rotation2d(units::radian_t(targetAngle));
+    };
+    return RotateToHubCommand(bestTargetAngle);
 }
 
 frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {

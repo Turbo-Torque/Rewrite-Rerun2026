@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.795385527876632,
-        "y": 4.675172004744959
+        "x": 6.634602609727166,
+        "y": 4.9871886120996445
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.870699881376039,
-        "y": 5.417556346381969
+        "x": 6.709916963226573,
+        "y": 5.729572953736654
       },
       "isLocked": false,
       "linkedName": "c3end"
@@ -76,8 +76,8 @@
       "minWaypointRelativePos": 0.2834645669291339,
       "maxWaypointRelativePos": 2.152980877390334,
       "constraints": {
-        "maxVelocity": 3.0,
-        "maxAcceleration": 6.0,
+        "maxVelocity": 2.0,
+        "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,

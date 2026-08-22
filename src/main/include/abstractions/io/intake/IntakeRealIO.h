@@ -28,10 +28,11 @@ class IntakeRealIO : public IntakeIO {
         void UpdateInputs(IntakeIOInputs& inputs) override {
             inputs.position = pivotMotor.GetEncoder().GetPosition();
             inputs.setpoint = pivotMotor.GetClosedLoopController().GetSetpoint();
+            // inputs.pivotCurrent = pivotMotor.GetOutputCurrent();
             inputs.intakeVolts = units::volt_t{intakeMotor.GetMotorVoltage().GetValue()};
             inputs.intakeCurrent = units::ampere_t{intakeMotor.GetTorqueCurrent().GetValue()};
             
-            if ((inputs.position  <= 0)) {
+            if ((inputs.position >= 55)) {
                 inputs.pivotAtSetpoint = true;
             } 
         }
@@ -45,6 +46,12 @@ class IntakeRealIO : public IntakeIO {
             units::radian_t currentAngle{(pivotMotor.GetEncoder().GetPosition())};
             units::volt_t ff = pivotFF.Calculate(currentAngle, 0_rad_per_s);
             pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, ff.value());
+        }
+
+        void Agitate(double rot)  {
+            units::radian_t currentAngle{(pivotMotor.GetEncoder().GetPosition())};
+            units::volt_t ff = pivotFF.Calculate(currentAngle, 0_rad_per_s);
+            pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot2, ff.value());
         }
 
     private:
@@ -65,7 +72,6 @@ class IntakeRealIO : public IntakeIO {
             config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
             intakeMotor.GetConfigurator().Apply(config);
-
         }
 
         void ConfigPivotMotor() {
@@ -78,6 +84,10 @@ class IntakeRealIO : public IntakeIO {
             config.closedLoop.I(0.0, rev::spark::kSlot1);
             config.closedLoop.D(0.002, rev::spark::kSlot1);
 
+            config.closedLoop.P(0.005, rev::spark::kSlot2);
+            config.closedLoop.I(0.0, rev::spark::kSlot2);
+            config.closedLoop.D(0.002, rev::spark::kSlot2);
+
             config.SmartCurrentLimit(35, 50);
             config.SetIdleMode(rev::spark::SparkBaseConfig::kCoast);
             config.OpenLoopRampRate(0.1);
@@ -85,6 +95,6 @@ class IntakeRealIO : public IntakeIO {
             config.Inverted(true);
 
             pivotMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
-            pivotMotor.GetEncoder().SetPosition(0.0);
+            // pivotMotor.GetEncoder().SetPosition(0.0);
         }
 };

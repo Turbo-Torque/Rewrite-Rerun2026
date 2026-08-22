@@ -21,10 +21,10 @@ frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
 
 
 frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
-    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeAgitate);}, {this})
+    return frc2::cmd::Run([this] {Agitate(IntakeConstants::kIntakeAgitate);}, {this})
     .Until([this]() { return inputs.pivotAtSetpoint; })
     .FinallyDo([this] {
-        SetIntakeSetpoint(IntakeConstants::kIntakeUp);
+        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway);
     });
 }
 
@@ -34,9 +34,18 @@ void IntakeSubsystem::Periodic() {
 
     frc::SmartDashboard::PutNumber("Intake Pose", inputs.position);
     frc::SmartDashboard::PutNumber("Intake Volts", inputs.intakeVolts.value());
-    if (inputs.pivotAtSetpoint && (inputs.position > 50) && (inputs.position < 60) ) {
+    frc::SmartDashboard::PutBoolean("intake setpoint", inputs.pivotAtSetpoint);
+    if (inputs.pivotAtSetpoint && (inputs.position > 50) && (inputs.position < 65) ) {
         SetIntakeVoltage(IntakeConstants::kIntakeVolts);
     } else {
         SetIntakeVoltage(0_V);
     }
+
+    // if (inputs.pivotCurrent < 20_A) {
+    //     (IntakeConstants::kIntakeAgitateVolts);
+    // } else {
+    //     SetIntakeVoltage(0_V)
+    // }
+
+
 }

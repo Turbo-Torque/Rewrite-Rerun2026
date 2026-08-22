@@ -28,14 +28,22 @@ namespace OperatorConstants {
 
 }
 
+namespace PathingConstants {
+    inline constexpr frc::Pose2d kRedHubPose{11.92_m, 4_m, 0_rad};
+    inline constexpr frc::Pose2d kBlueHubPose{4.625_m, 4_m, 0_rad};
+}
+
 namespace FieldConstants {
     inline constexpr units::meter_t kFieldLength = 16.541_m;//
     inline constexpr units::meter_t kTargetHeight = 1.8288_m;
-    inline constexpr units::meter_t kBluePosX = 4.931_m;
-    inline constexpr units::meter_t kHubPosY = 3.9478_m;
+    inline constexpr units::meter_t kBluePosX = 4.625_m;
+    inline constexpr units::meter_t kHubPosY = 4_m;
 
     inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
     inline constexpr frc::Translation3d kRedTargetPosition{kFieldLength - kBluePosX, kHubPosY, kTargetHeight};
+
+    inline constexpr frc::Pose2d kRedHubPose{11.92_m, 4_m, 0_rad};
+    inline constexpr frc::Pose2d kBlueHubPose{4.625_m, 4_m, 0_rad};
 }
 
 namespace VisionConstants {
@@ -81,9 +89,9 @@ namespace DriveConstants {
 
 
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
-    inline constexpr units::radians_per_second_t kMaxAngularSpeed = 570_deg_per_s;
+    inline constexpr units::radians_per_second_t kMaxAngularSpeed = 1020_deg_per_s;
     inline constexpr units::meters_per_second_squared_t kMaxLinearAcceleration = 8.0_mps_sq;
-    inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1200_deg_per_s_sq;
+    inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1400_deg_per_s_sq;
     inline constexpr double kControllerDeadBand = 0.08;
 
     inline constexpr double negativeMetersConvert = -1.0;
@@ -108,8 +116,10 @@ namespace IntakeConstants {
     inline constexpr double kIntakeUp = 30.0; //convert from degrees to rotations
     inline constexpr double kIntakeHalfway = 45.0;//convert from degrees to rotations
     inline constexpr double kIntakeDown = 60.0; //convert from degrees to rotations
+    inline constexpr double kIntakeAgitate = 15.0; // TODO: tune real agitate position
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 5_V;
+    inline constexpr units::volt_t kIntakeAgitateVolts = 3_V;
 
     inline constexpr double kSPivot = 0.0;      
     inline constexpr double kGPivot = 0.0;          

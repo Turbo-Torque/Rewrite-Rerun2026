@@ -6,6 +6,8 @@
 #include "frc/kinematics/SwerveModuleState.h"
 #include "ctre/phoenix6/CANBus.hpp"
 #include "frc/controller/PIDController.h"
+#include "frc/controller/ProfiledPIDController.h"
+#include "frc/trajectory/TrapezoidProfile.h"
 #include "networktables/BooleanTopic.h"
 #include "networktables/StructTopic.h"
 #include "networktables/StructArrayTopic.h"
@@ -55,7 +57,9 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
 
 
     frc2::CommandPtr DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotationSpeed);
-    
+    frc2::CommandPtr RotateToHubCommand(std::function<frc::Rotation2d()> angle);
+    frc2::CommandPtr GetAngletoHubCommand();
+
 
     void Periodic() override;
     void SimulationPeriodic() override;
@@ -67,10 +71,15 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     ctre::phoenix6::hardware::Pigeon2 gyro{DriveConstants::kGyro, canBus};
     turbolib::perception::TurboPoseEstimator poseEstimator;
     
-    frc::PIDController realRotationController{0.1, 0, 0.005};
-    frc::PIDController alignController{2.0, 0 , 0.015};
-    frc::PIDController simRotationController{4.0, 0, 0};
-    frc::PIDController& ActiveRotationController();
+    frc::ProfiledPIDController<units::degrees> realRotationController{
+        3, 0, 0,
+        {DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration}
+    };
+    frc::ProfiledPIDController<units::degrees> simRotationController{
+        5.0, 0, 0,
+        {DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration}
+    };
+    frc::ProfiledPIDController<units::degrees>& ActiveRotationController();
 
     frc::ChassisSpeeds cmdSpeeds{0.0_mps, 0.0_mps, 0.0_rad_per_s};
     frc::Pose2d simPose = frc::Pose2d(9_m, 4_m, 0_deg);
