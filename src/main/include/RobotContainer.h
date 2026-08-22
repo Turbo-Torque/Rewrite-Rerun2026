@@ -63,7 +63,18 @@ class RobotContainer {
       .FinallyDo([this] {drivebaseSubsystem.Drive(frc::ChassisSpeeds{});});
   }
 
-
+  frc2::CommandPtr ControllerAimCommand() {
+      return frc2::cmd::Run([this] {
+          auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());
+          units::meter_t controllerX{driveController.GetRightX()};
+          units::meter_t controllerY{driveController.GetRightY()};
+          frc::Translation3d target = {drivebaseSubsystem.GetPose().X() - controllerX, drivebaseSubsystem.GetPose().Y() - controllerY, 1.8288_m};
+          auto geometry = ShotSolve::ComputeGeometry(muzzle, target);
+          drivebaseSubsystem.AimAtHeading(geometry.bearing.RotateBy(180_deg));
+      }, {&drivebaseSubsystem})
+      .Until([this] { return drivebaseSubsystem.AtHeadingSetpoint(); })
+      .FinallyDo([this] {drivebaseSubsystem.Drive(frc::ChassisSpeeds{});});
+  }
 
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {
