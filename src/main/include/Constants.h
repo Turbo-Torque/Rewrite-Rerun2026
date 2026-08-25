@@ -118,14 +118,12 @@ namespace IntakeConstants {
     inline constexpr double kIntakeDown = 60.0; //convert from degrees to rotations
     inline constexpr double kIntakeAgitate = 15.0; // TODO: tune real agitate position
     inline constexpr double kFFPivot = 0.0;
-    inline constexpr units::volt_t kIntakeVolts = 5_V;
+    inline constexpr units::volt_t kIntakeVolts = 7_V;
     inline constexpr units::volt_t kIntakeAgitateVolts = 3_V;
 
     inline constexpr double kSPivot = 0.0;      
     inline constexpr double kGPivot = 0.0;          
     inline constexpr double kVPivot = 0.0;          
-
-
 }
 
 namespace HopperConstants {
@@ -144,7 +142,7 @@ namespace GateConstants {
 namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2900_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2800_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM1 = 3500_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM2 = 3500_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM3 = 3500_rpm;

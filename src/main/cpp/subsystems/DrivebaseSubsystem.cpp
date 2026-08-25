@@ -186,7 +186,7 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
 }
 
 frc2::CommandPtr DrivebaseSubsystem::RotateToHubCommand(std::function<frc::Rotation2d()> angle) {
-    return frc2::cmd::Wait(1_s).AndThen(frc2::FunctionalCommand([] {},
+    return frc2::FunctionalCommand([] {},
         [=, this] {
             const auto currentAngle = GetPose().Rotation().Degrees();
             const auto targetAngle = angle().Degrees();
@@ -195,12 +195,12 @@ frc2::CommandPtr DrivebaseSubsystem::RotateToHubCommand(std::function<frc::Rotat
             units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
             rotSpeed = std::clamp(rotSpeed, -maxSpeed.value(), maxSpeed.value());
 
-            Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{rotSpeed}});
+            Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{-rotSpeed}});
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); },
         [=, this] { return AtHeadingSetpoint(); },
         {this}
-    ).ToPtr()).WithName("Rotate To Hub");
+    ).ToPtr().WithName("Rotate To Hub");
 }
 
 
@@ -215,6 +215,7 @@ frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
 
         return frc::Rotation2d(units::radian_t(targetAngle));
     };
+    frc::SmartDashboard::PutNumber("best target angle", bestTargetAngle().Degrees().value());
     return RotateToHubCommand(bestTargetAngle);
 }
 
@@ -260,7 +261,6 @@ void DrivebaseSubsystem::Periodic() {
     auto alliance = frc::DriverStation::GetAlliance();
     frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
     frc::SmartDashboard::PutBoolean("IsRed", alliance && alliance.value() == frc::DriverStation::Alliance::kRed);
-
     
 }
 

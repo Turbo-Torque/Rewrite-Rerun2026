@@ -80,12 +80,6 @@
           }
         },
         {
-          "type": "path",
-          "data": {
-            "pathName": "c4"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Align"
