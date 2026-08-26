@@ -28,6 +28,12 @@ frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
     });
 }
 
+bool IntakeSubsystem::IntakeNeedHopper() {
+    if (inputs.pivotCurrent >= 15_A && inputs.rotations <= 50) {
+        return true;
+    }
+    return false;
+}
 
 void IntakeSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
@@ -39,6 +45,10 @@ void IntakeSubsystem::Periodic() {
         SetIntakeVoltage(IntakeConstants::kIntakeVolts);
     } else {
         SetIntakeVoltage(0_V);
+    }
+
+    if (inputs.pivotCurrent >= 15_A && inputs.rotations <= 50) {
+    
     }
 
     // if (inputs.pivotCurrent < 20_A) {

@@ -53,8 +53,16 @@ class RobotContainer {
         hopperSubsystem.RunHopperCommand()).AlongWith(gateSubsystem.RunGateCommand());
   }
 
-
-
+  frc2::CommandPtr IntakeNeedHopper() {
+      return frc2::cmd::WaitUntil([this] {
+          return intakeSubsystem.IntakeNeedHopper();
+      })
+      .AndThen(
+          hopperSubsystem.RunHopperCommand()
+              .WithTimeout(2_s)
+      )
+      .Repeatedly();
+  }
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {
           auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());

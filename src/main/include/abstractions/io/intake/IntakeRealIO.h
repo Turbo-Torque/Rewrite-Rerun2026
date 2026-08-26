@@ -17,6 +17,7 @@
 #include "units/current.h"
 #include "units/voltage.h"
 #include <frc/controller/ArmFeedforward.h>
+#include <iterator>
 
 class IntakeRealIO : public IntakeIO {
     public:
@@ -28,13 +29,15 @@ class IntakeRealIO : public IntakeIO {
         void UpdateInputs(IntakeIOInputs& inputs) override {
             inputs.position = pivotMotor.GetEncoder().GetPosition();
             inputs.setpoint = pivotMotor.GetClosedLoopController().GetSetpoint();
-            // inputs.pivotCurrent = pivotMotor.GetOutputCurrent();
+            inputs.rotations = intakeMotor.GetVelocity().GetValueAsDouble()*60;
+            inputs.pivotCurrent = units::ampere_t{pivotMotor.GetOutputCurrent()};
             inputs.intakeVolts = units::volt_t{intakeMotor.GetMotorVoltage().GetValue()};
             inputs.intakeCurrent = units::ampere_t{intakeMotor.GetTorqueCurrent().GetValue()};
             
             if ((inputs.position >= 55)) {
                 inputs.pivotAtSetpoint = true;
             } 
+
         }
 
         void SetIntakeVolts(units::volt_t voltage) override{

@@ -57,7 +57,7 @@ bool ShooterSubsystem::IsNearState() {
     if (inputs.shooterRPMsetpoint <= 200_rpm) {
         return false;
     }
-    if (inputs.atRotations) {
+    if (inputs.atRotations && inputs.shooterRPM >= 200_rpm) {
             return true;
     }
     return false;

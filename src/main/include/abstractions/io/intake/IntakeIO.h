@@ -6,13 +6,16 @@
 struct IntakeIOInputs{
     double position{0.0};
     double setpoint{0.0};
+    double rotations{0.0};
     units::volt_t pivotPIDOut{0_V};
     units::volt_t pivotFFOut{0_V};
-    // units::ampere_t pivotCurrent{0_A};
+    units::ampere_t pivotCurrent{0_A};
     units::volt_t intakeVolts{0_V};
     units::ampere_t intakeCurrent{0_A};
 
+
     bool pivotAtSetpoint{false};
+    bool needHopper{false};
 };
 
 class IntakeIO {

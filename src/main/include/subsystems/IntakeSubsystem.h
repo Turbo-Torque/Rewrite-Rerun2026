@@ -11,6 +11,8 @@ class IntakeSubsystem : public frc2::SubsystemBase {
         void SetIntakeSetpoint(double rot) {io -> SetIntakeSetpoint(rot);}
         void Agitate(double rot) {io -> Agitate(rot);}
 
+        bool IntakeNeedHopper();
+
         frc2::CommandPtr PivotAndRunIntakeCommand();
         frc2::CommandPtr AgitateCommand();
         void Periodic() override;
