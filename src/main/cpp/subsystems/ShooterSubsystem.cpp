@@ -26,6 +26,17 @@ frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
     });
 }
 
+frc2::CommandPtr ShooterSubsystem::Laser() {
+    return frc2::cmd::Run([this] {
+        SetShooterRPM(ShooterConstants::kLaser);
+        SetHoodSetpoint(ShooterConstants::kHoodLaser);
+    }, {this})
+    .FinallyDo([this] {
+        CoastOut();
+        SetHoodSetpoint(ShooterConstants::kHoodDown);
+    });
+}
+
 frc2::CommandPtr ShooterSubsystem::TestShooter() {
     return frc2::cmd::Run([this] {SetShooterRPM(units::revolutions_per_minute_t{frc::SmartDashboard::GetNumber("Put Shooter RPM", 0.0)});
         SetHoodSetpoint(frc::SmartDashboard::GetNumber("Put Hood Angle", 0.0));}, {this})
@@ -51,6 +62,10 @@ frc2::CommandPtr ShooterSubsystem::RunShooterCommand3() {
     return frc2::cmd::Run([this] {
         SetShooterRPM(units::revolutions_per_minute_t(targetRPM));
         SetHoodSetpoint(targetHoodAngle);
+    })
+    .FinallyDo([this] {
+        CoastOut();
+        SetHoodSetpoint(ShooterConstants::kHoodDown);
     });
 }
 
@@ -68,6 +83,8 @@ frc2::CommandPtr ShooterSubsystem::RunHoodCommand(double hoodAngle) {
     });
 
 }
+
+
 
 bool ShooterSubsystem::IsNearState() {
     if (inputs.shooterRPMsetpoint <= 200_rpm) {

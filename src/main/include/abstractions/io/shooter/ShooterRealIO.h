@@ -28,7 +28,7 @@ public:
     ShooterRealIO() {
         ConfigShooterMotor();
         ConfigHoodMotor();
-        hoodPID.SetTolerance(2.0);   // TODO: tune, degrees
+        hoodPID.SetTolerance(2.0);
     }
 
     void UpdateInputs(ShooterIOInputs& inputs) override {

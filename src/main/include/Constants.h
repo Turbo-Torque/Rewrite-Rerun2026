@@ -104,7 +104,7 @@ namespace DriveConstants {
     inline constexpr units::meters_per_second_squared_t kMaxLinearAcceleration = 8.0_mps_sq;
     inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1400_deg_per_s_sq;
     inline constexpr double kControllerDeadBand = 0.08;
-    // ADDED: used by DrivebaseSubsystem::AtPoseSetPoint() for DriveToSetpointCommand — TODO: tune real drive-to-setpoint tolerance
+    // ADDED: used by DrivebaseSubsystem::AtPoseSetPoint() for DriveToSetpointCommand
     inline constexpr units::meter_t kSetpointTolerance = 0.05_m;
 
     inline constexpr double negativeMetersConvert = -1.0;
@@ -129,7 +129,7 @@ namespace IntakeConstants {
     inline constexpr double kIntakeUp = 30.0; //convert from degrees to rotations
     inline constexpr double kIntakeHalfway = 45.0;//convert from degrees to rotations
     inline constexpr double kIntakeDown = 60.0; //convert from degrees to rotations
-    inline constexpr double kIntakeAgitate = 2.5; // TODO: tune real agitate position
+    inline constexpr double kIntakeAgitate = 2.5;
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 7_V;
     inline constexpr units::volt_t kIntakeAgitateVolts = 3_V;
@@ -160,6 +160,8 @@ namespace ShooterConstants {
     inline constexpr units::revolutions_per_minute_t kShooterRPM2 = 3500_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM3 = 3500_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM4 = 3500_rpm;
+    inline constexpr units::revolutions_per_minute_t kLaser = 1500_rpm;
+
 
     inline constexpr units::meters_per_second_squared_t kGravity = 9.80665_mps_sq;
     inline constexpr units::meter_t kShooterOffsetX = -0.2803_m;
@@ -178,7 +180,8 @@ namespace ShooterConstants {
 
     inline constexpr units::degree_t kMinAngle = 20_deg;
     inline constexpr units::degree_t kMaxAngle = 60_deg;
-    inline constexpr double kHoodUp = 120.0; 
+    inline constexpr double kHoodUp = 120.0;
+    inline constexpr double kHoodLaser = 160.0; 
     inline constexpr double kHoodDown = 0.0; 
     inline constexpr double kHoodAngle1 = 80.0;
     inline constexpr double kHoodAngle2 = 40.0;
@@ -190,7 +193,7 @@ namespace ShooterConstants {
 
     inline constexpr double kFFHood = 0.0;
     inline constexpr units::meter_t kRangeTolerance = 0.10_m;
-    inline constexpr double kHoodGearRatio = 1.0;   // TODO: real motor-rotations-per-hood-rotation ratio
+    inline constexpr double kHoodGearRatio = 1.0;
 }
 
 
