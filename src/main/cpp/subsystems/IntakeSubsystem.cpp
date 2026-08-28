@@ -22,9 +22,9 @@ frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
 
 frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
     return frc2::cmd::Run([this] {Agitate(IntakeConstants::kIntakeAgitate);}, {this})
-    .Until([this]() { return inputs.pivotAtSetpoint; })
+    .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeVolts);}, {this}))
     .FinallyDo([this] {
-        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway);
+        Agitate(IntakeConstants::kIntakeHalfway);
     });
 }
 

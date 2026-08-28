@@ -51,7 +51,7 @@ class IntakeRealIO : public IntakeIO {
             pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot0, ff.value());
         }
 
-        void Agitate(double rot)  {
+        void Agitate(double rot)  override {
             units::radian_t currentAngle{(pivotMotor.GetEncoder().GetPosition())};
             units::volt_t ff = pivotFF.Calculate(currentAngle, 0_rad_per_s);
             pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot2, ff.value());
@@ -87,7 +87,7 @@ class IntakeRealIO : public IntakeIO {
             config.closedLoop.I(0.0, rev::spark::kSlot1);
             config.closedLoop.D(0.002, rev::spark::kSlot1);
 
-            config.closedLoop.P(0.005, rev::spark::kSlot2);
+            config.closedLoop.P(0.02, rev::spark::kSlot2);
             config.closedLoop.I(0.0, rev::spark::kSlot2);
             config.closedLoop.D(0.002, rev::spark::kSlot2);
 

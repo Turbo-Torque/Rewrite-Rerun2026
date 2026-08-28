@@ -1,5 +1,7 @@
 #pragma once
 
+#include "frc/geometry/Pose2d.h"
+#include "frc/geometry/Translation3d.h"
 #include "frc2/command/SubsystemBase.h"
 #include "frc/kinematics/ChassisSpeeds.h"
 #include "frc/kinematics/SwerveModulePosition.h"
@@ -19,6 +21,7 @@
 #include "turbolib/perception/TurboPoseEstimator.hpp"
 #include "frc/filter/SlewRateLimiter.h"
 #include "Constants.h"
+#include "units/length.h"
 #include <frc/smartdashboard/Field2d.h>
 #include <frc/DriverStation.h>
 #include <frc/RobotBase.h>
@@ -42,10 +45,18 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     void ConfigureEstimator();
     void AimAtHeading(frc::Rotation2d targetHeading);
     void AimAtBump(frc::Rotation2d bumpHeading);
+    void SelectCenterSetpoint();
+    void SelectRightSetpoint();
+    void SelectLeftSetpoint();
+    
 
     bool AtHeadingSetpoint();
     bool IsRedAlliance();
     bool SideFieldRight();
+    bool SeesTag();
+    bool CanMake();
+    bool AtPoseSetPoint();
+
 
     frc::Pose2d GetPose();
     frc::Rotation2d GetGyroAngle();
@@ -58,7 +69,9 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
 
     frc2::CommandPtr DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotationSpeed);
     frc2::CommandPtr RotateToHubCommand(std::function<frc::Rotation2d()> angle);
+    frc2::CommandPtr DriveToSetpointCommand(std::function<frc::Translation2d()> distance);
     frc2::CommandPtr GetAngletoHubCommand();
+    frc2::CommandPtr GetPoseToSetpoint();
 
 
     void Periodic() override;
@@ -75,11 +88,16 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
         3, 0, 0,
         {DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration}
     };
+
     frc::ProfiledPIDController<units::degrees> simRotationController{
         5.0, 0, 0,
         {DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration}
     };
     frc::ProfiledPIDController<units::degrees>& ActiveRotationController();
+
+    // ADDED: translation controllers for DriveToSetpointCommand (previously reused ActiveRotationController() by mistake)
+    frc::PIDController xController{AutoConstants::kTranslationP, AutoConstants::kTranslationI, AutoConstants::kTranslationD};
+    frc::PIDController yController{AutoConstants::kTranslationP, AutoConstants::kTranslationI, AutoConstants::kTranslationD};
 
     frc::ChassisSpeeds cmdSpeeds{0.0_mps, 0.0_mps, 0.0_rad_per_s};
     frc::Pose2d simPose = frc::Pose2d(9_m, 4_m, 0_deg);
@@ -96,5 +114,6 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     nt::StructPublisher<frc::Rotation2d> gyroPublisher;
     nt::BooleanPublisher seesTagPublisher;
     
+    frc::Pose2d selectSetpoint = PathingConstants::kDummy;
 
 };

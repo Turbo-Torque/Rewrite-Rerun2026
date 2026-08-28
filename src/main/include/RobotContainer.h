@@ -48,7 +48,7 @@ class RobotContainer {
   frc2::CommandPtr RunFeedCommand() {
   return frc2::cmd::WaitUntil([this] {
         return shooterSubsystem.IsNearState();
-    })
+    }).WithTimeout(2_s)
     .AndThen(
         hopperSubsystem.RunHopperCommand()).AlongWith(gateSubsystem.RunGateCommand());
   }
@@ -63,6 +63,17 @@ class RobotContainer {
       )
       .Repeatedly();
   }
+
+  frc2::CommandPtr AlignToHub() {
+      return frc2::cmd::WaitUntil([this] {
+          return drivebaseSubsystem.SeesTag();
+      })
+      .AndThen(
+          drivebaseSubsystem.GetAngletoHubCommand()
+              .WithTimeout(2_s)
+      );
+  }
+
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {
           auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());

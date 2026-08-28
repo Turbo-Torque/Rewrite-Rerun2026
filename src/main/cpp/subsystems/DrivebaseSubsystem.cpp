@@ -1,12 +1,23 @@
 #include "subsystems/DrivebaseSubsystem.h"
 
 #include "Constants.h"
+#include <cmath>
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <frc2/command/Commands.h>
 #include <frc/MathUtil.h>
 #include <frc/estimator/SwerveDrivePoseEstimator.h>
+#include "RobotContainer.h"
+#include "frc/RobotController.h"
 #include "frc/Timer.h"
+#include "frc/geometry/Pose2d.h"
+#include "frc/geometry/Translation2d.h"
+#include "frc/kinematics/ChassisSpeeds.h"
+#include "frc2/command/CommandPtr.h"
+#include "frc2/command/FunctionalCommand.h"
 #include "turbolib/perception/TurboPoseEstimator.hpp"
+#include "units/length.h"
+#include "units/velocity.h"
+#include <functional>
 #include <pathplanner/lib/auto/AutoBuilder.h>
 #include <pathplanner/lib/config/RobotConfig.h>
 #include <pathplanner/lib/config/PIDConstants.h>
@@ -14,6 +25,7 @@
 #include <frc/DriverStation.h>
 #include <frc/RobotBase.h>
 #include <algorithm>
+#include "RobotContainer.h"
 
 
 using namespace DriveConstants;
@@ -63,9 +75,9 @@ void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
     poseEstimator.AddLocalizationCamera("rightShooterCam",
-                                  frc::Transform3d{3.5_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
+                                  frc::Transform3d{4_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
-    // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -135_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -260_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
     
 }
@@ -127,11 +139,21 @@ void DrivebaseSubsystem::ResetPose(frc::Pose2d pose) {
     poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), pose);
     simPose = pose;
 }
+void DrivebaseSubsystem::SelectCenterSetpoint() {
+    selectSetpoint = IsRedAlliance() ? PathingConstants::kRedCenter : PathingConstants::kBlueCenter;
+}
+
+void DrivebaseSubsystem::SelectLeftSetpoint() {
+    selectSetpoint = IsRedAlliance() ? PathingConstants::kRedTop : PathingConstants::kBlueBottom;
+}
+
+void DrivebaseSubsystem::SelectRightSetpoint() {
+    selectSetpoint = IsRedAlliance() ? PathingConstants::kRedBottom : PathingConstants::kRedBottom;
+}
 
 frc::ProfiledPIDController<units::degrees>& DrivebaseSubsystem::ActiveRotationController() {
     return frc::RobotBase::IsSimulation() ? simRotationController : realRotationController;
 }
-
 
 bool DrivebaseSubsystem::AtHeadingSetpoint() {
     return ActiveRotationController().AtSetpoint();
@@ -142,16 +164,18 @@ bool DrivebaseSubsystem::IsRedAlliance() {
     return alliance == frc::DriverStation::Alliance::kRed;
 }
 
-// bool DrivebaseSubsystem::SideFieldRight() {
-//     auto side = GetPose().Y().value();
-//     if (side >= 4.035) {
-//         double bumpY =  1.66;
-//         return true;
-//     } else {
-//         double bumpY = 6.41;
-//         return false;
-//     }
-// }
+bool DrivebaseSubsystem::SeesTag() {
+    if (poseEstimator.SeesTag()) {
+        return true;
+    }
+    return false;
+}
+
+// ADDED: was declared but never defined, so DriveToSetpointCommand couldn't link
+bool DrivebaseSubsystem::AtPoseSetPoint() {
+    return GetPose().Translation().Distance(selectSetpoint.Translation()) < DriveConstants::kSetpointTolerance;
+}
+
 
 frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotSpeed) {
     return frc2::FunctionalCommand ( []{},
@@ -218,6 +242,47 @@ frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
     frc::SmartDashboard::PutNumber("best target angle", bestTargetAngle().Degrees().value());
     return RotateToHubCommand(bestTargetAngle);
 }
+
+// FIXED: signature (missing "()"), used xController/yController instead of the rotation controller,
+// clamped output to kMaxLinearSpeed, closed the FunctionalCommand(...) call and added .ToPtr()
+frc2::CommandPtr DrivebaseSubsystem::DriveToSetpointCommand(std::function<frc::Translation2d()> distance) {
+    return frc2::FunctionalCommand([]{},
+        [=, this] {
+            const auto errorX = distance().X();
+            const auto errorY = distance().Y();
+
+            double driveXSpeed = xController.Calculate(0.0, errorX.value());
+            double driveYSpeed = yController.Calculate(0.0, errorY.value());
+
+            units::meters_per_second_t maxSpeed{DriveConstants::kMaxLinearSpeed};
+            driveXSpeed = std::clamp(driveXSpeed, -maxSpeed.value(), maxSpeed.value());
+            driveYSpeed = std::clamp(driveYSpeed, -maxSpeed.value(), maxSpeed.value());
+
+            Drive(frc::ChassisSpeeds(units::meters_per_second_t{driveXSpeed}, units::meters_per_second_t{driveYSpeed}, 0_rad_per_s));
+        },
+        [this](bool) { Drive(frc::ChassisSpeeds{}); },
+        [this] { return AtPoseSetPoint(); },
+        {this}
+    ).ToPtr().WithName("Drive To Setpoint");
+}
+
+frc2::CommandPtr DrivebaseSubsystem::GetPoseToSetpoint() {
+    std::function<frc::Translation2d()> bestTargetDistance = [this]() {
+        frc::Pose2d targetPose = selectSetpoint;
+        frc::Pose2d currentPose = GetPose();
+
+        units::meter_t targetX = (targetPose.X() - currentPose.X());
+        units::meter_t targetY = (targetPose.Y() - currentPose.Y());
+
+        units::meter_t targetZ{std::hypot(targetX.value(), targetY.value())};
+
+        return frc::Translation2d(units::meter_t(targetX), units::meter_t(targetY));
+    };
+
+    return DriveToSetpointCommand(bestTargetDistance);
+}
+
+
 
 frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {
     return gyro.GetRotation2d().RotateBy(180_deg);

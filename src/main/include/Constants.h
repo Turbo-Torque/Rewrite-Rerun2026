@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Constants.h"
 #include "frc/geometry/Translation2d.h"
 #include "frc/kinematics/SwerveDriveKinematics.h"
 #include <turbolib/structure/SwervePorts.hpp>
@@ -9,6 +10,7 @@
 #include "units/angular_velocity.h"
 #include "units/angular_acceleration.h"
 #include "units/current.h"
+#include "units/length.h"
 #include "units/voltage.h"
 #include "frc/geometry/Pose2d.h"
 #include <map>
@@ -31,6 +33,13 @@ namespace OperatorConstants {
 namespace PathingConstants {
     inline constexpr frc::Pose2d kRedHubPose{11.92_m, 4_m, 0_rad};
     inline constexpr frc::Pose2d kBlueHubPose{4.625_m, 4_m, 0_rad};
+    inline constexpr frc::Pose2d kDummy{0_m,0_m,0_rad};
+    inline constexpr frc::Pose2d kRedCenter{0_m,0_m,0_rad};
+    inline constexpr frc::Pose2d kRedBottom{0_m,0_m,0_rad};
+    inline constexpr frc::Pose2d kRedTop{0_m,0_m,0_rad};
+    inline constexpr frc::Pose2d kBlueCenter{0_m,0_m,0_rad};
+    inline constexpr frc::Pose2d kBlueBottom{0_m,0_m,0_rad};
+    inline constexpr frc::Pose2d kBlueTop{0_m,0_m,0_rad};
 }
 
 namespace FieldConstants {
@@ -44,6 +53,8 @@ namespace FieldConstants {
 
     inline constexpr frc::Pose2d kRedHubPose{11.92_m, 4_m, 0_rad};
     inline constexpr frc::Pose2d kBlueHubPose{4.625_m, 4_m, 0_rad};
+
+    
 }
 
 namespace VisionConstants {
@@ -93,6 +104,8 @@ namespace DriveConstants {
     inline constexpr units::meters_per_second_squared_t kMaxLinearAcceleration = 8.0_mps_sq;
     inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1400_deg_per_s_sq;
     inline constexpr double kControllerDeadBand = 0.08;
+    // ADDED: used by DrivebaseSubsystem::AtPoseSetPoint() for DriveToSetpointCommand — TODO: tune real drive-to-setpoint tolerance
+    inline constexpr units::meter_t kSetpointTolerance = 0.05_m;
 
     inline constexpr double negativeMetersConvert = -1.0;
     inline constexpr double negativeTurnConvert = -1.0;
@@ -116,7 +129,7 @@ namespace IntakeConstants {
     inline constexpr double kIntakeUp = 30.0; //convert from degrees to rotations
     inline constexpr double kIntakeHalfway = 45.0;//convert from degrees to rotations
     inline constexpr double kIntakeDown = 60.0; //convert from degrees to rotations
-    inline constexpr double kIntakeAgitate = 15.0; // TODO: tune real agitate position
+    inline constexpr double kIntakeAgitate = 2.5; // TODO: tune real agitate position
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 7_V;
     inline constexpr units::volt_t kIntakeAgitateVolts = 3_V;

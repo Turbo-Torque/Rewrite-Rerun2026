@@ -4,6 +4,7 @@
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include "units/angular_velocity.h"
 
 
 ShooterSubsystem::ShooterSubsystem(std::unique_ptr<ShooterIO> shooterIO) : io(std::move(shooterIO)) {
@@ -45,6 +46,21 @@ frc2::CommandPtr ShooterSubsystem::RunShooterCommand2(units::revolutions_per_min
     });
 }
 
+
+frc2::CommandPtr ShooterSubsystem::RunShooterCommand3() {
+    return frc2::cmd::Run([this] {
+        SetShooterRPM(units::revolutions_per_minute_t(targetRPM));
+        SetHoodSetpoint(targetHoodAngle);
+    });
+}
+
+frc2::CommandPtr ShooterSubsystem::SetShooterState(double rpm, double hoodAngle) {
+    return frc2::cmd::Run([this, rpm, hoodAngle] {
+        targetRPM = rpm;
+        targetHoodAngle = hoodAngle;
+    });
+}
+
 frc2::CommandPtr ShooterSubsystem::RunHoodCommand(double hoodAngle) {
     return frc2::cmd::Run([this, hoodAngle] {SetHoodSetpoint(hoodAngle);}, {this})
     .FinallyDo([this] {
@@ -57,7 +73,7 @@ bool ShooterSubsystem::IsNearState() {
     if (inputs.shooterRPMsetpoint <= 200_rpm) {
         return false;
     }
-    if (inputs.atRotations && inputs.shooterRPM >= 200_rpm) {
+    if (inputs.atRotations && inputs.shooterRPM >= 1000_rpm) {
             return true;
     }
     return false;

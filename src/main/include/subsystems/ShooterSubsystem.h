@@ -16,6 +16,8 @@ class ShooterSubsystem : public frc2::SubsystemBase {
         frc2::CommandPtr TestShooter();
         frc2::CommandPtr Laser();
         frc2::CommandPtr RunShooterCommand2(units::revolutions_per_minute_t rpm, double hoodAngle);
+        frc2::CommandPtr RunShooterCommand3();
+        frc2::CommandPtr SetShooterState(double targeRPM, double targetHoodAngle);
 
 
         bool IsNearState();
@@ -24,4 +26,6 @@ class ShooterSubsystem : public frc2::SubsystemBase {
     private:
         std::unique_ptr<ShooterIO> io;
         ShooterIOInputs inputs;
+        double targetRPM = 0.0;
+        double targetHoodAngle = 0.0;
 };

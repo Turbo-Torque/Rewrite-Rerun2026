@@ -14,6 +14,8 @@ struct ShooterIOInputs{
     units::volt_t hoodFF{0_V};
     double hoodPosition{0.0};
     double hoodSetPoint{0.0};
+    double targetRPM{0.0};
+    double targetHoodAngle{0.0};
 
 
     bool atRotations = false;

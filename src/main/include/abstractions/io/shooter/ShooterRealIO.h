@@ -48,6 +48,8 @@ public:
             std::abs((inputs.shooterRPM - velocityRequest.Velocity).value()) < 100.0;
         inputs.hoodAtSetpoint = hoodPID.AtSetpoint();
         inputs.shooterRPMsetpoint = velocityRequest.Velocity;
+        inputs.targetRPM = 0.0;
+        inputs.targetHoodAngle = 0.0;
     }
 
     void SetShooterRPM(units::revolutions_per_minute_t rpm) override {
