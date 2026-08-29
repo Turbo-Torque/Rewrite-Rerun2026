@@ -35,7 +35,8 @@ RobotContainer::RobotContainer()
     intakeSubsystem(std::make_unique<IntakeRealIO>()),
     hopperSubsystem(std::make_unique<HopperRealIO>()),
     gateSubsystem(std::make_unique<GateRealIO>()),
-    shooterSubsystem(std::make_unique<ShooterRealIO>())
+    shooterSubsystem(std::make_unique<ShooterRealIO>()),
+    hubSubsystem()
 
 {
     ConfigureBindings();
@@ -68,7 +69,6 @@ void RobotContainer::ConfigureBindings() {
 void RobotContainer::ConfigureIntakeBindings() {
     
     driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
-    // driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand().AlongWith(IntakeNeedHopper()));
     operatorController.RightBumper().ToggleOnTrue(intakeSubsystem.AgitateCommand());
     frc2::Trigger([this] { return intakeSubsystem.IntakeNeedHopper();}).OnTrue(hopperSubsystem.RunHopperCommand());
 }
@@ -83,15 +83,15 @@ void RobotContainer::ConfigureShooterBindings(){
     operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()));
     operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
-    operatorController.B().ToggleOnTrue(shooterSubsystem.Laser());
+    operatorController.B().ToggleOnTrue(shooterSubsystem.Laser().AlongWith(RunFeedCommand()));
 }
 
 void RobotContainer::ConfigureSetpointBindings() {
     operatorController.POVUp().OnTrue(shooterSubsystem.SetShooterState(double (ShooterConstants::kShooterRPM1), ShooterConstants::kHoodAngle1).AlongWith(frc2::cmd::RunOnce([this] { drivebaseSubsystem.SelectCenterSetpoint();})));
     operatorController.POVLeft().OnTrue(shooterSubsystem.SetShooterState(double (ShooterConstants::kShooterRPM3), ShooterConstants::kHoodAngle3).AlongWith(frc2::cmd::RunOnce([this] { drivebaseSubsystem.SelectLeftSetpoint();})));
     operatorController.POVRight().OnTrue(shooterSubsystem.SetShooterState(double (ShooterConstants::kShooterRPM4), ShooterConstants::kHoodAngle4).AlongWith(frc2::cmd::RunOnce([this] { drivebaseSubsystem.SelectRightSetpoint();})));
-    operatorController.RightTrigger().ToggleOnTrue(shooterSubsystem.RunShooterCommand3());
-    driveController.RightTrigger().OnTrue(drivebaseSubsystem.GetPoseToSetpoint());
+    operatorController.RightTrigger().ToggleOnTrue(shooterSubsystem.RunShooterCommand3().AlongWith(RunFeedCommand()));
+    driveController.RightTrigger().ToggleOnTrue(drivebaseSubsystem.GetPoseToSetpoint());
 }
 
 void RobotContainer::ConfigureNamedCommands() {

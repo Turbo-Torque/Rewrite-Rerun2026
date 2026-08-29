@@ -96,8 +96,8 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     frc::ProfiledPIDController<units::degrees>& ActiveRotationController();
 
     // ADDED: translation controllers for DriveToSetpointCommand (previously reused ActiveRotationController() by mistake)
-    frc::PIDController xController{AutoConstants::kTranslationP, AutoConstants::kTranslationI, AutoConstants::kTranslationD};
-    frc::PIDController yController{AutoConstants::kTranslationP, AutoConstants::kTranslationI, AutoConstants::kTranslationD};
+    frc::PIDController xController{1.0, AutoConstants::kTranslationI, AutoConstants::kTranslationD};
+    frc::PIDController yController{1.0, AutoConstants::kTranslationI, AutoConstants::kTranslationD};
 
     frc::ChassisSpeeds cmdSpeeds{0.0_mps, 0.0_mps, 0.0_rad_per_s};
     frc::Pose2d simPose = frc::Pose2d(9_m, 4_m, 0_deg);

@@ -31,6 +31,12 @@
                 "data": {
                   "name": "Shoot"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
               }
             ]
           }
@@ -62,6 +68,12 @@
                 "data": {
                   "name": "Shoot"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
               }
             ]
           }
@@ -92,6 +104,12 @@
                 "type": "named",
                 "data": {
                   "name": "Shoot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
                 }
               }
             ]

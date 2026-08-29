@@ -16,6 +16,8 @@
 #include "subsystems/ShooterSubsystem.h"
 #include <frc2/command/Commands.h>
 #include "subsystems/ShotSolve.h"
+#include "subsystems/HubSubsystem.h"
+
 
 /**
  * This class is where the bulk of the robot should be declared.  Since
@@ -36,6 +38,7 @@ class RobotContainer {
   HopperSubsystem hopperSubsystem;
   GateSubsystem gateSubsystem;
   ShooterSubsystem shooterSubsystem;
+  HubSubsystem hubSubsystem;
 
   frc2::CommandXboxController driveController{OperatorConstants::kDriveControllerPort};
   frc2::CommandXboxController operatorController{OperatorConstants::kOperatorControllerPort};

@@ -75,9 +75,9 @@ void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
     poseEstimator.AddLocalizationCamera("rightShooterCam",
-                                  frc::Transform3d{4_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
+                                  frc::Transform3d{3.8_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
-    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -260_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+    // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -260_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
     
 }
@@ -258,7 +258,11 @@ frc2::CommandPtr DrivebaseSubsystem::DriveToSetpointCommand(std::function<frc::T
             driveXSpeed = std::clamp(driveXSpeed, -maxSpeed.value(), maxSpeed.value());
             driveYSpeed = std::clamp(driveYSpeed, -maxSpeed.value(), maxSpeed.value());
 
-            Drive(frc::ChassisSpeeds(units::meters_per_second_t{driveXSpeed}, units::meters_per_second_t{driveYSpeed}, 0_rad_per_s));
+            // FIXED: errorX/errorY are field-relative deltas, but Drive() expects robot-relative
+            // speeds — without this conversion the robot spirals around the target instead of
+            // going straight at it, since the drive direction rotates along with the robot's heading
+            const frc::ChassisSpeeds fieldRelativeSpeeds{units::meters_per_second_t{driveXSpeed}, units::meters_per_second_t{driveYSpeed}, 0_rad_per_s};
+            Drive(frc::ChassisSpeeds::FromFieldRelativeSpeeds(fieldRelativeSpeeds, GetGyroAngle()));
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); },
         [this] { return AtPoseSetPoint(); },

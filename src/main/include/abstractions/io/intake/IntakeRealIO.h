@@ -34,7 +34,7 @@ class IntakeRealIO : public IntakeIO {
             inputs.intakeVolts = units::volt_t{intakeMotor.GetMotorVoltage().GetValue()};
             inputs.intakeCurrent = units::ampere_t{intakeMotor.GetTorqueCurrent().GetValue()};
             
-            if ((inputs.position >= 55)) {
+            if ((inputs.position <= 0.5)) {
                 inputs.pivotAtSetpoint = true;
             } 
 
@@ -71,7 +71,9 @@ class IntakeRealIO : public IntakeIO {
         void ConfigIntakeMotor() {
             ctre::phoenix6::configs::TalonFXConfiguration config{};
             config.MotorOutput.NeutralMode = ctre::phoenix6::signals::NeutralModeValue::Brake;
-            config.CurrentLimits.SupplyCurrentLimit = 45_A;
+            config.CurrentLimits.SupplyCurrentLimit = 40_A;
+            config.CurrentLimits.StatorCurrentLimit = 80_A;
+            config.CurrentLimits.StatorCurrentLimitEnable = true;
             config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
             intakeMotor.GetConfigurator().Apply(config);
@@ -79,7 +81,7 @@ class IntakeRealIO : public IntakeIO {
 
         void ConfigPivotMotor() {
             rev::spark::SparkMaxConfig config;
-            config.closedLoop.P(0.04, rev::spark::kSlot0);
+            config.closedLoop.P(0.03, rev::spark::kSlot0);
             config.closedLoop.I(0.001, rev::spark::kSlot0);
             config.closedLoop.D(0.002, rev::spark::kSlot0);
 
@@ -98,6 +100,6 @@ class IntakeRealIO : public IntakeIO {
             config.Inverted(true);
 
             pivotMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
-            // pivotMotor.GetEncoder().SetPosition(0.0);
+            pivotMotor.GetEncoder().SetPosition(0.0);
         }
 };
