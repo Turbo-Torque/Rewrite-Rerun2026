@@ -8,6 +8,7 @@ class HopperSubsystem : public frc2::SubsystemBase{
         void SetHopperVoltage(units::volt_t volts) { io -> SetHopperVolts(volts);}
 
         frc2::CommandPtr RunHopperCommand();
+        frc2::CommandPtr Outtake();
 
         // void FeedRequsted(bool request);
         // void StopHopper() { SetHopperVoltage(0_V);};

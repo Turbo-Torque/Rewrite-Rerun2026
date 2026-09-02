@@ -4,6 +4,8 @@
 #include <frc2/command/Commands.h>
 #include <frc2/command/button/Trigger.h>
 
+#include "frc/GenericHID.h"
+#include "frc/Timer.h"
 #include "subsystems/DrivebaseSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
 #include "abstractions/io/intake/IntakeIO.h"
@@ -54,23 +56,40 @@ RobotContainer::RobotContainer()
 void RobotContainer::ConfigureDefualts() {
     drivebaseSubsystem.SetDefaultCommand(CreateDriveCommand());
     driveController.B().ToggleOnTrue(drivebaseSubsystem.GetAngletoHubCommand());
-    // driveController.B().OnTrue(AlignToHub());
+    // driveController.B().ToggleOnTrue(AlignToHub().WithDeadline(frc2::cmd::Wait(2_s)));
 
 }
 void RobotContainer::ConfigureBindings() {
 
-    driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {
-    drivebaseSubsystem.ZeroGyro();}));
-    driveController.Y().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.GetPoseEstimator().SetVisionEnabled(!drivebaseSubsystem.GetPoseEstimator().GetVisionEnabled());
-
-    }));
+    driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.ZeroGyro();}));
+    driveController.Y().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.GetPoseEstimator().SetVisionEnabled(!drivebaseSubsystem.GetPoseEstimator().GetVisionEnabled());}));
 }
 
 void RobotContainer::ConfigureIntakeBindings() {
     
     driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
     operatorController.RightBumper().ToggleOnTrue(intakeSubsystem.AgitateCommand());
-    frc2::Trigger([this] { return intakeSubsystem.IntakeNeedHopper();}).OnTrue(hopperSubsystem.RunHopperCommand());
+    frc2::Trigger([this] {
+        return intakeSubsystem.IntakeNeedHopper();
+    })
+    .WhileTrue(hopperSubsystem.RunHopperCommand())
+    .OnTrue(
+        frc2::cmd::RunOnce([this] {
+            driveController.SetRumble(
+                frc::GenericHID::RumbleType::kBothRumble,
+                1.0
+            );
+        })
+    )
+    .OnFalse(
+        frc2::cmd::RunOnce([this] {
+            driveController.SetRumble(
+                frc::GenericHID::RumbleType::kBothRumble,
+                0.0
+            );
+        })
+    );
+    operatorController.LeftBumper().ToggleOnTrue(intakeSubsystem.PivotAndRunOuttakeCommand().AlongWith(hopperSubsystem.Outtake()));
 }
 
 void RobotContainer::ConfigureFeedBindings() {
@@ -95,10 +114,11 @@ void RobotContainer::ConfigureSetpointBindings() {
 }
 
 void RobotContainer::ConfigureNamedCommands() {
-      pathplanner::NamedCommands::registerCommand("Intake", intakeSubsystem.PivotAndRunIntakeCommand());
-      pathplanner::NamedCommands::registerCommand("Feed", RunFeedCommand());
+    pathplanner::NamedCommands::registerCommand("Intake", intakeSubsystem.PivotAndRunIntakeCommand());
+    pathplanner::NamedCommands::registerCommand("Agitate", intakeSubsystem.AgitateCommand());
+    pathplanner::NamedCommands::registerCommand("Feed", RunFeedCommand());
     pathplanner::NamedCommands::registerCommand("Shoot", shooterSubsystem.RunShooterCommand());
-    pathplanner::NamedCommands::registerCommand("Align", drivebaseSubsystem.GetAngletoHubCommand().WithDeadline(frc2::cmd::Wait(1.2_s)));
+    pathplanner::NamedCommands::registerCommand("Align", drivebaseSubsystem.GetAngletoHubCommand());
 
 }
 

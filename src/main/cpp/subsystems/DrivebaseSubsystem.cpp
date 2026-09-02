@@ -74,8 +74,8 @@ void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), frc::Pose2d{});
     poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
-    poseEstimator.AddLocalizationCamera("rightShooterCam",
-                                  frc::Transform3d{3.8_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
+     poseEstimator.AddLocalizationCamera("rightShooterCam",
+                                  frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
     // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -260_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
@@ -173,9 +173,11 @@ bool DrivebaseSubsystem::SeesTag() {
 
 // ADDED: was declared but never defined, so DriveToSetpointCommand couldn't link
 bool DrivebaseSubsystem::AtPoseSetPoint() {
-    return GetPose().Translation().Distance(selectSetpoint.Translation()) < DriveConstants::kSetpointTolerance;
+    if ((GetPose().Translation().Distance(selectSetpoint.Translation()) < DriveConstants::kSetpointTolerance) && AtHeadingSetpoint()){
+        return true;
+    }
+    return false;
 }
-
 
 frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotSpeed) {
     return frc2::FunctionalCommand ( []{},
@@ -258,11 +260,7 @@ frc2::CommandPtr DrivebaseSubsystem::DriveToSetpointCommand(std::function<frc::T
             driveXSpeed = std::clamp(driveXSpeed, -maxSpeed.value(), maxSpeed.value());
             driveYSpeed = std::clamp(driveYSpeed, -maxSpeed.value(), maxSpeed.value());
 
-            // FIXED: errorX/errorY are field-relative deltas, but Drive() expects robot-relative
-            // speeds — without this conversion the robot spirals around the target instead of
-            // going straight at it, since the drive direction rotates along with the robot's heading
-            const frc::ChassisSpeeds fieldRelativeSpeeds{units::meters_per_second_t{driveXSpeed}, units::meters_per_second_t{driveYSpeed}, 0_rad_per_s};
-            Drive(frc::ChassisSpeeds::FromFieldRelativeSpeeds(fieldRelativeSpeeds, GetGyroAngle()));
+            Drive(frc::ChassisSpeeds{units::meters_per_second_t{driveXSpeed}, units::meters_per_second_t{driveYSpeed}, 0_rad_per_s});
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); },
         [this] { return AtPoseSetPoint(); },
@@ -329,8 +327,8 @@ void DrivebaseSubsystem::Periodic() {
     frc::SmartDashboard::PutNumber("Gyro", GetGyroAngle().Degrees().value());
     auto alliance = frc::DriverStation::GetAlliance();
     frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
-    frc::SmartDashboard::PutBoolean("IsRed", alliance && alliance.value() == frc::DriverStation::Alliance::kRed);
-    
+    frc::SmartDashboard::PutBoolean("At Setpoint", AtPoseSetPoint());
+    frc::SmartDashboard::PutBoolean("IsRed", alliance && alliance.value() == frc::DriverStation::Alliance::kRed);   
 }
 
 void DrivebaseSubsystem::SimulationPeriodic() {

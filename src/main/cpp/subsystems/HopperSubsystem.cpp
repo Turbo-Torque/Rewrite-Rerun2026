@@ -17,6 +17,13 @@ frc2::CommandPtr HopperSubsystem::RunHopperCommand() {
     });
 }
 
+frc2::CommandPtr HopperSubsystem::Outtake() {
+    return frc2::cmd::Run([this] {SetHopperVoltage(-6_V);})
+    .FinallyDo([this] {
+        SetHopperVoltage(0_V);
+    });
+}
+
 void HopperSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
 

@@ -127,11 +127,12 @@ namespace IntakeConstants {
     //inline constexpr int kIntakeCANPort = 0;
 
     inline constexpr double kIntakeUp = 0.0; //convert from degrees to rotations
-    inline constexpr double kIntakeHalfway = 0.0;//45.0convert from degrees to rotations
-    inline constexpr double kIntakeDown = 0.0; //60.0convert from degrees to rotations
-    inline constexpr double kIntakeAgitate = 0; //2.5
+    inline constexpr double kIntakeHalfway = 30.0;//45.0convert from degrees to rotations
+    inline constexpr double kIntakeDown = 57.0; //60.0convert from degrees to rotations
+    inline constexpr double kIntakeAgitate = 2.5; //2.5
     inline constexpr double kFFPivot = 0.0;
-    inline constexpr units::volt_t kIntakeVolts = 6_V;
+    inline constexpr units::volt_t kIntakeVolts = 10_V;
+    inline constexpr units::volt_t kOuttakeVolts = - 6_V;
     inline constexpr units::volt_t kIntakeAgitateVolts = 3_V;
 
     inline constexpr double kSPivot = 0.0;      

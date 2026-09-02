@@ -67,15 +67,15 @@ class RobotContainer {
       .Repeatedly();
   }
 
-  frc2::CommandPtr AlignToHub() {
-      return frc2::cmd::WaitUntil([this] {
-          return drivebaseSubsystem.SeesTag();
-      })
-      .AndThen(
-          drivebaseSubsystem.GetAngletoHubCommand()
-              .WithTimeout(2_s)
-      );
-  }
+frc2::CommandPtr AlignToHub() {
+    return frc2::cmd::WaitUntil([this] {
+        return drivebaseSubsystem.SeesTag();
+    }).AndThen(drivebaseSubsystem.GetPoseToSetpoint())
+    .AndThen(
+        drivebaseSubsystem.GetAngletoHubCommand()
+    );
+}
+
 
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {

@@ -8,12 +8,15 @@
 #include "frc/DriverStation.h"
 #include "frc/DataLogManager.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include <exception>
+#include <iostream>
 
 Robot::Robot() {
   frc::DataLogManager::Start();
   frc::DriverStation::StartDataLog(frc::DataLogManager::GetLog());
 
   frc::SmartDashboard::PutData("Command Scheduler", &frc2::CommandScheduler::GetInstance());
+  // voltageTopic = nt::NetworkTableInstance::GetDefault().GetDoubleTopic("Voltage").Publish();
 
 }
 
@@ -22,6 +25,8 @@ void Robot::RobotPeriodic() {
 
 
   frc::SmartDashboard::PutNumber("MatchTime", frc::DriverStation::GetMatchTime().value());
+  // voltageTopic.Set(frc::DriverStation::GetBatteryVoltage());
+
 }
 
 void Robot::DisabledInit() {}
@@ -67,6 +72,6 @@ void Robot::SimulationPeriodic() {}
 
 #ifndef RUNNING_FRC_TESTS
 int main() {
-  return frc::StartRobot<Robot>();
+
 }
 #endif

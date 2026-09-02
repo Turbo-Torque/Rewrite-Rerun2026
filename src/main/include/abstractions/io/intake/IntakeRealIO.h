@@ -34,9 +34,11 @@ class IntakeRealIO : public IntakeIO {
             inputs.intakeVolts = units::volt_t{intakeMotor.GetMotorVoltage().GetValue()};
             inputs.intakeCurrent = units::ampere_t{intakeMotor.GetTorqueCurrent().GetValue()};
             
-            if ((inputs.position <= 0.5)) {
+            if ((inputs.position >= 55.0)) {
                 inputs.pivotAtSetpoint = true;
-            } 
+            } else {
+                inputs.pivotAtSetpoint = false;
+            }
 
         }
 
@@ -100,6 +102,5 @@ class IntakeRealIO : public IntakeIO {
             config.Inverted(true);
 
             pivotMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
-            pivotMotor.GetEncoder().SetPosition(0.0);
         }
 };
