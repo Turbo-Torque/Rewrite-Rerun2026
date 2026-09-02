@@ -69,27 +69,7 @@ void RobotContainer::ConfigureIntakeBindings() {
     
     driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
     operatorController.RightBumper().ToggleOnTrue(intakeSubsystem.AgitateCommand());
-    frc2::Trigger([this] {
-        return intakeSubsystem.IntakeNeedHopper();
-    })
-    .WhileTrue(hopperSubsystem.RunHopperCommand())
-    .OnTrue(
-        frc2::cmd::RunOnce([this] {
-            driveController.SetRumble(
-                frc::GenericHID::RumbleType::kBothRumble,
-                1.0
-            );
-        })
-    )
-    .OnFalse(
-        frc2::cmd::RunOnce([this] {
-            driveController.SetRumble(
-                frc::GenericHID::RumbleType::kBothRumble,
-                0.0
-            );
-        })
-    );
-    operatorController.LeftBumper().ToggleOnTrue(intakeSubsystem.PivotAndRunOuttakeCommand().AlongWith(hopperSubsystem.Outtake()));
+    frc2::Trigger([this] {return intakeSubsystem.IntakeNeedHopper();}).WhileTrue(hopperSubsystem.RunHopperCommand().AlongWith(ControllerRumble(driveController)));
 }
 
 void RobotContainer::ConfigureFeedBindings() {
@@ -111,6 +91,7 @@ void RobotContainer::ConfigureSetpointBindings() {
     operatorController.POVRight().OnTrue(shooterSubsystem.SetShooterState(double (ShooterConstants::kShooterRPM4), ShooterConstants::kHoodAngle4).AlongWith(frc2::cmd::RunOnce([this] { drivebaseSubsystem.SelectRightSetpoint();})));
     operatorController.RightTrigger().ToggleOnTrue(shooterSubsystem.RunShooterCommand3().AlongWith(RunFeedCommand()));
     driveController.RightTrigger().ToggleOnTrue(drivebaseSubsystem.GetPoseToSetpoint());
+    frc2::Trigger([this] {return drivebaseSubsystem.AtPoseSetPoint();}).OnTrue(ControllerRumble(driveController).AlongWith(ControllerRumble(operatorController)));
 }
 
 void RobotContainer::ConfigureNamedCommands() {
@@ -119,7 +100,6 @@ void RobotContainer::ConfigureNamedCommands() {
     pathplanner::NamedCommands::registerCommand("Feed", RunFeedCommand());
     pathplanner::NamedCommands::registerCommand("Shoot", shooterSubsystem.RunShooterCommand());
     pathplanner::NamedCommands::registerCommand("Align", drivebaseSubsystem.GetAngletoHubCommand());
-
 }
 
 

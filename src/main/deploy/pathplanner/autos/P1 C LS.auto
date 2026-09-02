@@ -37,6 +37,12 @@
                 "data": {
                   "name": "Feed"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Agitate"
+                }
               }
             ]
           }
@@ -73,6 +79,12 @@
                 "type": "named",
                 "data": {
                   "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Agitate"
                 }
               }
             ]

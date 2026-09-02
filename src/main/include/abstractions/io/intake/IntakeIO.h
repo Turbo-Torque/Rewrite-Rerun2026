@@ -24,5 +24,6 @@ class IntakeIO {
         virtual void SetIntakeVolts(units::volt_t volts) = 0;
         virtual void SetIntakeSetpoint(double rot) = 0;
         virtual void Agitate(double rot) = 0;
+        virtual void SetAgitateVolts(units::volt_t volts) = 0;
         virtual ~IntakeIO() = default;
 };

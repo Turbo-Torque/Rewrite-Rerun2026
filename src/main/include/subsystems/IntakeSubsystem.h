@@ -8,8 +8,10 @@ class IntakeSubsystem : public frc2::SubsystemBase {
         IntakeSubsystem(std::unique_ptr<IntakeIO> io);
 
         void SetIntakeVoltage(units::volt_t voltage) { io -> SetIntakeVolts(voltage);}
+        void SetAgitateVolts(units::volt_t volts) { io -> SetAgitateVolts(volts);}
         void SetIntakeSetpoint(double rot) {io -> SetIntakeSetpoint(rot);}
         void Agitate(double rot) {io -> Agitate(rot);}
+
 
         bool IntakeNeedHopper();
 

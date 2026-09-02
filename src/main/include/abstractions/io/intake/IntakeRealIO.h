@@ -58,6 +58,10 @@ class IntakeRealIO : public IntakeIO {
             units::volt_t ff = pivotFF.Calculate(currentAngle, 0_rad_per_s);
             pivotMotor.GetClosedLoopController().SetSetpoint(rot, rev::spark::SparkLowLevel::ControlType::kPosition, rev::spark::kSlot2, ff.value());
         }
+        
+        void SetAgitateVolts(units::volt_t volts) override{
+            intakeMotor.SetVoltage(volts);
+        }
 
     private:
         ctre::phoenix6::hardware::TalonFX intakeMotor{IntakeConstants::kIntakeMotorPort};

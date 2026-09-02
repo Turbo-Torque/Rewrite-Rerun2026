@@ -74,6 +74,12 @@
                 "data": {
                   "name": "Feed"
                 }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Agitate"
+                }
               }
             ]
           }

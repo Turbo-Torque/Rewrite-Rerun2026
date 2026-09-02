@@ -32,15 +32,15 @@ frc2::CommandPtr IntakeSubsystem::PivotAndRunOuttakeCommand() {
 
 frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
     return frc2::cmd::Run([this] {Agitate(IntakeConstants::kIntakeAgitate);}, {this})
-    .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeAgitateVolts);}, {this}))
+    .AndThen(frc2::cmd::Run([this] {SetAgitateVolts(IntakeConstants::kIntakeAgitateVolts);}, {this}))
     .FinallyDo([this] {
-        SetIntakeVoltage(0_V);
+        SetAgitateVolts(0_V);
         Agitate(IntakeConstants::kIntakeHalfway);
     });
 }
 
 bool IntakeSubsystem::IntakeNeedHopper() {
-    if (inputs.pivotCurrent >= 70_A && inputs.rotations <= 500 && inputs.pivotAtSetpoint) {
+    if (inputs.pivotCurrent >= 50_A && inputs.rotations < 100 && inputs.pivotAtSetpoint) {
         return true;
     }
     return false;
@@ -54,10 +54,7 @@ void IntakeSubsystem::Periodic() {
     frc::SmartDashboard::PutBoolean("intake setpoint", inputs.pivotAtSetpoint);
     frc::SmartDashboard::PutNumber("intake current", inputs.intakeCurrent.value());
     frc::SmartDashboard::PutNumber("intake rollers rpm", inputs.rotations);
-    // frc::SmartDashboard::PutString("Intake Stall",     {"#FF0000", "#0000FF"});
-    if (IntakeNeedHopper()) {
-    }
-    if (inputs.pivotAtSetpoint && (inputs.position < 62) && (inputs.position > 50) ) {
+    if (inputs.pivotAtSetpoint && (inputs.position >= 50) && (inputs.position < 62) ) {
         SetIntakeVoltage(IntakeConstants::kIntakeVolts);
     } else {
         SetIntakeVoltage(0_V);

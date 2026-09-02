@@ -102,6 +102,16 @@ frc2::CommandPtr AlignToHub() {
         shooterSubsystem.SetHoodSetpoint(ShooterConstants::kHoodDown);    });
   }
 
+frc2::CommandPtr ControllerRumble(frc2::CommandXboxController& controller) {
+    return frc2::cmd::Run([&controller] {
+        controller.SetRumble(frc::GenericHID::RumbleType::kBothRumble, 1.0);
+    })
+    .FinallyDo([&controller] {
+        controller.SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0.0);
+    });
+}
+
+
   void ConfigureBindings();
   void ConfigureDefualts();
     void ConfigureNamedCommands();

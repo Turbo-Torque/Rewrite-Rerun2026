@@ -169,7 +169,7 @@ namespace ShooterConstants {
     inline constexpr units::meter_t kShooterOffsetY = -0.2041_m;
     inline constexpr units::meter_t kShooterHeight = 0.525_m;
 
-    inline constexpr units::revolutions_per_minute_t kMinRPM = 3200_rpm;
+    inline constexpr units::revolutions_per_minute_t kMinRPM = 2500_rpm;
     inline constexpr units::revolutions_per_minute_t kMaxRPM = 4000_rpm;
 
     inline constexpr units::second_t kMaxFlightTime = 1.5_s;

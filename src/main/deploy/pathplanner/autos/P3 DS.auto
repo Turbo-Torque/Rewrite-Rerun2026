@@ -23,7 +23,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.3
+                  "waitTime": 1.5
                 }
               },
               {
@@ -36,6 +36,12 @@
                 "type": "named",
                 "data": {
                   "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Agitate"
                 }
               }
             ]
@@ -60,7 +66,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 2.4
                 }
               },
               {
@@ -73,6 +79,12 @@
                 "type": "named",
                 "data": {
                   "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Agitate"
                 }
               }
             ]
@@ -97,7 +109,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.4
+                  "waitTime": 2.4
                 }
               },
               {
@@ -110,6 +122,12 @@
                 "type": "named",
                 "data": {
                   "name": "Feed"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Agitate"
                 }
               }
             ]
