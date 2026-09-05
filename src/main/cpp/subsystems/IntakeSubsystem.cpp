@@ -54,11 +54,11 @@ void IntakeSubsystem::Periodic() {
     frc::SmartDashboard::PutBoolean("intake setpoint", inputs.pivotAtSetpoint);
     frc::SmartDashboard::PutNumber("intake current", inputs.intakeCurrent.value());
     frc::SmartDashboard::PutNumber("intake rollers rpm", inputs.rotations);
-    if (inputs.pivotAtSetpoint && (inputs.position >= 50) && (inputs.position < 62) ) {
-        SetIntakeVoltage(IntakeConstants::kIntakeVolts);
-    } else {
-        SetIntakeVoltage(0_V);
-    }
+    // if (inputs.pivotAtSetpoint && (inputs.position <= 0.2)) {
+    //     SetIntakeVoltage(IntakeConstants::kIntakeVolts);
+    // } else {
+    //     SetIntakeVoltage(0_V);
+    // }
 
 
 }

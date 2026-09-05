@@ -79,7 +79,7 @@ void RobotContainer::ConfigureFeedBindings() {
 }
 
 void RobotContainer::ConfigureShooterBindings(){
-    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()));
+    operatorController.Y().ToggleOnTrue(shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand()).AlongWith(ControllerRumble(operatorController)));
     operatorController.A().ToggleOnTrue(shooterSubsystem.TestShooter());
     operatorController.X().ToggleOnTrue(AimAndShootCommand());
     operatorController.B().ToggleOnTrue(shooterSubsystem.Laser().AlongWith(RunFeedCommand()));

@@ -11,12 +11,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Align"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -54,12 +48,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Align"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -94,12 +82,6 @@
           "type": "path",
           "data": {
             "pathName": "L3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Align"
           }
         },
         {
