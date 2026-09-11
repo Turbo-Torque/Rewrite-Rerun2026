@@ -35,8 +35,8 @@ namespace PathingConstants {
     inline constexpr frc::Pose2d kBlueHubPose{4.625_m, 4_m, 0_rad};
     inline constexpr frc::Pose2d kDummy{0_m,0_m,0_rad};
     inline constexpr frc::Pose2d kRedCenter{15.0_m,4.2_m,0_rad};
-    inline constexpr frc::Pose2d kRedBottom{14.5_m,6.0_m,0_rad};
-    inline constexpr frc::Pose2d kRedTop{14.5_m,1.7_m,0_rad};
+    inline constexpr frc::Pose2d kRedBottom{13.2_m,5.7_m,0_rad};
+    inline constexpr frc::Pose2d kRedTop{13.2_m,1.7_m,0_rad};
     inline constexpr frc::Pose2d kBlueCenter{1.8_m,3.9_m,0_rad};
     inline constexpr frc::Pose2d kBlueBottom{2_m,5.8_m,0_rad};
     inline constexpr frc::Pose2d kBlueTop{1.8_m,2.3_m,0_rad};
@@ -127,13 +127,13 @@ namespace IntakeConstants {
     //inline constexpr int kIntakeCANPort = 0;
 
     inline constexpr double kIntakeUp = 0.0; //convert from degrees to rotations
-    inline constexpr double kIntakeHalfway = 0.;//30.0convert from degrees to rotations
-    inline constexpr double kIntakeDown = 0.0; //57.0convert from degrees to rotations
-    inline constexpr double kIntakeAgitate = 0; //2.5
+    inline constexpr double kIntakeHalfway = 30.0;//30.0convert from degrees to rotations
+    inline constexpr double kIntakeDown = 62.0; //57.0convert from degrees to rotations
+    inline constexpr double kIntakeAgitate = 2.5; //2.5
     inline constexpr double kFFPivot = 0.0;
-    inline constexpr units::volt_t kIntakeVolts = 10_V;
+    inline constexpr units::volt_t kIntakeVolts = 8_V;
     inline constexpr units::volt_t kOuttakeVolts = - 6_V;
-    inline constexpr units::volt_t kIntakeAgitateVolts = 3_V;
+    inline constexpr units::volt_t kIntakeAgitateVolts = 2_V;
 
     inline constexpr double kSPivot = 0.0;      
     inline constexpr double kGPivot = 0.0;          
@@ -157,7 +157,7 @@ namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
     inline constexpr units::revolutions_per_minute_t kShooterRPM = 2800_rpm;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM1 = 2800_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM1 = 2500_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM2 = 2800_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM3 = 2800_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM4 = 2800_rpm;
@@ -184,8 +184,8 @@ namespace ShooterConstants {
     inline constexpr double kHoodUp = 120.0;
     inline constexpr double kHoodLaser = 160.0; 
     inline constexpr double kHoodDown = 0.0; 
-    inline constexpr double kHoodAngle1 = 120.0;
-    inline constexpr double kHoodAngle2 = 120.0;
+    inline constexpr double kHoodAngle1 = 100.0;
+    inline constexpr double kHoodAngle2 = 100.0;
     inline constexpr double kHoodAngle3 = 120.0;
     inline constexpr double kHoodAngle4 = 120.0;
     inline constexpr units::degree_t kAngleStep = 1_deg;

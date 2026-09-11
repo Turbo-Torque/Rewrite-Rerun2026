@@ -72,11 +72,11 @@ void DrivebaseSubsystem::ConfigureAutoBuilder() {
 
 void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), frc::Pose2d{});
-    // poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
-    //                               frc::AprilTagField::k2026RebuiltAndyMark);
-    //  poseEstimator.AddLocalizationCamera("rightShooterCam",
-    //                               frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
-    //                               frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
+                                  frc::AprilTagField::k2026RebuiltAndyMark);
+     poseEstimator.AddLocalizationCamera("rightShooterCam",
+                                  frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
+                                  frc::AprilTagField::k2026RebuiltAndyMark);
     // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -260_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
     
@@ -103,9 +103,9 @@ void DrivebaseSubsystem::Drive(const frc::ChassisSpeeds& speeds){
 }
 
 void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
-    auto x = speeds.vx * 1;
-    auto y = speeds.vy * 1;
-    auto rot = speeds.omega * 1;
+    auto x = speeds.vx * -1;
+    auto y = speeds.vy * -1;
+    auto rot = speeds.omega * -1;
 
     auto states = DriveConstants::kKinematics.ToSwerveModuleStates({x, y, rot});
 
@@ -220,7 +220,7 @@ frc2::CommandPtr DrivebaseSubsystem::RotateToHubCommand(std::function<frc::Rotat
             units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
             rotSpeed = std::clamp(rotSpeed, -maxSpeed.value(), maxSpeed.value());
 
-            Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{rotSpeed}});
+            Drive(frc::ChassisSpeeds{0_mps, 0_mps, units::degrees_per_second_t{-rotSpeed}});
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); },
         [=, this] { return AtHeadingSetpoint(); },
@@ -259,7 +259,7 @@ frc2::CommandPtr DrivebaseSubsystem::DriveToSetpointCommand(std::function<frc::T
             driveXSpeed = std::clamp(driveXSpeed, -maxSpeed.value(), maxSpeed.value());
             driveYSpeed = std::clamp(driveYSpeed, -maxSpeed.value(), maxSpeed.value());
 
-            Drive(frc::ChassisSpeeds{units::meters_per_second_t{-driveXSpeed}, units::meters_per_second_t{-driveYSpeed}, 0_rad_per_s});
+            Drive(frc::ChassisSpeeds{units::meters_per_second_t{driveXSpeed}, units::meters_per_second_t{driveYSpeed}, 0_rad_per_s});
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); },
         [this] { return AtPoseSetPoint(); },

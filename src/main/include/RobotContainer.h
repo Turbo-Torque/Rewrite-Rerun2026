@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "Constants.h"
+#include "frc/Timer.h"
 #include "subsystems/DrivebaseSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
 #include "subsystems/HopperSubsystem.h"
@@ -68,13 +69,10 @@ class RobotContainer {
   }
 
 frc2::CommandPtr AlignToHub() {
-    return frc2::cmd::WaitUntil([this] {
-        return drivebaseSubsystem.SeesTag();
-    }).AndThen(drivebaseSubsystem.GetPoseToSetpoint())
-    .AndThen(
-        drivebaseSubsystem.GetAngletoHubCommand()
-    );
+    return drivebaseSubsystem.GetPoseToSetpoint().WithDeadline(frc2::cmd::Wait(3_s))
+        .AndThen(drivebaseSubsystem.GetAngletoHubCommand());
 }
+
 
 
   frc2::CommandPtr AimAndShootCommand() {

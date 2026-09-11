@@ -46,6 +46,10 @@ bool IntakeSubsystem::IntakeNeedHopper() {
     return false;
 }
 
+bool IntakeSubsystem::AgitateRollers() {
+    return true;
+}
+
 void IntakeSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
 
@@ -54,8 +58,13 @@ void IntakeSubsystem::Periodic() {
     frc::SmartDashboard::PutBoolean("intake setpoint", inputs.pivotAtSetpoint);
     frc::SmartDashboard::PutNumber("intake current", inputs.intakeCurrent.value());
     frc::SmartDashboard::PutNumber("intake rollers rpm", inputs.rotations);
-    // if (inputs.pivotAtSetpoint && (inputs.position <= 0.2)) {
-    //     SetIntakeVoltage(IntakeConstants::kIntakeVolts);
+    if (inputs.pivotAtSetpoint && (inputs.position > 55) && (inputs.position <= 62) ) {
+        SetIntakeVoltage(IntakeConstants::kIntakeVolts);
+    } else {
+        SetIntakeVoltage(0_V);
+    }
+    // if (AgitateRollers()) {
+    //     SetIntakeVoltage(IntakeConstants::kIntakeAgitateVolts);
     // } else {
     //     SetIntakeVoltage(0_V);
     // }

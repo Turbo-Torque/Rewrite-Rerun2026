@@ -34,7 +34,7 @@ class IntakeRealIO : public IntakeIO {
             inputs.intakeVolts = units::volt_t{intakeMotor.GetMotorVoltage().GetValue()};
             inputs.intakeCurrent = units::ampere_t{intakeMotor.GetTorqueCurrent().GetValue()};
             
-            if ((inputs.position <= 0.2)) {
+            if ((inputs.position >= 55)) {
                 inputs.pivotAtSetpoint = true;
             } else {
                 inputs.pivotAtSetpoint = false;
@@ -87,7 +87,7 @@ class IntakeRealIO : public IntakeIO {
 
         void ConfigPivotMotor() {
             rev::spark::SparkMaxConfig config;
-            config.closedLoop.P(0.03, rev::spark::kSlot0);
+            config.closedLoop.P(0.04, rev::spark::kSlot0);
             config.closedLoop.I(0.001, rev::spark::kSlot0);
             config.closedLoop.D(0.002, rev::spark::kSlot0);
 

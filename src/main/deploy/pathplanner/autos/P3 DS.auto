@@ -11,12 +11,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Align"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -29,7 +23,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "Shoot 2"
                 }
               },
               {
@@ -54,12 +48,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Align"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -72,7 +60,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "Shoot 2"
                 }
               },
               {
@@ -97,12 +85,6 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Align"
-          }
-        },
-        {
           "type": "deadline",
           "data": {
             "commands": [
@@ -115,7 +97,7 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Shoot"
+                  "name": "Shoot 2"
                 }
               },
               {

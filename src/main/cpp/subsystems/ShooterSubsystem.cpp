@@ -46,11 +46,10 @@ frc2::CommandPtr ShooterSubsystem::TestShooter() {
     });
 }
 
-frc2::CommandPtr ShooterSubsystem::RunShooterCommand2(units::revolutions_per_minute_t rpm, double hoodAngle) {
-    return frc2::cmd::Run([this, rpm, hoodAngle] {
-        SetShooterRPM(rpm);
-        SetHoodSetpoint(hoodAngle);
-    }, {this})
+frc2::CommandPtr ShooterSubsystem::RunShooterCommand2() {
+    return frc2::cmd::Run([this] {SetShooterRPM(ShooterConstants::kShooterRPM1);
+        SetHoodSetpoint(ShooterConstants::kHoodAngle1);
+        }, {this})
     .FinallyDo([this] {
         CoastOut();
         SetHoodSetpoint(ShooterConstants::kHoodDown);
