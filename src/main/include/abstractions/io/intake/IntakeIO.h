@@ -2,6 +2,7 @@
 
 #include "units/current.h"
 #include "units/voltage.h"
+#include <string>
 
 struct IntakeIOInputs{
     double position{0.0};
@@ -12,7 +13,7 @@ struct IntakeIOInputs{
     units::ampere_t pivotCurrent{0_A};
     units::volt_t intakeVolts{0_V};
     units::ampere_t intakeCurrent{0_A};
-
+    units::volt_t pivotVolts{0_V};
 
     bool pivotAtSetpoint{false};
     bool needHopper{false};
@@ -25,5 +26,6 @@ class IntakeIO {
         virtual void SetIntakeSetpoint(double rot) = 0;
         virtual void Agitate(double rot) = 0;
         virtual void SetAgitateVolts(units::volt_t volts) = 0;
+        virtual void SetPivotVolts(units::volt_t volts) = 0;
         virtual ~IntakeIO() = default;
 };

@@ -67,8 +67,9 @@ void RobotContainer::ConfigureBindings() {
 void RobotContainer::ConfigureIntakeBindings() {
     
     driveController.A().ToggleOnTrue(intakeSubsystem.PivotAndRunIntakeCommand());
+    driveController.POVDown().ToggleOnTrue(intakeSubsystem.SupplyPivotVoltsCommand());
     operatorController.RightBumper().ToggleOnTrue(intakeSubsystem.AgitateCommand());
-    frc2::Trigger([this] {return intakeSubsystem.IntakeNeedHopper();}).WhileTrue(hopperSubsystem.RunHopperCommand().AlongWith(ControllerRumble(driveController)));
+    frc2::Trigger([this] {return intakeSubsystem.IntakeNeedHopper();}).WhileTrue(ControllerRumble(driveController));
 }
 
 void RobotContainer::ConfigureFeedBindings() {
@@ -100,11 +101,10 @@ void RobotContainer::ConfigureNamedCommands() {
     pathplanner::NamedCommands::registerCommand("Shoot", shooterSubsystem.RunShooterCommand());
     pathplanner::NamedCommands::registerCommand("Shoot 2", shooterSubsystem.RunShooterCommand2());
     pathplanner::NamedCommands::registerCommand("Align", drivebaseSubsystem.GetAngletoHubCommand());
+    pathplanner::NamedCommands::registerCommand("Gyro", frc2::cmd::RunOnce([this] { drivebaseSubsystem.ZeroGyro(); }));
 }
 
 
 frc2::Command* RobotContainer::GetAutonomousCommand() {
-
     return autoChooser.GetSelected();
-
 }

@@ -18,6 +18,7 @@
 #include "units/voltage.h"
 #include <frc/controller/ArmFeedforward.h>
 #include <iterator>
+#include <string>
 
 class IntakeRealIO : public IntakeIO {
     public:
@@ -40,13 +41,15 @@ class IntakeRealIO : public IntakeIO {
                 inputs.pivotAtSetpoint = false;
             }
 
+
         }
 
         void SetIntakeVolts(units::volt_t voltage) override{
             intakeMotor.SetVoltage(voltage);
         }
-
-
+        void SetPivotVolts(units::volt_t volts) override {
+            pivotMotor.SetVoltage(volts);
+        }
         void SetIntakeSetpoint(double rot) override{
             units::radian_t currentAngle{(pivotMotor.GetEncoder().GetPosition())};
             units::volt_t ff = pivotFF.Calculate(currentAngle, 0_rad_per_s);
@@ -62,6 +65,7 @@ class IntakeRealIO : public IntakeIO {
         void SetAgitateVolts(units::volt_t volts) override{
             intakeMotor.SetVoltage(volts);
         }
+
 
     private:
         ctre::phoenix6::hardware::TalonFX intakeMotor{IntakeConstants::kIntakeMotorPort};
@@ -106,6 +110,6 @@ class IntakeRealIO : public IntakeIO {
             config.Inverted(true);
 
             pivotMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
-            pivotMotor.GetEncoder().SetPosition(0.0);
+            // pivotMotor.GetEncoder().SetPosition(0.0);
         }
 };

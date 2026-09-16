@@ -3,6 +3,7 @@
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/Commands.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include <string>
 
 
 IntakeSubsystem::IntakeSubsystem(std::unique_ptr<IntakeIO> intakeIo) : io(std::move(intakeIo)) {
@@ -10,58 +11,85 @@ IntakeSubsystem::IntakeSubsystem(std::unique_ptr<IntakeIO> intakeIo) : io(std::m
 } 
 
 frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
-    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown);}, {this})
+    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
     .Until([this]() { return inputs.pivotAtSetpoint; })
     .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeVolts);}, {this}))
     .FinallyDo([this] {
         SetIntakeVoltage(0_V);
-        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway);
+        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway + pivotOffset);
     });
 }
 
 frc2::CommandPtr IntakeSubsystem::PivotAndRunOuttakeCommand() {
-    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown);}, {this})
+    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
     .Until([this]() { return inputs.pivotAtSetpoint; })
     .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kOuttakeVolts);}, {this}))
     .FinallyDo([this] {
         SetIntakeVoltage(0_V);
-        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway);
+        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway + pivotOffset);
     });
 }
 
 
 frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
-    return frc2::cmd::Run([this] {Agitate(IntakeConstants::kIntakeAgitate);}, {this})
+    return frc2::cmd::Run([this] {Agitate(IntakeConstants::kIntakeAgitate + pivotOffset);}, {this})
     .AndThen(frc2::cmd::Run([this] {SetAgitateVolts(IntakeConstants::kIntakeAgitateVolts);}, {this}))
     .FinallyDo([this] {
         SetAgitateVolts(0_V);
-        Agitate(IntakeConstants::kIntakeHalfway);
+        Agitate(IntakeConstants::kIntakeHalfway + pivotOffset);
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::SupplyPivotVoltsCommand() {
+    return frc2::cmd::Run([this] {SetPivotVolts(IntakeConstants::kPivotVolts);}, {this})
+    .FinallyDo([this] {
+        SetPivotVolts(0_V);
+        newIntakePivot = inputs.position;  // real pivot position, not roller RPM
+        pivotOffset = newIntakePivot - IntakeConstants::kIntakeDown;  // drift from where "down" should be
     });
 }
 
 bool IntakeSubsystem::IntakeNeedHopper() {
-    if (inputs.pivotCurrent >= 50_A && inputs.rotations < 100 && inputs.pivotAtSetpoint) {
+    if (inputs.intakeCurrent >= 50_A && inputs.rotations < 3000.0) {
         return true;
+    } else {
+        return false;
     }
-    return false;
 }
 
 bool IntakeSubsystem::AgitateRollers() {
     return true;
 }
 
+
 void IntakeSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
 
+    // ADDED: pivotOffset so these thresholds stay correct after SupplyPivotVoltsCommand() recalibrates
+    std::string intakeState;
+    if (inputs.position >  (IntakeConstants::kIntakeDown + pivotOffset - 3) && inputs.position <= (IntakeConstants::kIntakeDown + pivotOffset + 5)) {
+        intakeState = "Intake Down";
+    } else if (inputs.position >  (IntakeConstants::kIntakeHalfway + pivotOffset - 3) && inputs.position <= (IntakeConstants::kIntakeHalfway + pivotOffset + 5)) {
+        intakeState = "Intake Halfway";
+    } else if (inputs.position >  (IntakeConstants::kIntakeAgitate + pivotOffset - 2) && inputs.position <= (IntakeConstants::kIntakeAgitate + pivotOffset + 5)) {
+        intakeState = "Intake Agitate";
+    } else {
+        intakeState = "Intake Up";
+    }
+
+    
     frc::SmartDashboard::PutNumber("Intake Pose", inputs.position);
     frc::SmartDashboard::PutNumber("Intake Volts", inputs.intakeVolts.value());
     frc::SmartDashboard::PutBoolean("intake setpoint", inputs.pivotAtSetpoint);
     frc::SmartDashboard::PutNumber("intake current", inputs.intakeCurrent.value());
     frc::SmartDashboard::PutNumber("intake rollers rpm", inputs.rotations);
-    if (inputs.pivotAtSetpoint && (inputs.position > 55) && (inputs.position <= 62) ) {
+    frc::SmartDashboard::PutString("Intake State", intakeState);
+    frc::SmartDashboard::PutBoolean("Intake Roller Stall", IntakeNeedHopper());
+    if (inputs.pivotAtSetpoint && (inputs.position > 55 + pivotOffset) && (inputs.position <= 62 + pivotOffset) ) {
         SetIntakeVoltage(IntakeConstants::kIntakeVolts);
     } else {
         SetIntakeVoltage(0_V);
+        
     }
     // if (AgitateRollers()) {
     //     SetIntakeVoltage(IntakeConstants::kIntakeAgitateVolts);

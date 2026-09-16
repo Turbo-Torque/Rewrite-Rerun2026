@@ -54,7 +54,8 @@ class RobotContainer {
         return shooterSubsystem.IsNearState();
     }).WithTimeout(2_s)
     .AndThen(
-        hopperSubsystem.RunHopperCommand()).AlongWith(gateSubsystem.RunGateCommand());
+        hopperSubsystem.RunHopperCommand().AlongWith(gateSubsystem.RunGateCommand())
+    );
   }
 
   frc2::CommandPtr IntakeNeedHopper() {

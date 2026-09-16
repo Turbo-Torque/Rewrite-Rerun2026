@@ -8,6 +8,7 @@
 #include "frc/DriverStation.h"
 #include "frc/DataLogManager.h"
 #include "frc/smartdashboard/SmartDashboard.h"
+#include "subsystems/DrivebaseSubsystem.h"
 #include <exception>
 #include <iostream>
 

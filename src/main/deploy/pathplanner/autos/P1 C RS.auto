@@ -5,15 +5,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "c1"
+            "name": "Gyro"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Align"
+            "pathName": "c1"
           }
         },
         {
@@ -45,12 +45,6 @@
           "type": "path",
           "data": {
             "pathName": "c2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Align"
           }
         },
         {

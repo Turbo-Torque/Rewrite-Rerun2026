@@ -77,7 +77,7 @@ void DrivebaseSubsystem::ConfigureEstimator() {
      poseEstimator.AddLocalizationCamera("rightShooterCam",
                                   frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
-    // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -260_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -190_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
     
 }
@@ -124,11 +124,6 @@ void DrivebaseSubsystem::SetModuleStates(const std::array<frc::SwerveModuleState
 
 void DrivebaseSubsystem::ZeroGyro() {
     gyro.Reset();
-
-    poseEstimator.ResetEstimatorPosition(
-        GetGyroAngle(),
-        GetSwerveModulePosition(),
-        frc::Pose2d{});
 }
 
 turbolib::perception::TurboPoseEstimator& DrivebaseSubsystem::GetPoseEstimator() {
