@@ -69,6 +69,13 @@ class RobotContainer {
       .Repeatedly();
   }
 
+    frc2::CommandPtr AgitateSequenceCommand() {
+        return intakeSubsystem.PivotAndRunIntakeCommand()
+            .WithTimeout(3_s)
+            .AndThen(intakeSubsystem.AgitateCommand());
+    }
+
+
 frc2::CommandPtr AlignToHub() {
     return drivebaseSubsystem.GetPoseToSetpoint().WithDeadline(frc2::cmd::Wait(3_s))
         .AndThen(drivebaseSubsystem.GetAngletoHubCommand());
@@ -107,6 +114,24 @@ frc2::CommandPtr ControllerRumble(frc2::CommandXboxController& controller) {
     })
     .FinallyDo([&controller] {
         controller.SetRumble(frc::GenericHID::RumbleType::kBothRumble, 0.0);
+    });
+}
+
+frc2::CommandPtr ControllerRumbleSShoot(frc2::CommandXboxController& controller) {
+    return frc2::cmd::Run([&controller] {
+        controller.SetRumble(frc::GenericHID::RumbleType::kRightRumble, .5);
+    })
+    .FinallyDo([&controller] {
+        controller.SetRumble(frc::GenericHID::RumbleType::kRightRumble, 0.0);
+    });
+}
+
+frc2::CommandPtr ControllerRumbleWShoot(frc2::CommandXboxController& controller) {
+    return frc2::cmd::Run([&controller] {
+        controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, .5);
+    })
+    .FinallyDo([&controller] {
+        controller.SetRumble(frc::GenericHID::RumbleType::kLeftRumble, 0.0);
     });
 }
 

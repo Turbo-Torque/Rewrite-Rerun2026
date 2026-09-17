@@ -12,7 +12,7 @@ IntakeSubsystem::IntakeSubsystem(std::unique_ptr<IntakeIO> intakeIo) : io(std::m
 
 frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
     return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
-    .Until([this]() { return inputs.pivotAtSetpoint; })
+    .Until([this]() { return AtPivotSetpoint(IntakeConstants::kIntakeDown + pivotOffset); })
     .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeVolts);}, {this}))
     .FinallyDo([this] {
         SetIntakeVoltage(0_V);
@@ -85,12 +85,11 @@ void IntakeSubsystem::Periodic() {
     frc::SmartDashboard::PutNumber("intake rollers rpm", inputs.rotations);
     frc::SmartDashboard::PutString("Intake State", intakeState);
     frc::SmartDashboard::PutBoolean("Intake Roller Stall", IntakeNeedHopper());
-    if (inputs.pivotAtSetpoint && (inputs.position > 55 + pivotOffset) && (inputs.position <= 62 + pivotOffset) ) {
-        SetIntakeVoltage(IntakeConstants::kIntakeVolts);
-    } else {
-        SetIntakeVoltage(0_V);
-        
-    }
+    // REMOVED (by request): this ran every tick unconditionally, regardless of which command (if
+    // any) was active, and fought PivotAndRunOuttakeCommand()'s FinallyDo() — the pivot sits in
+    // this exact position window right after outtake ends, so this kept re-enabling forward intake
+    // voltage every cycle instead of letting the roller stay at 0V / the pivot settle at halfway.
+    // PivotAndRunIntakeCommand() already runs the rollers itself when intentionally going down.
     // if (AgitateRollers()) {
     //     SetIntakeVoltage(IntakeConstants::kIntakeAgitateVolts);
     // } else {

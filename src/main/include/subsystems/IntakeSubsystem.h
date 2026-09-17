@@ -19,6 +19,9 @@ class IntakeSubsystem : public frc2::SubsystemBase {
 
         bool IntakeNeedHopper();
         bool AgitateRollers();
+        bool AtPivotSetpoint(double target, double tolerance = 2.0) const {
+            return std::abs(inputs.position - target) <= tolerance;
+        }
 
         frc2::CommandPtr PivotAndRunIntakeCommand();
         frc2::CommandPtr PivotAndRunOuttakeCommand();

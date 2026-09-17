@@ -188,13 +188,13 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
 
             if (IsRedAlliance()) {
                 
-                x =  xInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                y =   yInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.65;
+                x =  xInput * DriveConstants::kMaxLinearSpeed * -0.75;
+                y =   yInput * DriveConstants::kMaxLinearSpeed * -0.75;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed * -0.65;
             } else {
-                x = xInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                y =  yInput * DriveConstants::kMaxLinearSpeed * 0.75;
-                rot = rotInput * DriveConstants::kMaxAngularSpeed * 0.65;
+                x = xInput * DriveConstants::kMaxLinearSpeed * -0.75;
+                y =  yInput * DriveConstants::kMaxLinearSpeed * -0.75;
+                rot = rotInput * DriveConstants::kMaxAngularSpeed * -0.65;
             }
 
             const frc::ChassisSpeeds speeds{x, y, rot};
@@ -281,7 +281,7 @@ frc2::CommandPtr DrivebaseSubsystem::GetPoseToSetpoint() {
 
 
 frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {
-    return gyro.GetRotation2d().RotateBy(180_deg);
+    return gyro.GetRotation2d();
 }
 
 frc::Pose2d DrivebaseSubsystem::GetPose() {

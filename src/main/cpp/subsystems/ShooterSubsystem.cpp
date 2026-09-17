@@ -13,6 +13,8 @@ ShooterSubsystem::ShooterSubsystem(std::unique_ptr<ShooterIO> shooterIO) : io(st
     // put smartdashboard (controls rpm)
     frc::SmartDashboard::PutNumber("Put Shooter RPM", 0.0);
     frc::SmartDashboard::PutNumber("Put Hood Angle", 0.0);
+    shotRegression.insert(2_m, 2000_rpm);
+    shotRegression.insert(6_m, 4000_rpm);
 
 }
 
@@ -26,9 +28,21 @@ frc2::CommandPtr ShooterSubsystem::RunShooterCommand() {
     });
 }
 
-frc2::CommandPtr ShooterSubsystem::Laser() {
-    return frc2::cmd::Run([this] {
-        SetShooterRPM(ShooterConstants::kLaser);
+// frc2::CommandPtr ShooterSubsystem::Laser() {
+//     return frc2::cmd::Run([this] {
+//         SetShooterRPM(ShooterConstants::kLaser);
+//         SetHoodSetpoint(ShooterConstants::kHoodLaser);
+//     }, {this})
+//     .FinallyDo([this] {
+//         CoastOut();
+//         SetHoodSetpoint(ShooterConstants::kHoodDown);
+//     });
+// }
+
+frc2::CommandPtr ShooterSubsystem::Laser(std::function<units::meter_t()> getDistance) {
+    return frc2::cmd::Run([this, getDistance] {
+        lastLaserDistance = getDistance();
+        SetShooterRPM(GetShotRPM(lastLaserDistance));
         SetHoodSetpoint(ShooterConstants::kHoodLaser);
     }, {this})
     .FinallyDo([this] {
@@ -36,6 +50,7 @@ frc2::CommandPtr ShooterSubsystem::Laser() {
         SetHoodSetpoint(ShooterConstants::kHoodDown);
     });
 }
+
 
 frc2::CommandPtr ShooterSubsystem::TestShooter() {
     return frc2::cmd::Run([this] {SetShooterRPM(units::revolutions_per_minute_t{frc::SmartDashboard::GetNumber("Put Shooter RPM", 0.0)});
@@ -95,6 +110,7 @@ bool ShooterSubsystem::IsNearState() {
     return false;
 }
 
+
 // void ShooterSubsystem::SetHoodAngleGoal(units::degree_t angle) {
 //     SetHoodSetpoint(angle.value());
 // }
@@ -111,6 +127,7 @@ void ShooterSubsystem::Periodic() {
     frc::SmartDashboard::PutNumber("Hood Angle", inputs.hoodPosition);
     frc::SmartDashboard::PutNumber("Hood Setpoint", inputs.hoodSetPoint);
     frc::SmartDashboard::PutNumber("Hood Current", inputs.hoodCurrent.value());
+    frc::SmartDashboard::PutNumber("Get Distance to Laser", lastLaserDistance.value());
 
     
 

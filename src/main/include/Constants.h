@@ -45,7 +45,8 @@ namespace PathingConstants {
 namespace FieldConstants {
     inline constexpr units::meter_t kFieldLength = 16.541_m;//
     inline constexpr units::meter_t kTargetHeight = 1.8288_m;
-    inline constexpr units::meter_t kBluePosX = 4.625_m;
+    inline constexpr units::meter_t kBluePosX = 2.5_m;
+    inline constexpr units::meter_t kRedPosX = kFieldLength - 2.5_m;
     inline constexpr units::meter_t kHubPosY = 4_m;
 
     inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
@@ -183,7 +184,7 @@ namespace ShooterConstants {
     inline constexpr units::degree_t kMinAngle = 20_deg;
     inline constexpr units::degree_t kMaxAngle = 60_deg;
     inline constexpr double kHoodUp = 120.0;
-    inline constexpr double kHoodLaser = 160.0; 
+    inline constexpr double kHoodLaser = 155.0;
     inline constexpr double kHoodDown = 0.0; 
     inline constexpr double kHoodAngle1 = 100.0;
     inline constexpr double kHoodAngle2 = 100.0;
