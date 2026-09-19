@@ -18,7 +18,7 @@ frc2::CommandPtr HopperSubsystem::RunHopperCommand() {
 }
 
 frc2::CommandPtr HopperSubsystem::Outtake() {
-    return frc2::cmd::Run([this] {SetHopperVoltage(-6_V);})
+    return frc2::cmd::Run([this] {SetHopperVoltage(-9_V);})
     .FinallyDo([this] {
         SetHopperVoltage(0_V);
     });

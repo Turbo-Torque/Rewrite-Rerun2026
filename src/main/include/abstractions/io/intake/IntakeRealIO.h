@@ -91,7 +91,7 @@ class IntakeRealIO : public IntakeIO {
 
         void ConfigPivotMotor() {
             rev::spark::SparkMaxConfig config;
-            config.closedLoop.P(0.04, rev::spark::kSlot0);
+            config.closedLoop.P(0.03, rev::spark::kSlot0);
             config.closedLoop.I(0.001, rev::spark::kSlot0);
             config.closedLoop.D(0.002, rev::spark::kSlot0);
 
@@ -99,7 +99,7 @@ class IntakeRealIO : public IntakeIO {
             config.closedLoop.I(0.0, rev::spark::kSlot1);
             config.closedLoop.D(0.002, rev::spark::kSlot1);
 
-            config.closedLoop.P(0.02, rev::spark::kSlot2);
+            config.closedLoop.P(0.03, rev::spark::kSlot2);
             config.closedLoop.I(0.0, rev::spark::kSlot2);
             config.closedLoop.D(0.002, rev::spark::kSlot2);
 

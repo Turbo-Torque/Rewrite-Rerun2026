@@ -16,6 +16,13 @@ frc2::CommandPtr GateSubsystem::RunGateCommand() {
     });
 }
 
+frc2::CommandPtr GateSubsystem::RunOutake() {
+    return frc2::cmd::Run([this] {SetGateVolts(-6_V);}, {this})
+    .FinallyDo([this] {
+        SetGateVolts(0_V);
+    });
+}
+
 void GateSubsystem::Periodic() {
     io -> UpdateInputs(inputs);
     frc::SmartDashboard::PutNumber("gate rollers", inputs.gateCurrent.value());

@@ -45,8 +45,8 @@ namespace PathingConstants {
 namespace FieldConstants {
     inline constexpr units::meter_t kFieldLength = 16.541_m;//
     inline constexpr units::meter_t kTargetHeight = 1.8288_m;
-    inline constexpr units::meter_t kBluePosX = 2.5_m;
-    inline constexpr units::meter_t kRedPosX = kFieldLength - 2.5_m;
+    inline constexpr units::meter_t kBluePosX = 1.82_m;
+    inline constexpr units::meter_t kRedPosX = kFieldLength - 1.82_m;
     inline constexpr units::meter_t kHubPosY = 4_m;
 
     inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
@@ -135,7 +135,7 @@ namespace IntakeConstants {
     inline constexpr units::volt_t kIntakeVolts = 9.5_V;
     inline constexpr units::volt_t kOuttakeVolts = - 6_V;
     inline constexpr units::volt_t kIntakeAgitateVolts = 2_V;
-    inline constexpr units::volt_t kPivotVolts = 1_V;
+    inline constexpr units::volt_t kPivotVolts = 2_V;
 
     inline constexpr double kSPivot = 0.0;      
     inline constexpr double kGPivot = 0.0;          
@@ -159,7 +159,7 @@ namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
     inline constexpr units::revolutions_per_minute_t kShooterRPM = 2800_rpm;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM1 = 2500_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM1 = 2600_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM2 = 2800_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM3 = 2800_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM4 = 2800_rpm;
@@ -186,7 +186,7 @@ namespace ShooterConstants {
     inline constexpr double kHoodUp = 120.0;
     inline constexpr double kHoodLaser = 155.0;
     inline constexpr double kHoodDown = 0.0; 
-    inline constexpr double kHoodAngle1 = 100.0;
+    inline constexpr double kHoodAngle1 = 95.0;
     inline constexpr double kHoodAngle2 = 100.0;
     inline constexpr double kHoodAngle3 = 120.0;
     inline constexpr double kHoodAngle4 = 120.0;

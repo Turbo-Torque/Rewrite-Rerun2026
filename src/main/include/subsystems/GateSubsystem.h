@@ -1,4 +1,5 @@
 #pragma once
+#include "frc2/command/CommandPtr.h"
 #include "frc2/command/SubsystemBase.h"
 #include "abstractions/io/gate/GateIO.h"
 
@@ -8,6 +9,7 @@ class GateSubsystem : public frc2::SubsystemBase {
         void SetGateVolts(units::volt_t volts) {io -> SetGateVolts(volts);};
 
         frc2::CommandPtr RunGateCommand();
+        frc2::CommandPtr RunOutake();
 
         void Periodic() override;
     private:

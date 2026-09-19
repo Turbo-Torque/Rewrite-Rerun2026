@@ -27,6 +27,7 @@ class IntakeSubsystem : public frc2::SubsystemBase {
         frc2::CommandPtr PivotAndRunOuttakeCommand();
         frc2::CommandPtr AgitateCommand();
         frc2::CommandPtr SupplyPivotVoltsCommand();
+        frc2::CommandPtr PivotVolts();
         void Periodic() override;
 
     private:

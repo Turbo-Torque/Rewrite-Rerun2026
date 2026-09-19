@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "Gyro"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "L1"
@@ -23,7 +17,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.3
+                  "waitTime": 1.5
                 }
               },
               {
@@ -37,12 +31,6 @@
                 "data": {
                   "name": "Feed"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Agitate"
-                }
               }
             ]
           }
@@ -54,9 +42,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Align"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              }
+            ]
           }
         },
         {
@@ -66,7 +73,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.4
+                  "waitTime": 2.0
                 }
               },
               {
@@ -97,9 +104,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Align"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 2.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot 2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Feed"
+                }
+              }
+            ]
           }
         },
         {
@@ -109,7 +135,7 @@
               {
                 "type": "wait",
                 "data": {
-                  "waitTime": 2.4
+                  "waitTime": 2.0
                 }
               },
               {

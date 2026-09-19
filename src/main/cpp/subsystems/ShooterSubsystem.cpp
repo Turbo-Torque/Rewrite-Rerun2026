@@ -13,8 +13,9 @@ ShooterSubsystem::ShooterSubsystem(std::unique_ptr<ShooterIO> shooterIO) : io(st
     // put smartdashboard (controls rpm)
     frc::SmartDashboard::PutNumber("Put Shooter RPM", 0.0);
     frc::SmartDashboard::PutNumber("Put Hood Angle", 0.0);
-    shotRegression.insert(2_m, 2000_rpm);
-    shotRegression.insert(6_m, 4000_rpm);
+    shotRegression.insert(2.6_m, 2000_rpm);
+    shotRegression.insert(6.2_m, 3000_rpm);
+    shotRegression.insert(10.1_m, 4000_rpm);
 
 }
 

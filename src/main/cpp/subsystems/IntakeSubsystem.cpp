@@ -22,7 +22,7 @@ frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
 
 frc2::CommandPtr IntakeSubsystem::PivotAndRunOuttakeCommand() {
     return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
-    .Until([this]() { return inputs.pivotAtSetpoint; })
+    .Until([this]() { return AtPivotSetpoint(IntakeConstants::kIntakeDown + pivotOffset);})
     .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kOuttakeVolts);}, {this}))
     .FinallyDo([this] {
         SetIntakeVoltage(0_V);
@@ -46,6 +46,13 @@ frc2::CommandPtr IntakeSubsystem::SupplyPivotVoltsCommand() {
         SetPivotVolts(0_V);
         newIntakePivot = inputs.position;  // real pivot position, not roller RPM
         pivotOffset = newIntakePivot - IntakeConstants::kIntakeDown;  // drift from where "down" should be
+    });
+}
+
+frc2::CommandPtr IntakeSubsystem::PivotVolts() {
+    return frc2::cmd::Run([this] {SetPivotVolts(IntakeConstants::kPivotVolts);}, {this})
+    .FinallyDo([this] {
+        SetPivotVolts(0_V);
     });
 }
 
