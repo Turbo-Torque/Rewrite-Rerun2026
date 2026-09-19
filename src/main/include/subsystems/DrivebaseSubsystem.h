@@ -85,7 +85,7 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     turbolib::perception::TurboPoseEstimator poseEstimator;
     
     frc::ProfiledPIDController<units::degrees> realRotationController{
-        3, 0, 0,
+        3.5, 0, 0,
         {DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration}
     };
 

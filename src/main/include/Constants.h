@@ -133,9 +133,9 @@ namespace IntakeConstants {
     inline constexpr double kIntakeAgitate = 2.5; //2.5
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 9.5_V;
-    inline constexpr units::volt_t kOuttakeVolts = - 6_V;
+    inline constexpr units::volt_t kOuttakeVolts = - 8_V;
     inline constexpr units::volt_t kIntakeAgitateVolts = 2_V;
-    inline constexpr units::volt_t kPivotVolts = 2_V;
+    inline constexpr units::volt_t kPivotVolts = 3.5_V;
 
     inline constexpr double kSPivot = 0.0;      
     inline constexpr double kGPivot = 0.0;          

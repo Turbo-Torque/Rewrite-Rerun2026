@@ -110,6 +110,10 @@
       "rotationDegrees": -90.0
     },
     {
+      "waypointRelativePos": 2.9649122807017743,
+      "rotationDegrees": 180.0
+    },
+    {
       "waypointRelativePos": 3.561403508771975,
       "rotationDegrees": 100.0
     },
@@ -141,7 +145,7 @@
       "minWaypointRelativePos": 1.65,
       "maxWaypointRelativePos": 3.586932447397565,
       "constraints": {
-        "maxVelocity": 1.5,
+        "maxVelocity": 1.0,
         "maxAcceleration": 6.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -167,7 +171,7 @@
   "eventMarkers": [
     {
       "name": "Intake",
-      "waypointRelativePos": 1.4,
+      "waypointRelativePos": 0.841638981173876,
       "endWaypointRelativePos": 4.1282339707536995,
       "command": {
         "type": "named",
