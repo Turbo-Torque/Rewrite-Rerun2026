@@ -99,7 +99,7 @@ class IntakeRealIO : public IntakeIO {
             config.closedLoop.I(0.0, rev::spark::kSlot1);
             config.closedLoop.D(0.002, rev::spark::kSlot1);
 
-            config.closedLoop.P(0.03, rev::spark::kSlot2);
+            config.closedLoop.P(0.02, rev::spark::kSlot2);
             config.closedLoop.I(0.0, rev::spark::kSlot2);
             config.closedLoop.D(0.002, rev::spark::kSlot2);
 
@@ -110,6 +110,6 @@ class IntakeRealIO : public IntakeIO {
             config.Inverted(true);
 
             pivotMotor.Configure(config, rev::ResetMode::kResetSafeParameters, rev::PersistMode::kPersistParameters);
-            // pivotMotor.GetEncoder().SetPosition(0.0);
+            pivotMotor.GetEncoder().SetPosition(0.0);
         }
 };

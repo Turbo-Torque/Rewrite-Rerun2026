@@ -226,7 +226,7 @@ frc2::CommandPtr DrivebaseSubsystem::RotateToHubCommand(std::function<frc::Rotat
 
 frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
     std::function<frc::Rotation2d()> bestTargetAngle = [this]() {
-        frc::Pose2d targetPose = (IsRedAlliance()) ? PathingConstants::kRedHubPose : PathingConstants::kBlueHubPose;
+        frc::Pose2d targetPose = (IsRedAlliance()) ? FieldConstants::kRedHubPose : FieldConstants::kBlueHubPose;
 
         frc::Pose2d currentPose = GetPose();
 
@@ -324,6 +324,7 @@ void DrivebaseSubsystem::Periodic() {
     frc::SmartDashboard::PutBoolean("HasAlliance", alliance.has_value());
     frc::SmartDashboard::PutBoolean("At Setpoint", AtPoseSetPoint());
     frc::SmartDashboard::PutBoolean("IsRed", alliance && alliance.value() == frc::DriverStation::Alliance::kRed);   
+    frc::SmartDashboard::PutBoolean("Is Alligned", "At Heading Setpoint");
 }
 
 void DrivebaseSubsystem::SimulationPeriodic() {

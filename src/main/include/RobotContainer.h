@@ -18,6 +18,7 @@
 #include <frc2/command/Commands.h>
 #include "subsystems/ShotSolve.h"
 #include "subsystems/HubSubsystem.h"
+#include "frc/smartdashboard/SmartDashboard.h"
 
 
 /**
@@ -32,6 +33,13 @@ class RobotContainer {
   RobotContainer();
 
   frc2::Command* GetAutonomousCommand();
+
+  // ADDED: runs ShotSolve and publishes the result to Elastic every call, independent of any
+  // button — meant to be called unconditionally from Robot::RobotPeriodic() so the dashboard
+  // keeps showing "what the shot would be right now" continuously as the robot moves, without
+  // needing AimAndShootCommand() to be actively toggled on. Does NOT command the shooter/hood —
+  // actually shooting still requires pressing the button, this is display-only.
+  void UpdateShotSolveDisplay() { ComputeBestShot(); }
 
  private:
   DrivebaseSubsystem drivebaseSubsystem;
@@ -83,24 +91,50 @@ frc2::CommandPtr AlignToHub() {
 
 
 
+  // ADDED: shared by AimAndShootCommand() and UpdateShotSolveDisplay() so the continuous dashboard
+  // display and the actual shoot command always compute the exact same thing, once, in one place.
+  std::optional<ShotSolve::ShotEvaluation> ComputeBestShot() {
+      // COMMENTED OUT (by request): fake-pose testing, run through real pose for now instead.
+      // frc::Pose2d currentPose = frc::SmartDashboard::GetBoolean("Use Fake Pose", false)
+      //     ? frc::Pose2d{units::meter_t{frc::SmartDashboard::GetNumber("Fake X", 0.0)},
+      //                   units::meter_t{frc::SmartDashboard::GetNumber("Fake Y", 0.0)}, 0_deg}
+      //     : drivebaseSubsystem.GetPose();
+      frc::Pose2d currentPose = drivebaseSubsystem.GetPose();
+
+      auto muzzle = ShotSolve::GetMuzzlePosition(currentPose);
+      auto target = ShotSolve::GetTargetPosition();  // handles Red/Blue internally via DriverStation::GetAlliance()
+      auto geometry = ShotSolve::ComputeGeometry(muzzle, target);
+
+      auto candidates = ShotSolve::GenerateCandidates();
+      auto evaluations = ShotSolve::EvaluateCandidates(candidates, geometry);
+      auto validShots = ShotSolve::FilterValidShots(evaluations, geometry);
+
+      ShotSolve::RankShots(validShots);
+      auto shot = ShotSolve::SelectBestShot(validShots);
+
+      // ADDED: publish the computed best shot to Elastic so it's visible while testing with a fake pose
+      frc::SmartDashboard::PutBoolean("ShotSolve Has Valid Shot", shot.has_value());
+      if (shot) {
+          // FIXED: shot->candidate.hoodAngle is the true launch angle (physics) — SetHoodSetpoint
+          // needs the hood's raw encoder setpoint, converted via the calibration map.
+          double hoodSetpoint = shooterSubsystem.AngleToHoodSetpoint(shot->candidate.hoodAngle);
+          frc::SmartDashboard::PutNumber("ShotSolve Best RPM", shot->candidate.rpm.value());
+          frc::SmartDashboard::PutNumber("ShotSolve Best Hood Angle (true)", shot->candidate.hoodAngle.value());
+          frc::SmartDashboard::PutNumber("ShotSolve Best Hood Setpoint (raw)", hoodSetpoint);
+      }
+      return shot;
+  }
+
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {
-          auto muzzle = ShotSolve::GetMuzzlePosition(drivebaseSubsystem.GetPose());
-          auto target = ShotSolve::GetTargetPosition();
-          auto geometry = ShotSolve::ComputeGeometry(muzzle, target);
-
-          auto candidates = ShotSolve::GenerateCandidates();
-          auto evaluations = ShotSolve::EvaluateCandidates(candidates, geometry);
-          auto validShots = ShotSolve::FilterValidShots(evaluations, geometry);
-
-          ShotSolve::RankShots(validShots);
-          auto shot = ShotSolve::SelectBestShot(validShots);
+          auto shot = ComputeBestShot();
 
         //   drivebaseSubsystem.AimAtHeading(geometry.bearing);
 
           if (shot) {
+              double hoodSetpoint = shooterSubsystem.AngleToHoodSetpoint(shot->candidate.hoodAngle);
               shooterSubsystem.SetShooterRPM(shot->candidate.rpm);
-              shooterSubsystem.SetHoodSetpoint(shot->candidate.hoodAngle.value());
+              shooterSubsystem.SetHoodSetpoint(hoodSetpoint);
           }
     }, {&drivebaseSubsystem, &shooterSubsystem})
     .FinallyDo([this] {

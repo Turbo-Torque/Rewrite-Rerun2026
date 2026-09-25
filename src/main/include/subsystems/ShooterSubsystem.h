@@ -4,6 +4,7 @@
 #include "abstractions/io/shooter/ShooterIO.h"
 #include "units/length.h"
 #include <wpi/interpolating_map.h>
+#include "Constants.h"
 
 class ShooterSubsystem : public frc2::SubsystemBase {
     public:
@@ -23,6 +24,13 @@ class ShooterSubsystem : public frc2::SubsystemBase {
         frc2::CommandPtr SetShooterState(double targeRPM, double targetHoodAngle);
         units::revolutions_per_minute_t GetShotRPM(units::meter_t distance) { return shotRegression[distance]; }
 
+        // ADDED: converts ShotSolve's true launch angle (physics, kMinAngle..kMaxAngle) into the
+        // hood's raw absolute-encoder setpoint (kHoodDown..kHoodUp scale). PLACEHOLDER calibration —
+        // seeded from the existing named constants as a starting guess. Replace with real measured
+        // (true angle, encoder reading) pairs once the actual gear ratio is known:
+        //   hoodCalibration.insert(<measured true angle>_deg, <encoder reading at that angle>);
+        double AngleToHoodSetpoint(units::degree_t trueAngle) { return hoodCalibration[trueAngle]; }
+
         bool IsNearState();
         void Periodic() override;
 
@@ -34,4 +42,14 @@ class ShooterSubsystem : public frc2::SubsystemBase {
         wpi::interpolating_map<units::meter_t, units::revolutions_per_minute_t> shotRegression;
         // ADDED: last distance the Laser command computed, so Periodic() can publish it to Elastic
         units::meter_t lastLaserDistance{0_m};
+
+        // Two-point calibration — see AngleToHoodSetpoint() above. Both ends are real measured
+        // values: raw endpoints (0deg/160deg) from the hood's sensor sweep, true angle endpoints
+        // (kMinAngle=15deg/kMaxAngle=35deg) from a protractor on the barrel.
+        wpi::interpolating_map<units::degree_t, double> hoodCalibration = [] {
+            wpi::interpolating_map<units::degree_t, double> map;
+            map.insert(ShooterConstants::kMinAngle, 0.0);
+            map.insert(ShooterConstants::kMaxAngle, 160.0);
+            return map;
+        }();
 };

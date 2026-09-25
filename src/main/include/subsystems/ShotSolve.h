@@ -10,7 +10,6 @@
 namespace ShotSolve{
     struct ShotGeometry {
         units::meter_t groundDistance;
-        units::meter_t heightDelta;
         frc::Rotation2d bearing;
     };
 
@@ -21,9 +20,12 @@ namespace ShotSolve{
 
     struct ShotEvaluation {
         ShotCandidate candidate;
-        units::meter_t achievedRange;
         units::second_t flightTime;
-        bool reachedHeight;
+        // ADDED: clears the near wall of the hex (the obstacle/rim) AND is still airborne by the time
+        // it's crossed to the hex's far side — once both hold, it drops into the scoring opening on
+        // its own, so there's no separate exact-height-at-target check.
+        bool clearsObstacle;
+        bool reachesFarSide;
     };
 
 

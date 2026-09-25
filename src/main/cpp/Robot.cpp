@@ -24,6 +24,10 @@ Robot::Robot() {
 void Robot::RobotPeriodic() {
   frc2::CommandScheduler::GetInstance().Run();
 
+  // ADDED: keeps ShotSolve's dashboard readout live at all times, tracking wherever the robot
+  // actually is, independent of whether AimAndShootCommand() is toggled on. Display-only —
+  // doesn't command the shooter/hood; that still only happens when the button is actually pressed.
+  m_container.UpdateShotSolveDisplay();
 
   frc::SmartDashboard::PutNumber("MatchTime", frc::DriverStation::GetMatchTime().value());
   // voltageTopic.Set(frc::DriverStation::GetBatteryVoltage());

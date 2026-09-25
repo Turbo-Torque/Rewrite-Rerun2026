@@ -11,36 +11,43 @@ IntakeSubsystem::IntakeSubsystem(std::unique_ptr<IntakeIO> intakeIo) : io(std::m
 } 
 
 frc2::CommandPtr IntakeSubsystem::PivotAndRunIntakeCommand() {
-    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
-    .Until([this]() { return AtPivotSetpoint(IntakeConstants::kIntakeDown + pivotOffset); })
-    .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeVolts);}, {this}))
-    .FinallyDo([this] {
-        SetIntakeVoltage(0_V);
-        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway + pivotOffset);
-    });
+    return GuardedByReset(
+        frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
+        .Until([this]() { return AtPivotSetpoint(IntakeConstants::kIntakeDown + pivotOffset); })
+        .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kIntakeVolts);}, {this}))
+        .FinallyDo([this] {
+            SetIntakeVoltage(0_V);
+            SetIntakeSetpoint(IntakeConstants::kIntakeHalfway + pivotOffset);
+        })
+    );
 }
 
 frc2::CommandPtr IntakeSubsystem::PivotAndRunOuttakeCommand() {
-    return frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
-    .Until([this]() { return AtPivotSetpoint(IntakeConstants::kIntakeDown + pivotOffset);})
-    .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kOuttakeVolts);}, {this}))
-    .FinallyDo([this] {
-        SetIntakeVoltage(0_V);
-        SetIntakeSetpoint(IntakeConstants::kIntakeHalfway + pivotOffset);
-    });
+    return GuardedByReset(
+        frc2::cmd::Run([this] {SetIntakeSetpoint(IntakeConstants::kIntakeDown + pivotOffset);}, {this})
+        .Until([this]() { return AtPivotSetpoint(IntakeConstants::kIntakeDown + pivotOffset);})
+        .AndThen(frc2::cmd::Run([this] {SetIntakeVoltage(IntakeConstants::kOuttakeVolts);}, {this}))
+        .FinallyDo([this] {
+            SetIntakeVoltage(0_V);
+            SetIntakeSetpoint(IntakeConstants::kIntakeHalfway + pivotOffset);
+        })
+    );
 }
 
 
 frc2::CommandPtr IntakeSubsystem::AgitateCommand() {
-    return frc2::cmd::Run([this] {Agitate(IntakeConstants::kIntakeAgitate + pivotOffset);}, {this})
-    .AndThen(frc2::cmd::Run([this] {SetAgitateVolts(IntakeConstants::kIntakeAgitateVolts);}, {this}))
-    .FinallyDo([this] {
-        SetAgitateVolts(0_V);
-        Agitate(IntakeConstants::kIntakeHalfway + pivotOffset);
-    });
+    return GuardedByReset(
+        frc2::cmd::Run([this] {Agitate(IntakeConstants::kIntakeAgitate + pivotOffset);}, {this})
+        .AndThen(frc2::cmd::Run([this] {SetAgitateVolts(IntakeConstants::kIntakeAgitateVolts);}, {this}))
+        .FinallyDo([this] {
+            SetAgitateVolts(0_V);
+            Agitate(IntakeConstants::kIntakeHalfway + pivotOffset);
+        })
+    );
 }
 
 frc2::CommandPtr IntakeSubsystem::SupplyPivotVoltsCommand() {
+    // Not guarded: this IS the reset/recalibration routine, gating it on itself would deadlock it.
     return frc2::cmd::Run([this] {SetPivotVolts(IntakeConstants::kPivotVolts);}, {this})
     .FinallyDo([this] {
         SetPivotVolts(0_V);
@@ -50,10 +57,25 @@ frc2::CommandPtr IntakeSubsystem::SupplyPivotVoltsCommand() {
 }
 
 frc2::CommandPtr IntakeSubsystem::PivotVolts() {
-    return frc2::cmd::Run([this] {SetPivotVolts(IntakeConstants::kPivotVolts);}, {this})
-    .FinallyDo([this] {
-        SetPivotVolts(0_V);
-    });
+    return GuardedByReset(
+        frc2::cmd::Run([this] {SetPivotVolts(IntakeConstants::kPivotVolts);}, {this})
+        .FinallyDo([this] {
+            SetPivotVolts(0_V);
+        })
+    );
+}
+
+frc2::CommandPtr IntakeSubsystem::SetIntakeToUp() {
+    return GuardedByReset(
+        frc2::cmd::Run([this] {SetIntakeSetpoint(0.0 + pivotOffset);}, {this})
+        .FinallyDo([this] {
+            SetIntakeSetpoint(0.0 + pivotOffset);
+        })
+    );
+}
+
+frc2::CommandPtr IntakeSubsystem::GuardedByReset(frc2::CommandPtr&& command) {
+    return frc2::cmd::Either(std::move(command), frc2::cmd::None(), [this] { return !resetIntake; });
 }
 
 bool IntakeSubsystem::IntakeNeedHopper() {
@@ -66,6 +88,19 @@ bool IntakeSubsystem::IntakeNeedHopper() {
 
 bool IntakeSubsystem::AgitateRollers() {
     return true;
+}
+
+bool IntakeSubsystem::ResetIntake() {
+    return resetIntake;
+}
+
+frc2::CommandPtr IntakeSubsystem::SetResetIntake() {
+    // FIXED: this only flips a flag, no hardware access — requiring {this} made it illegally
+    // overlap with SupplyPivotVoltsCommand() (also requires IntakeSubsystem) in their .AlongWith(...)
+    // binding, throwing "Multiple commands in a parallel group cannot require the same subsystems"
+    // at startup (bindings get built during RobotContainer's constructor).
+    return frc2::cmd::RunOnce([this] {resetIntake = true;})
+    .FinallyDo([this] {resetIntake = false;});
 }
 
 

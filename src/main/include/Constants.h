@@ -31,8 +31,6 @@ namespace OperatorConstants {
 }
 
 namespace PathingConstants {
-    inline constexpr frc::Pose2d kRedHubPose{11.92_m, 4_m, 0_rad};
-    inline constexpr frc::Pose2d kBlueHubPose{4.625_m, 4_m, 0_rad};
     inline constexpr frc::Pose2d kDummy{0_m,0_m,0_rad};
     inline constexpr frc::Pose2d kRedCenter{15.0_m,4.2_m,0_rad};
     inline constexpr frc::Pose2d kRedBottom{13.2_m,5.7_m,0_rad};
@@ -44,18 +42,30 @@ namespace PathingConstants {
 
 namespace FieldConstants {
     inline constexpr units::meter_t kFieldLength = 16.541_m;//
+    // Real value from the FIRST field HUB drawing (GE-26300): the rim the ball must arc over,
+    // 72.000in off the floor all the way around the hexagon. This is an OBSTACLE, not where the
+    // ball needs to land — see kScoringHeight below and ShooterConstants::kObstacleHeight.
     inline constexpr units::meter_t kTargetHeight = 1.8288_m;
-    inline constexpr units::meter_t kBluePosX = 1.82_m;
-    inline constexpr units::meter_t kRedPosX = kFieldLength - 1.82_m;
+    // Center of the real scoring opening (30.13in-49.75in off the same floor datum as the rim above),
+    // kept here for reference/display — ShotSolve no longer gates on hitting this exact height. Once a
+    // shot clears the rim (kTargetHeight) AND still has enough reach to cross to the far side of the
+    // hex (see ShooterConstants::kObstacleDistanceFromTarget), it drops into the opening on its own.
+    inline constexpr units::meter_t kScoringHeight = 39.94_in;
+
+    // FIXED: this used to be built from kBluePosX/kRedPosX (1.82m from the field wall) — a DIFFERENT,
+    // wrong hub position than the one DrivebaseSubsystem's alignment uses below (11.92m/4.625m). The
+    // two features were aiming at hub positions ~2.8m apart. Both now come from the same single source.
+    inline constexpr units::meter_t kRedHubPosX = 11.92_m;
+    inline constexpr units::meter_t kBlueHubPosX = 4.625_m;
     inline constexpr units::meter_t kHubPosY = 4_m;
 
-    inline constexpr frc::Translation3d kBlueTargetPosition{kBluePosX, kHubPosY, kTargetHeight};
-    inline constexpr frc::Translation3d kRedTargetPosition{kFieldLength - kBluePosX, kHubPosY, kTargetHeight};
+    inline constexpr frc::Pose2d kRedHubPose{kRedHubPosX, kHubPosY, 0_rad};
+    inline constexpr frc::Pose2d kBlueHubPose{kBlueHubPosX, kHubPosY, 0_rad};
 
-    inline constexpr frc::Pose2d kRedHubPose{11.92_m, 4_m, 0_rad};
-    inline constexpr frc::Pose2d kBlueHubPose{4.625_m, 4_m, 0_rad};
-
-    
+    // ADDED: Translation3d version (with height) for ShotSolve's physics — same X/Y as the Pose2d
+    // hub pose above, plus kScoringHeight for the Z the trajectory math needs.
+    inline constexpr frc::Translation3d kRedTargetPosition{kRedHubPosX, kHubPosY, kScoringHeight};
+    inline constexpr frc::Translation3d kBlueTargetPosition{kBlueHubPosX, kHubPosY, kScoringHeight};
 }
 
 namespace VisionConstants {
@@ -128,14 +138,14 @@ namespace IntakeConstants {
     //inline constexpr int kIntakeCANPort = 0;
 
     inline constexpr double kIntakeUp = 0.0; //convert from degrees to rotations
-    inline constexpr double kIntakeHalfway = 30.0;//30.0convert from degrees to rotations
-    inline constexpr double kIntakeDown = 62.0; //57.0convert from degrees to rotations
-    inline constexpr double kIntakeAgitate = 2.5; //2.5
+    inline constexpr double kIntakeHalfway = 0.0;//30.0convert from degrees to rotations
+    inline constexpr double kIntakeDown = 0.0; //57.0convert from degrees to rotations
+    inline constexpr double kIntakeAgitate = 0.0; //2.5
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 9.5_V;
     inline constexpr units::volt_t kOuttakeVolts = - 8_V;
     inline constexpr units::volt_t kIntakeAgitateVolts = 2_V;
-    inline constexpr units::volt_t kPivotVolts = 3.5_V;
+    inline constexpr units::volt_t kPivotVolts = 4_V;
 
     inline constexpr double kSPivot = 0.0;      
     inline constexpr double kGPivot = 0.0;          
@@ -158,7 +168,7 @@ namespace GateConstants {
 namespace ShooterConstants {
     inline constexpr int kRightShooterMotorPort = 6;
     inline constexpr int kLeftShooterMotorPort = 16;
-    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2800_rpm;
+    inline constexpr units::revolutions_per_minute_t kShooterRPM = 2900_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM1 = 2600_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM2 = 2800_rpm;
     inline constexpr units::revolutions_per_minute_t kShooterRPM3 = 2800_rpm;
@@ -171,18 +181,21 @@ namespace ShooterConstants {
     inline constexpr units::meter_t kShooterOffsetY = -0.2041_m;
     inline constexpr units::meter_t kShooterHeight = 0.525_m;
 
-    inline constexpr units::revolutions_per_minute_t kMinRPM = 2500_rpm;
-    inline constexpr units::revolutions_per_minute_t kMaxRPM = 4000_rpm;
+    inline constexpr units::revolutions_per_minute_t kMinRPM = 1000_rpm;
+    inline constexpr units::revolutions_per_minute_t kMaxRPM = 3500_rpm;
 
-    inline constexpr units::second_t kMaxFlightTime = 1.5_s;
+    inline constexpr units::second_t kMaxFlightTime = 5_s;
     inline constexpr units::meter_t kFlywheelDiameter = 0.1016_m;
+
+    inline constexpr units::meter_t kObstacleHeight = FieldConstants::kTargetHeight;
+    inline constexpr units::meter_t kObstacleDistanceFromTarget = 0.5972_m;
 
     //Hood
     inline constexpr int kHoodMotor = 47;
     inline constexpr int kHoodCAN = 23;
 
-    inline constexpr units::degree_t kMinAngle = 20_deg;
-    inline constexpr units::degree_t kMaxAngle = 60_deg;
+    inline constexpr units::degree_t kMinAngle = 15_deg;
+    inline constexpr units::degree_t kMaxAngle = 35_deg;
     inline constexpr double kHoodUp = 120.0;
     inline constexpr double kHoodLaser = 155.0;
     inline constexpr double kHoodDown = 0.0; 
@@ -190,12 +203,12 @@ namespace ShooterConstants {
     inline constexpr double kHoodAngle2 = 100.0;
     inline constexpr double kHoodAngle3 = 120.0;
     inline constexpr double kHoodAngle4 = 120.0;
-    inline constexpr units::degree_t kAngleStep = 1_deg;
+    inline constexpr units::degree_t kAngleStep = 2.5_deg;
     inline constexpr units::revolutions_per_minute_t kMaxStep = 25_rpm;
     
 
     inline constexpr double kFFHood = 0.0;
-    inline constexpr units::meter_t kRangeTolerance = 0.10_m;
+    inline constexpr units::meter_t kRangeTolerance = 3_m;
     inline constexpr double kHoodGearRatio = 1.0;
 }
 
