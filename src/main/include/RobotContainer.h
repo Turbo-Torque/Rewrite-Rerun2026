@@ -57,6 +57,10 @@ class RobotContainer {
     return drivebaseSubsystem.DriveCommand([this]() {return -(driveController.GetLeftY());}, [this]() {return -(driveController.GetLeftX());}, [this]() {return driveController.GetRightX();});
   }
 
+  frc2::CommandPtr CreateRotateAndDriveCommand() {
+    return drivebaseSubsystem.RotateToHubAndDriveCommand([this] {return -(driveController.GetLeftY());}, [this] {return -(driveController.GetLeftX());}, drivebaseSubsystem.GetBestTargetAngle());
+  }
+
   frc2::CommandPtr RunFeedCommand() {
   return frc2::cmd::WaitUntil([this] {
         return shooterSubsystem.IsNearState();

@@ -15,6 +15,7 @@
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/FunctionalCommand.h"
 #include "turbolib/perception/TurboPoseEstimator.hpp"
+#include "units/angular_velocity.h"
 #include "units/length.h"
 #include "units/velocity.h"
 #include <functional>
@@ -223,9 +224,38 @@ frc2::CommandPtr DrivebaseSubsystem::RotateToHubCommand(std::function<frc::Rotat
     ).ToPtr().WithName("Rotate To Hub");
 }
 
+frc2::CommandPtr DrivebaseSubsystem::RotateToHubAndDriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<frc::Rotation2d()> angle) {
+    return frc2::FunctionalCommand([] {},
+        [=, this] {
 
-frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
-    std::function<frc::Rotation2d()> bestTargetAngle = [this]() {
+            double xInput = frc::ApplyDeadband(xSpeed(), DriveConstants::kControllerDeadBand);
+            double yInput = frc::ApplyDeadband(ySpeed(), DriveConstants::kControllerDeadBand);
+
+            units::meters_per_second_t x;
+            units::meters_per_second_t y;
+
+            x =  xInput * DriveConstants::kMaxLinearSpeed * -0.55;
+            y =   yInput * DriveConstants::kMaxLinearSpeed * -0.55;
+
+            const auto currentAngle = GetPose().Rotation().Degrees();
+            const auto targetAngle = angle().Degrees();
+
+            double rotSpeed = ActiveRotationController().Calculate(currentAngle, targetAngle);
+            units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
+            rotSpeed = std::clamp(rotSpeed, -maxSpeed.value(), maxSpeed.value());
+
+            const frc::ChassisSpeeds speeds{x, y, units::degrees_per_second_t{-rotSpeed}};
+            frc::ChassisSpeeds cmdspeeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(speeds, GetGyroAngle());
+            Drive(cmdspeeds);
+        },
+        [this](bool) { Drive(frc::ChassisSpeeds{}); },
+        [=, this] { return AtHeadingSetpoint(); },
+        {this}
+    ).ToPtr().WithName("Rotate To Hub And Drive");
+}
+
+std::function<frc::Rotation2d()> DrivebaseSubsystem::GetBestTargetAngle() {
+    return [this]() {
         frc::Pose2d targetPose = (IsRedAlliance()) ? FieldConstants::kRedHubPose : FieldConstants::kBlueHubPose;
 
         frc::Pose2d currentPose = GetPose();
@@ -235,6 +265,10 @@ frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
 
         return frc::Rotation2d(units::radian_t(targetAngle));
     };
+}
+
+frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
+    std::function<frc::Rotation2d()> bestTargetAngle = GetBestTargetAngle();
     frc::SmartDashboard::PutNumber("best target angle", bestTargetAngle().Degrees().value());
     return RotateToHubCommand(bestTargetAngle);
 }
