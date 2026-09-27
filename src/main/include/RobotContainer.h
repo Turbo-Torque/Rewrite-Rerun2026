@@ -52,10 +52,19 @@ class RobotContainer {
   frc2::CommandXboxController driveController{OperatorConstants::kDriveControllerPort};
   frc2::CommandXboxController operatorController{OperatorConstants::kOperatorControllerPort};
 
-
   frc2::CommandPtr CreateDriveCommand() {
     return drivebaseSubsystem.DriveCommand([this]() {return -(driveController.GetLeftY());}, [this]() {return -(driveController.GetLeftX());}, [this]() {return driveController.GetRightX();});
   }
+
+    frc2::CommandPtr CreateDrive2Command() {
+
+        return drivebaseSubsystem.Drive2Command([this]() {return -(driveController.GetLeftY());}, [this]() {return -(driveController.GetLeftX());}, [this]() {
+            double x = driveController.GetRightY();
+            double y = driveController.GetRightX();
+            return std::atan2(-y, -x) * 180.0 / M_PI;
+        });
+    }
+
 
   frc2::CommandPtr CreateRotateAndDriveCommand() {
     return drivebaseSubsystem.RotateToHubAndDriveCommand([this] {return -(driveController.GetLeftY());}, [this] {return -(driveController.GetLeftX());}, drivebaseSubsystem.GetBestTargetAngle());
@@ -98,11 +107,7 @@ frc2::CommandPtr AlignToHub() {
   // ADDED: shared by AimAndShootCommand() and UpdateShotSolveDisplay() so the continuous dashboard
   // display and the actual shoot command always compute the exact same thing, once, in one place.
   std::optional<ShotSolve::ShotEvaluation> ComputeBestShot() {
-      // COMMENTED OUT (by request): fake-pose testing, run through real pose for now instead.
-      // frc::Pose2d currentPose = frc::SmartDashboard::GetBoolean("Use Fake Pose", false)
-      //     ? frc::Pose2d{units::meter_t{frc::SmartDashboard::GetNumber("Fake X", 0.0)},
-      //                   units::meter_t{frc::SmartDashboard::GetNumber("Fake Y", 0.0)}, 0_deg}
-      //     : drivebaseSubsystem.GetPose();
+
       frc::Pose2d currentPose = drivebaseSubsystem.GetPose();
 
       auto muzzle = ShotSolve::GetMuzzlePosition(currentPose);
@@ -116,11 +121,9 @@ frc2::CommandPtr AlignToHub() {
       ShotSolve::RankShots(validShots);
       auto shot = ShotSolve::SelectBestShot(validShots);
 
-      // ADDED: publish the computed best shot to Elastic so it's visible while testing with a fake pose
       frc::SmartDashboard::PutBoolean("ShotSolve Has Valid Shot", shot.has_value());
       if (shot) {
-          // FIXED: shot->candidate.hoodAngle is the true launch angle (physics) — SetHoodSetpoint
-          // needs the hood's raw encoder setpoint, converted via the calibration map.
+
           double hoodSetpoint = shooterSubsystem.AngleToHoodSetpoint(shot->candidate.hoodAngle);
           frc::SmartDashboard::PutNumber("ShotSolve Best RPM", shot->candidate.rpm.value());
           frc::SmartDashboard::PutNumber("ShotSolve Best Hood Angle (true)", shot->candidate.hoodAngle.value());
@@ -133,14 +136,12 @@ frc2::CommandPtr AlignToHub() {
       return frc2::cmd::Run([this] {
           auto shot = ComputeBestShot();
 
-        //   drivebaseSubsystem.AimAtHeading(geometry.bearing);
-
           if (shot) {
               double hoodSetpoint = shooterSubsystem.AngleToHoodSetpoint(shot->candidate.hoodAngle);
               shooterSubsystem.SetShooterRPM(shot->candidate.rpm);
               shooterSubsystem.SetHoodSetpoint(hoodSetpoint);
           }
-    }, {&drivebaseSubsystem, &shooterSubsystem})
+    }, {&shooterSubsystem})
     .FinallyDo([this] {
         shooterSubsystem.CoastOut();
         shooterSubsystem.SetHoodSetpoint(ShooterConstants::kHoodDown);    });

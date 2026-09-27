@@ -51,7 +51,7 @@ std::vector<ShotSolve::ShotEvaluation> ShotSolve::EvaluateCandidates(
         // ADDED: live-tunable on the dashboard (Elastic/SmartDashboard) — both seeded in
         // RobotContainer's constructor, read fresh every call here so you can adjust them while
         // testing and see the effect immediately. Neither is a Constants.h compile-time value anymore.
-        double efficiency = frc::SmartDashboard::GetNumber("Flywheel Efficiency", 0.52);
+        double efficiency = frc::SmartDashboard::GetNumber("Flywheel Efficiency", 0.435);
         units::meter_t obstacleDistanceFromTarget{frc::SmartDashboard::GetNumber("Obstacle Distance From Target", ShooterConstants::kObstacleDistanceFromTarget.value())};
 
         double a = 0.5 * ShooterConstants::kGravity.value();

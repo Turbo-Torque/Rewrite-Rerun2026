@@ -68,13 +68,12 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
 
 
     frc2::CommandPtr DriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> rotationSpeed);
+    frc2::CommandPtr Drive2Command(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> angle);
     frc2::CommandPtr RotateToHubAndDriveCommand(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<frc::Rotation2d()> angle);
     frc2::CommandPtr RotateToHubCommand(std::function<frc::Rotation2d()> angle);
     frc2::CommandPtr DriveToSetpointCommand(std::function<frc::Translation2d()> distance);
     frc2::CommandPtr GetAngletoHubCommand();
-    // ADDED: the angle-computation callback GetAngletoHubCommand() uses internally, exposed on its
-    // own so it can be passed directly to RotateToHubAndDriveCommand()'s angle parameter (which needs
-    // a std::function<Rotation2d()>, not a whole Command).
+    frc2::CommandPtr GetAngletoHubCommand2();
     std::function<frc::Rotation2d()> GetBestTargetAngle();
     frc2::CommandPtr GetPoseToSetpoint();
 

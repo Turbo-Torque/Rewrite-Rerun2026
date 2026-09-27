@@ -15,6 +15,7 @@
 #include "frc2/command/CommandPtr.h"
 #include "frc2/command/FunctionalCommand.h"
 #include "turbolib/perception/TurboPoseEstimator.hpp"
+#include "units/angle.h"
 #include "units/angular_velocity.h"
 #include "units/length.h"
 #include "units/velocity.h"
@@ -39,9 +40,9 @@ DrivebaseSubsystem::DrivebaseSubsystem():
     backRight("BackRight", kBackRightPorts.driveMotorPort, kBackRightPorts.steerMotorPort, kBackRightPorts.encoderPort),
     poseEstimator(frc::Rotation2d{}, std::array<frc::SwerveModulePosition, 4>{}, frc::Pose2d{}, kKinematics){
         realRotationController.SetTolerance(0.5_deg, 30_deg_per_s);
-        realRotationController.EnableContinuousInput(0_deg, 360_deg);
+        realRotationController.EnableContinuousInput(-180_deg, 180_deg);
         simRotationController.SetTolerance(0.5_deg, 30_deg_per_s);
-        simRotationController.EnableContinuousInput(0_deg, 360_deg);
+        simRotationController.EnableContinuousInput(-180_deg, 180_deg);
         ConfigureAutoBuilder();
         ConfigureEstimator();
         ConfigureTelemetry();
@@ -167,7 +168,6 @@ bool DrivebaseSubsystem::SeesTag() {
     return false;
 }
 
-// ADDED: was declared but never defined, so DriveToSetpointCommand couldn't link
 bool DrivebaseSubsystem::AtPoseSetPoint() {
     if ((GetPose().Translation().Distance(selectSetpoint.Translation()) < DriveConstants::kSetpointTolerance) && AtHeadingSetpoint()){
         return true;
@@ -204,6 +204,31 @@ frc2::CommandPtr DrivebaseSubsystem::DriveCommand(std::function<double()> xSpeed
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); }, [] {return false;}, {this}
     ).ToPtr().WithName("Drive");
+}
+
+frc2::CommandPtr DrivebaseSubsystem::Drive2Command(std::function<double()> xSpeed, std::function<double()> ySpeed, std::function<double()> angle) {
+    return frc2::FunctionalCommand ( []{},
+        [=, this] {
+
+            double xInput = frc::ApplyDeadband(xSpeed(), DriveConstants::kControllerDeadBand);
+            double yInput = frc::ApplyDeadband(ySpeed(), DriveConstants::kControllerDeadBand);
+
+            const auto currentAngle = GetPose().Rotation().Degrees();
+            const auto targetAngle = units::degree_t{angle()};
+
+            double rotSpeed = ActiveRotationController().Calculate(currentAngle, targetAngle);
+            units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
+            rotSpeed = std::clamp(rotSpeed, -maxSpeed.value(), maxSpeed.value());
+
+            units::meters_per_second_t x = xInput * DriveConstants::kMaxLinearSpeed * -0.85;
+            units::meters_per_second_t y = yInput * DriveConstants::kMaxLinearSpeed * -0.85;
+
+            const frc::ChassisSpeeds speeds{x, y, units::degrees_per_second_t(-rotSpeed)};
+            frc::ChassisSpeeds cmdspeeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(speeds, GetGyroAngle());
+            Drive(cmdspeeds);
+        },
+        [this](bool) { Drive(frc::ChassisSpeeds{}); }, [] {return false;}, {this}
+    ).ToPtr().WithName("Drive2");
 }
 
 frc2::CommandPtr DrivebaseSubsystem::RotateToHubCommand(std::function<frc::Rotation2d()> angle) {
@@ -249,7 +274,11 @@ frc2::CommandPtr DrivebaseSubsystem::RotateToHubAndDriveCommand(std::function<do
             Drive(cmdspeeds);
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); },
-        [=, this] { return AtHeadingSetpoint(); },
+        // FIXED: was AtHeadingSetpoint() — finished on its own once aligned. Commenting these two args
+        // out entirely (as this was) drops FunctionalCommand to 3 arguments, which doesn't compile —
+        // onEnd/isFinished are required. Never finishes on its own now; only ends when the button is
+        // released/toggled off (ToggleOnTrue on driveController.X() cancels it).
+        [] { return false; },
         {this}
     ).ToPtr().WithName("Rotate To Hub And Drive");
 }
