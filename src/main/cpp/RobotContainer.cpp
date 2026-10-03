@@ -62,6 +62,7 @@ RobotContainer::RobotContainer()
 
     frc::SmartDashboard::PutNumber("Flywheel Efficiency", 0.435);
     frc::SmartDashboard::PutNumber("Obstacle Distance From Target", ShooterConstants::kObstacleDistanceFromTarget.value());
+    frc::SmartDashboard::PutNumber("Rotate Lead Time", 1.0);
 }
 
 void RobotContainer::ConfigureDefualts() {
@@ -125,6 +126,7 @@ void RobotContainer::ConfigureNamedCommands() {
     pathplanner::NamedCommands::registerCommand("Auto Shoot", AimAndShootCommand());
     pathplanner::NamedCommands::registerCommand("Gyro", frc2::cmd::RunOnce([this] { drivebaseSubsystem.ZeroGyro(); }));
     pathplanner::NamedCommands::registerCommand("Intake D", intakeSubsystem.PivotVolts());
+    
 }
 
 

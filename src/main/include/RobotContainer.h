@@ -32,6 +32,8 @@ class RobotContainer {
  public:
   RobotContainer();
 
+  DrivebaseSubsystem& GetDrivebaseSubsystem() { return drivebaseSubsystem; }
+
   frc2::Command* GetAutonomousCommand();
 
   // ADDED: runs ShotSolve and publishes the result to Elastic every call, independent of any
@@ -67,7 +69,7 @@ class RobotContainer {
 
 
   frc2::CommandPtr CreateRotateAndDriveCommand() {
-    return drivebaseSubsystem.RotateToHubAndDriveCommand([this] {return -(driveController.GetLeftY());}, [this] {return -(driveController.GetLeftX());}, drivebaseSubsystem.GetBestTargetAngle());
+    return drivebaseSubsystem.RotateToHubAndDriveCommand([this] {return -(driveController.GetLeftY());}, [this] {return -(driveController.GetLeftX());}, drivebaseSubsystem.GetBestFutureTargetAngle());
   }
 
   frc2::CommandPtr RunFeedCommand() {

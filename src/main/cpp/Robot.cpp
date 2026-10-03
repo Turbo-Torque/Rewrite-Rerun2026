@@ -41,6 +41,7 @@ void Robot::DisabledPeriodic() {}
 void Robot::AutonomousInit() {
 
   m_autonomousCommand = m_container.GetAutonomousCommand();
+  m_container.GetDrivebaseSubsystem().ZeroGyro();
 
   if (m_autonomousCommand) {
     frc2::CommandScheduler::GetInstance().Schedule(m_autonomousCommand);

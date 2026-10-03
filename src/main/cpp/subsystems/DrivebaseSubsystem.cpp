@@ -10,6 +10,7 @@
 #include "frc/RobotController.h"
 #include "frc/Timer.h"
 #include "frc/geometry/Pose2d.h"
+#include "frc/geometry/Rotation2d.h"
 #include "frc/geometry/Translation2d.h"
 #include "frc/kinematics/ChassisSpeeds.h"
 #include "frc2/command/CommandPtr.h"
@@ -18,6 +19,7 @@
 #include "units/angle.h"
 #include "units/angular_velocity.h"
 #include "units/length.h"
+#include "units/time.h"
 #include "units/velocity.h"
 #include <functional>
 #include <pathplanner/lib/auto/AutoBuilder.h>
@@ -79,7 +81,7 @@ void DrivebaseSubsystem::ConfigureEstimator() {
      poseEstimator.AddLocalizationCamera("rightShooterCam",
                                   frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
                                   frc::AprilTagField::k2026RebuiltAndyMark);
-    poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -190_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+    // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -190_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
         
     
 }
@@ -105,9 +107,9 @@ void DrivebaseSubsystem::Drive(const frc::ChassisSpeeds& speeds){
 }
 
 void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
-    auto x = speeds.vx * -1;
-    auto y = speeds.vy * -1;
-    auto rot = speeds.omega * -1;
+    auto x = speeds.vx * 1;
+    auto y = speeds.vy * 1;
+    auto rot = speeds.omega * 1;
 
     auto states = DriveConstants::kKinematics.ToSwerveModuleStates({x, y, rot});
 
@@ -259,25 +261,21 @@ frc2::CommandPtr DrivebaseSubsystem::RotateToHubAndDriveCommand(std::function<do
             units::meters_per_second_t x;
             units::meters_per_second_t y;
 
-            x =  xInput * DriveConstants::kMaxLinearSpeed * -0.55;
-            y =   yInput * DriveConstants::kMaxLinearSpeed * -0.55;
+            x =  xInput * DriveConstants::kMaxLinearSpeed * 0.20;
+            y =   yInput * DriveConstants::kMaxLinearSpeed * 0.20;
 
             const auto currentAngle = GetPose().Rotation().Degrees();
             const auto targetAngle = angle().Degrees();
 
             double rotSpeed = ActiveRotationController().Calculate(currentAngle, targetAngle);
             units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
-            rotSpeed = std::clamp(rotSpeed, -maxSpeed.value(), maxSpeed.value());
+            rotSpeed = std::clamp(rotSpeed, -maxSpeed.value() + 10, maxSpeed.value() + 10);
 
             const frc::ChassisSpeeds speeds{x, y, units::degrees_per_second_t{-rotSpeed}};
             frc::ChassisSpeeds cmdspeeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(speeds, GetGyroAngle());
             Drive(cmdspeeds);
         },
         [this](bool) { Drive(frc::ChassisSpeeds{}); },
-        // FIXED: was AtHeadingSetpoint() — finished on its own once aligned. Commenting these two args
-        // out entirely (as this was) drops FunctionalCommand to 3 arguments, which doesn't compile —
-        // onEnd/isFinished are required. Never finishes on its own now; only ends when the button is
-        // released/toggled off (ToggleOnTrue on driveController.X() cancels it).
         [] { return false; },
         {this}
     ).ToPtr().WithName("Rotate To Hub And Drive");
@@ -296,14 +294,36 @@ std::function<frc::Rotation2d()> DrivebaseSubsystem::GetBestTargetAngle() {
     };
 }
 
+std::function<frc::Rotation2d()> DrivebaseSubsystem::GetBestFutureTargetAngle() {
+    return [this]() {
+        frc::Pose2d targetPose = (IsRedAlliance()) ? FieldConstants::kRedHubPose : FieldConstants::kBlueHubPose;
+        frc::Pose2d currentPose = GetPose();
+
+        frc::Translation2d toTarget = targetPose.Translation() - currentPose.Translation();
+        double baseAngle = std::atan2(toTarget.Y().value(), toTarget.X().value());
+
+        frc::ChassisSpeeds fieldVelocity =
+            frc::ChassisSpeeds::FromRobotRelativeSpeeds(GetRobotRelativeSpeeds(), GetGyroAngle());
+
+        double distSq = toTarget.Norm().value() * toTarget.Norm().value();
+        double angularRate = (distSq > 1e-6)
+            ? (toTarget.Y().value() * fieldVelocity.vx.value() - toTarget.X().value() * fieldVelocity.vy.value()) / distSq
+            : 0.0;
+
+        units::second_t leadTime{frc::SmartDashboard::GetNumber("Rotate Lead Time", -1.0)};
+        frc::SmartDashboard::PutNumber("Angular Rate", angularRate);
+        double compensatedAngle = baseAngle + (angularRate * leadTime.value());
+        return frc::Rotation2d(units::radian_t(compensatedAngle));
+    };
+}
+
+
 frc2::CommandPtr DrivebaseSubsystem::GetAngletoHubCommand(){
     std::function<frc::Rotation2d()> bestTargetAngle = GetBestTargetAngle();
     frc::SmartDashboard::PutNumber("best target angle", bestTargetAngle().Degrees().value());
     return RotateToHubCommand(bestTargetAngle);
 }
 
-// FIXED: signature (missing "()"), used xController/yController instead of the rotation controller,
-// clamped output to kMaxLinearSpeed, closed the FunctionalCommand(...) call and added .ToPtr()
 frc2::CommandPtr DrivebaseSubsystem::DriveToSetpointCommand(std::function<frc::Translation2d()> distance) {
     return frc2::FunctionalCommand([]{},
         [=, this] {
@@ -341,10 +361,10 @@ frc2::CommandPtr DrivebaseSubsystem::GetPoseToSetpoint() {
     return DriveToSetpointCommand(bestTargetDistance);
 }
 
-
-
 frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {
-    return gyro.GetRotation2d();
+    // return gyro.GetRotation2d().RotateBy(frc::Rotation2d(180_deg));
+    return gyro.GetRotation2d().RotateBy(0_deg);
+
 
 }
 

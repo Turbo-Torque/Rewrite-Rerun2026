@@ -113,7 +113,9 @@ namespace DriveConstants {
     inline constexpr units::meters_per_second_t kMaxLinearSpeed = 4.25_mps;
     inline constexpr units::radians_per_second_t kMaxAngularSpeed = 1020_deg_per_s;
     inline constexpr units::meters_per_second_squared_t kMaxLinearAcceleration = 8.0_mps_sq;
-    inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 1400_deg_per_s_sq;
+    // FIXED: was 400deg/s^2 -- ~2.55s just to ramp to full angular speed, far too sluggish for a
+    // quick snap-to-heading while driving. Bumped up; tune further on the robot from here.
+    inline constexpr units::radians_per_second_squared_t kMaxAngularAcceleration = 3000_deg_per_s_sq;
     inline constexpr double kControllerDeadBand = 0.08;
     // ADDED: used by DrivebaseSubsystem::AtPoseSetPoint() for DriveToSetpointCommand
     inline constexpr units::meter_t kSetpointTolerance = 0.05_m;
@@ -138,9 +140,9 @@ namespace IntakeConstants {
     //inline constexpr int kIntakeCANPort = 0;
 
     inline constexpr double kIntakeUp = 0.0; //convert from degrees to rotations
-    inline constexpr double kIntakeHalfway = 0.0;//30.0convert from degrees to rotations
-    inline constexpr double kIntakeDown = 0.0; //57.0convert from degrees to rotations
-    inline constexpr double kIntakeAgitate = 0.0; //2.5
+    inline constexpr double kIntakeHalfway = 30.0;//30.0convert from degrees to rotations
+    inline constexpr double kIntakeDown = 60.0; //57.0convert from degrees to rotations
+    inline constexpr double kIntakeAgitate = 2.5; //2.5
     inline constexpr double kFFPivot = 0.0;
     inline constexpr units::volt_t kIntakeVolts = 9.5_V;
     inline constexpr units::volt_t kOuttakeVolts = - 8_V;

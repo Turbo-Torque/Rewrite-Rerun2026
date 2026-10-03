@@ -75,6 +75,7 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     frc2::CommandPtr GetAngletoHubCommand();
     frc2::CommandPtr GetAngletoHubCommand2();
     std::function<frc::Rotation2d()> GetBestTargetAngle();
+    std::function<frc::Rotation2d()> GetBestFutureTargetAngle();
     frc2::CommandPtr GetPoseToSetpoint();
 
 
@@ -89,7 +90,7 @@ class DrivebaseSubsystem final:public frc2::SubsystemBase {
     turbolib::perception::TurboPoseEstimator poseEstimator;
     
     frc::ProfiledPIDController<units::degrees> realRotationController{
-        3.5, 0, 0,
+        5, 0, 0,
         {DriveConstants::kMaxAngularSpeed, DriveConstants::kMaxAngularAcceleration}
     };
 
