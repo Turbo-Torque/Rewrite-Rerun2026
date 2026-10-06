@@ -120,6 +120,10 @@ namespace DriveConstants {
     // ADDED: used by DrivebaseSubsystem::AtPoseSetPoint() for DriveToSetpointCommand
     inline constexpr units::meter_t kSetpointTolerance = 0.05_m;
 
+    // FIXED: was live-tunable on Elastic ("Rotate Lead Time") during testing — locked in as a constant
+    // now that -1s has been confirmed to work in DrivebaseSubsystem::GetBestFutureTargetAngle().
+    inline constexpr units::second_t kRotateLeadTime = -1_s;
+
     inline constexpr double negativeMetersConvert = -1.0;
     inline constexpr double negativeTurnConvert = -1.0;
 }
@@ -191,6 +195,10 @@ namespace ShooterConstants {
 
     inline constexpr units::meter_t kObstacleHeight = FieldConstants::kTargetHeight;
     inline constexpr units::meter_t kObstacleDistanceFromTarget = 0.5972_m;
+
+    // FIXED: was live-tunable on Elastic ("Flywheel Efficiency") during testing — locked in as a
+    // constant now that 0.435 has been confirmed as a good value.
+    inline constexpr double kFlywheelEfficiency = 0.435;
 
     //Hood
     inline constexpr int kHoodMotor = 47;

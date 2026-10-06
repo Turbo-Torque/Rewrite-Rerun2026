@@ -48,10 +48,9 @@ std::vector<ShotSolve::ShotEvaluation> ShotSolve::EvaluateCandidates(
         std::vector<ShotEvaluation> evaluations;
         units::meter_t radius = ShooterConstants::kFlywheelDiameter / 2;
 
-        // ADDED: live-tunable on the dashboard (Elastic/SmartDashboard) — both seeded in
-        // RobotContainer's constructor, read fresh every call here so you can adjust them while
-        // testing and see the effect immediately. Neither is a Constants.h compile-time value anymore.
-        double efficiency = frc::SmartDashboard::GetNumber("Flywheel Efficiency", 0.435);
+        // FIXED: efficiency was live-tunable on the dashboard during testing — locked back in as a
+        // constant now that 0.435 is confirmed good. Obstacle offset is still live-tunable.
+        double efficiency = ShooterConstants::kFlywheelEfficiency;
         units::meter_t obstacleDistanceFromTarget{frc::SmartDashboard::GetNumber("Obstacle Distance From Target", ShooterConstants::kObstacleDistanceFromTarget.value())};
 
         double a = 0.5 * ShooterConstants::kGravity.value();

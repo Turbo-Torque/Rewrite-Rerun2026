@@ -107,9 +107,9 @@ void DrivebaseSubsystem::Drive(const frc::ChassisSpeeds& speeds){
 }
 
 void DrivebaseSubsystem::AutoDrive(const frc::ChassisSpeeds& speeds) {
-    auto x = speeds.vx * 1;
-    auto y = speeds.vy * 1;
-    auto rot = speeds.omega * 1;
+    auto x = speeds.vx * -1;
+    auto y = speeds.vy * -1;
+    auto rot = speeds.omega * -1;
 
     auto states = DriveConstants::kKinematics.ToSwerveModuleStates({x, y, rot});
 
@@ -222,8 +222,8 @@ frc2::CommandPtr DrivebaseSubsystem::Drive2Command(std::function<double()> xSpee
             units::degrees_per_second_t maxSpeed{DriveConstants::kMaxAngularSpeed};
             rotSpeed = std::clamp(rotSpeed, -maxSpeed.value(), maxSpeed.value());
 
-            units::meters_per_second_t x = xInput * DriveConstants::kMaxLinearSpeed * -0.85;
-            units::meters_per_second_t y = yInput * DriveConstants::kMaxLinearSpeed * -0.85;
+            units::meters_per_second_t x = xInput * DriveConstants::kMaxLinearSpeed * -0.8;
+            units::meters_per_second_t y = yInput * DriveConstants::kMaxLinearSpeed * -0.8;
 
             const frc::ChassisSpeeds speeds{x, y, units::degrees_per_second_t(-rotSpeed)};
             frc::ChassisSpeeds cmdspeeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(speeds, GetGyroAngle());
@@ -261,8 +261,8 @@ frc2::CommandPtr DrivebaseSubsystem::RotateToHubAndDriveCommand(std::function<do
             units::meters_per_second_t x;
             units::meters_per_second_t y;
 
-            x =  xInput * DriveConstants::kMaxLinearSpeed * 0.20;
-            y =   yInput * DriveConstants::kMaxLinearSpeed * 0.20;
+            x =  xInput * DriveConstants::kMaxLinearSpeed * -0.20;
+            y =   yInput * DriveConstants::kMaxLinearSpeed * -0.20;
 
             const auto currentAngle = GetPose().Rotation().Degrees();
             const auto targetAngle = angle().Degrees();
@@ -310,7 +310,9 @@ std::function<frc::Rotation2d()> DrivebaseSubsystem::GetBestFutureTargetAngle() 
             ? (toTarget.Y().value() * fieldVelocity.vx.value() - toTarget.X().value() * fieldVelocity.vy.value()) / distSq
             : 0.0;
 
-        units::second_t leadTime{frc::SmartDashboard::GetNumber("Rotate Lead Time", -1.0)};
+        // FIXED: was live-tunable on the dashboard during testing — locked back in as a constant
+        // now that -1s is confirmed good.
+        units::second_t leadTime = DriveConstants::kRotateLeadTime;
         frc::SmartDashboard::PutNumber("Angular Rate", angularRate);
         double compensatedAngle = baseAngle + (angularRate * leadTime.value());
         return frc::Rotation2d(units::radian_t(compensatedAngle));

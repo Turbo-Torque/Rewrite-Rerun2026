@@ -60,9 +60,9 @@ RobotContainer::RobotContainer()
     frc::SmartDashboard::PutNumber("Fake X", 0.0);
     frc::SmartDashboard::PutNumber("Fake Y", 0.0);
 
-    frc::SmartDashboard::PutNumber("Flywheel Efficiency", 0.435);
+    // Flywheel Efficiency and Rotate Lead Time are locked in as constants now
+    // (ShooterConstants::kFlywheelEfficiency / DriveConstants::kRotateLeadTime) — no longer seeded here.
     frc::SmartDashboard::PutNumber("Obstacle Distance From Target", ShooterConstants::kObstacleDistanceFromTarget.value());
-    frc::SmartDashboard::PutNumber("Rotate Lead Time", 1.0);
 }
 
 void RobotContainer::ConfigureDefualts() {
@@ -73,9 +73,7 @@ void RobotContainer::ConfigureBindings() {
 
     driveController.Start().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.ZeroGyro();}));
     driveController.Y().OnTrue(frc2::cmd::RunOnce([this] {drivebaseSubsystem.GetPoseEstimator().SetVisionEnabled(!drivebaseSubsystem.GetPoseEstimator().GetVisionEnabled());}));
-    driveController.X().ToggleOnTrue(CreateRotateAndDriveCommand());
-    driveController.B().ToggleOnTrue(CreateDrive2Command());
-    driveController.RightTrigger().ToggleOnTrue(drivebaseSubsystem.GetAngletoHubCommand().WithDeadline(frc2::cmd::Wait(2_s)));
+    driveController.RightTrigger().ToggleOnTrue(CreateRotateAndDriveCommand());
 
 
 }
@@ -99,7 +97,7 @@ void RobotContainer::ConfigureShooterBindings(){
         return !hubSubsystem.IsAllianceActive(frc::DriverStation::GetAlliance().value_or(frc::DriverStation::kRed));
     };
 
-    operatorController.RightTrigger().WhileTrue((shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand())));
+    // operatorController.RightTrigger().WhileTrue((shooterSubsystem.RunShooterCommand().AlongWith(RunFeedCommand())));
     operatorController.LeftTrigger().WhileTrue((shooterSubsystem.RunShooterCommand2().AlongWith(RunFeedCommand())));
 
     frc2::Trigger([this] {return frc::DriverStation::IsTeleopEnabled() && shooterSubsystem.IsNearState();}).WhileTrue(ControllerRumble(driveController).AlongWith(ControllerRumble(operatorController)));
@@ -109,7 +107,7 @@ void RobotContainer::ConfigureShooterBindings(){
         return units::math::abs(target.X() - muzzle.X());
     }).AlongWith(RunFeedCommand()).AlongWith(ControllerRumble(driveController)).AlongWith(ControllerRumble(operatorController)));
 
-    driveController.A().ToggleOnTrue(AimAndShootCommand().AlongWith(RunFeedCommand()));
+    operatorController.RightTrigger().ToggleOnTrue(AimAndShootCommand().AlongWith(RunFeedCommand()));
 }
 
 void RobotContainer::ConfigureSetpointBindings() {
@@ -126,6 +124,7 @@ void RobotContainer::ConfigureNamedCommands() {
     pathplanner::NamedCommands::registerCommand("Auto Shoot", AimAndShootCommand());
     pathplanner::NamedCommands::registerCommand("Gyro", frc2::cmd::RunOnce([this] { drivebaseSubsystem.ZeroGyro(); }));
     pathplanner::NamedCommands::registerCommand("Intake D", intakeSubsystem.PivotVolts());
+    pathplanner::NamedCommands::registerCommand("Auto Shoot",AimAndShootCommand().AlongWith(RunFeedCommand()));
     
 }
 

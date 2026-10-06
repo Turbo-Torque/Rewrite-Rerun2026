@@ -6,6 +6,7 @@
 
 #include <frc2/command/CommandPtr.h>
 #include <frc2/command/button/CommandXboxController.h>
+#include <algorithm>
 #include <cmath>
 
 #include "Constants.h"
@@ -126,6 +127,24 @@ frc2::CommandPtr AlignToHub() {
       frc::SmartDashboard::PutBoolean("ShotSolve Has Valid Shot", shot.has_value());
       if (shot) {
 
+          frc::Translation2d toTarget = target.ToTranslation2d() - muzzle.ToTranslation2d();
+          double dist = toTarget.Norm().value();
+          frc::ChassisSpeeds fieldVelocity = frc::ChassisSpeeds::FromRobotRelativeSpeeds(
+              drivebaseSubsystem.GetRobotRelativeSpeeds(), drivebaseSubsystem.GetGyroAngle());
+          double closingSpeed = (dist > 1e-6)
+              ? (toTarget.X().value() * fieldVelocity.vx.value() + toTarget.Y().value() * fieldVelocity.vy.value()) / dist
+              : 0.0;
+
+          units::meter_t radius = ShooterConstants::kFlywheelDiameter / 2;
+          units::radians_per_second_t deltaOmega{-closingSpeed / (ShooterConstants::kFlywheelEfficiency * radius.value())};
+          units::revolutions_per_minute_t rpmCompensation{deltaOmega};
+
+          units::revolutions_per_minute_t compensatedRPM = std::clamp(
+              shot->candidate.rpm + rpmCompensation,
+              ShooterConstants::kMinRPM,
+              ShooterConstants::kMaxRPM);
+          shot->candidate.rpm = compensatedRPM;
+
           double hoodSetpoint = shooterSubsystem.AngleToHoodSetpoint(shot->candidate.hoodAngle);
           frc::SmartDashboard::PutNumber("ShotSolve Best RPM", shot->candidate.rpm.value());
           frc::SmartDashboard::PutNumber("ShotSolve Best Hood Angle (true)", shot->candidate.hoodAngle.value());
@@ -137,6 +156,7 @@ frc2::CommandPtr AlignToHub() {
   frc2::CommandPtr AimAndShootCommand() {
       return frc2::cmd::Run([this] {
           auto shot = ComputeBestShot();
+
 
           if (shot) {
               double hoodSetpoint = shooterSubsystem.AngleToHoodSetpoint(shot->candidate.hoodAngle);
