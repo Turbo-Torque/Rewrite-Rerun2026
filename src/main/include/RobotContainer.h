@@ -136,7 +136,7 @@ frc2::CommandPtr AlignToHub() {
               : 0.0;
 
           units::meter_t radius = ShooterConstants::kFlywheelDiameter / 2;
-          units::radians_per_second_t deltaOmega{-closingSpeed / (ShooterConstants::kFlywheelEfficiency * radius.value())};
+          units::radians_per_second_t deltaOmega{closingSpeed / (ShooterConstants::kFlywheelEfficiency * radius.value())};
           units::revolutions_per_minute_t rpmCompensation{deltaOmega};
 
           units::revolutions_per_minute_t compensatedRPM = std::clamp(

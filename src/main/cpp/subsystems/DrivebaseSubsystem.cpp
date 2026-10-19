@@ -76,12 +76,14 @@ void DrivebaseSubsystem::ConfigureAutoBuilder() {
 
 void DrivebaseSubsystem::ConfigureEstimator() {
     poseEstimator.ResetEstimatorPosition(GetGyroAngle(), GetSwerveModulePosition(), frc::Pose2d{});
-    poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
-                                  frc::AprilTagField::k2026RebuiltAndyMark);
-     poseEstimator.AddLocalizationCamera("rightShooterCam",
-                                  frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
-                                  frc::AprilTagField::k2026RebuiltAndyMark);
+    // poseEstimator.AddLocalizationCamera("LSCam", {3.5_in, 10.5_in, 29.6_in, frc::Rotation3d{0_rad, -30_deg, 0_rad}},
+    //                               frc::AprilTagField::k2026RebuiltAndyMark);
+    //  poseEstimator.AddLocalizationCamera("rightShooterCam",
+    //                               frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
+    //                               frc::AprilTagField::k2026RebuiltAndyMark);
     // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -190_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+
+    // poseEstimator.AddLimelightCamera("limelight-test", frc::Transform3d{0_m, 0.29_m, 0.27_m, frc::Rotation3d{0_deg, 40_deg, -135_deg}});
         
     
 }
@@ -364,8 +366,7 @@ frc2::CommandPtr DrivebaseSubsystem::GetPoseToSetpoint() {
 }
 
 frc::Rotation2d DrivebaseSubsystem::GetGyroAngle() {
-    // return gyro.GetRotation2d().RotateBy(frc::Rotation2d(180_deg));
-    return gyro.GetRotation2d().RotateBy(0_deg);
+    return gyro.GetRotation2d().RotateBy(frc::Rotation2d(0_deg));
 
 
 }
