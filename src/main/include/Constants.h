@@ -160,14 +160,14 @@ namespace IntakeConstants {
  
 namespace HopperConstants {
     inline constexpr int kHopperMotorPort = 11;
-    inline constexpr units::volt_t kHopperInVolts = 6_V;
+    inline constexpr units::volt_t kHopperInVolts = 7_V;
     //inline constexpr units::volt_t kHopperOutVolts = -3_V;
 }
 
 namespace GateConstants {
     inline constexpr int kRightGateMotorPort = 15;
     inline constexpr int kLeftGateMotorPort = 14;
-    inline constexpr units::volt_t kGateVolts = 7_V;
+    inline constexpr units::volt_t kGateVolts = 8_V;
 }
 
 
@@ -198,7 +198,7 @@ namespace ShooterConstants {
 
     // FIXED: was live-tunable on Elastic ("Flywheel Efficiency") during testing — locked in as a
     // constant now that 0.435 has been confirmed as a good value.
-    inline constexpr double kFlywheelEfficiency = 0.435;
+    inline constexpr double kFlywheelEfficiency = 0.425;
 
     //Hood
     inline constexpr int kHoodMotor = 47;
@@ -213,8 +213,8 @@ namespace ShooterConstants {
     inline constexpr double kHoodAngle2 = 100.0;
     inline constexpr double kHoodAngle3 = 120.0;
     inline constexpr double kHoodAngle4 = 120.0;
-    inline constexpr units::degree_t kAngleStep = 2.5_deg;
-    inline constexpr units::revolutions_per_minute_t kMaxStep = 25_rpm;
+    inline constexpr units::degree_t kAngleStep = 5_deg;
+    inline constexpr units::revolutions_per_minute_t kMaxStep = 50_rpm;
     
 
     inline constexpr double kFFHood = 0.0;

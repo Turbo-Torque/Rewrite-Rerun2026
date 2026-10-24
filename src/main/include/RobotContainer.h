@@ -146,6 +146,7 @@ frc2::CommandPtr AlignToHub() {
           shot->candidate.rpm = compensatedRPM;
 
           double hoodSetpoint = shooterSubsystem.AngleToHoodSetpoint(shot->candidate.hoodAngle);
+          frc::SmartDashboard::PutNumber("CompensatedRpm", rpmCompensation.value());
           frc::SmartDashboard::PutNumber("ShotSolve Best RPM", shot->candidate.rpm.value());
           frc::SmartDashboard::PutNumber("ShotSolve Best Hood Angle (true)", shot->candidate.hoodAngle.value());
           frc::SmartDashboard::PutNumber("ShotSolve Best Hood Setpoint (raw)", hoodSetpoint);

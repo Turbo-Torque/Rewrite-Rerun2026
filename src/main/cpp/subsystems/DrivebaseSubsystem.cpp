@@ -81,7 +81,7 @@ void DrivebaseSubsystem::ConfigureEstimator() {
     //  poseEstimator.AddLocalizationCamera("rightShooterCam",
     //                               frc::Transform3d{3.7_in, -10.5_in, 29.6_in, frc::Rotation3d{0_deg, -30_deg, 0_deg}},
     //                               frc::AprilTagField::k2026RebuiltAndyMark);
-    // poseEstimator.AddLocalizationCamera("blCam", frc::Transform3d{-10.477_in, 10.379_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -190_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
+    poseEstimator.AddLocalizationCamera("bl", frc::Transform3d{8.523_in, 10.397_in, 6.576_in, frc::Rotation3d{0_deg, -22.23_deg, -190_deg}}, frc::AprilTagField::k2026RebuiltAndyMark);
 
     // poseEstimator.AddLimelightCamera("limelight-test", frc::Transform3d{0_m, 0.29_m, 0.27_m, frc::Rotation3d{0_deg, 40_deg, -135_deg}});
         

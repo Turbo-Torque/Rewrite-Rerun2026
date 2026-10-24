@@ -108,6 +108,7 @@ void RobotContainer::ConfigureShooterBindings(){
     }).AlongWith(RunFeedCommand()).AlongWith(ControllerRumble(driveController)).AlongWith(ControllerRumble(operatorController)));
 
     operatorController.RightTrigger().ToggleOnTrue(AimAndShootCommand().AlongWith(RunFeedCommand()));
+    operatorController.X().ToggleOnTrue(shooterSubsystem.TestShooter());
 }
 
 void RobotContainer::ConfigureSetpointBindings() {
